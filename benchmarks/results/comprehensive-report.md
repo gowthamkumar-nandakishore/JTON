@@ -39,19 +39,19 @@ Deserialization latency per file (median of 10 iterations):
 
 | File | Size (KB) | stdlib (μs) | orjson (μs) | MYSON (μs) | vs stdlib | vs orjson | Winner |
 |------|-----------|-------------|-------------|------------|-----------|-----------|--------|
-| canada.json          |    2198.3 |      24,984 |       6,541 |     15,293 |    1.63x |    0.43x | 🥇 orjson |
-| citm_catalog.json    |    1686.7 |       5,575 |       4,465 |      4,920 |    1.13x |    0.91x | 🥇 orjson |
-| github.json          |      54.5 |         129 |          60 |        147 |    0.88x |    0.41x | 🥇 orjson |
-| twitter.json         |     616.7 |       2,250 |         980 |      2,025 |    1.11x |    0.48x | 🥇 orjson |
-| large.json           |    7693.1 |      86,166 |      58,654 |     88,907 |    0.97x |    0.66x | 🥇 orjson |
-| super_long.json      |  300581.1 |   1,878,117 |         N/A |  1,784,780 |    1.05x |      N/A | 🥇 MYSON |
+| canada.json          |    2198.3 |      24,393 |       5,499 |     17,933 |    1.36x |    0.31x | 🥇 orjson |
+| citm_catalog.json    |    1686.7 |       4,968 |       2,622 |      4,215 |    1.18x |    0.62x | 🥇 orjson |
+| github.json          |      54.5 |         153 |          71 |        135 |    1.13x |    0.53x | 🥇 orjson |
+| twitter.json         |     616.7 |       2,086 |       1,009 |      2,371 |    0.88x |    0.43x | 🥇 orjson |
+| large.json           |    7693.1 |     100,341 |      63,663 |     97,102 |    1.03x |    0.66x | 🥇 orjson |
+| super_long.json      |  300581.1 |   1,963,873 |         N/A |  1,753,319 |    1.12x |      N/A | 🥇 MYSON |
 
 **Average Performance**:
-- stdlib json: **217.3 MB/s**
-- orjson: **466.0 MB/s** (baseline)
-- MYSON: **230.6 MB/s**
-- MYSON vs stdlib: **1.13x**
-- MYSON vs orjson: **0.58x** (slower)
+- stdlib json: **213.4 MB/s**
+- orjson: **496.7 MB/s** (baseline)
+- MYSON: **233.9 MB/s**
+- MYSON vs stdlib: **1.12x**
+- MYSON vs orjson: **0.51x** (slower)
 
 ---
 
@@ -60,9 +60,9 @@ Deserialization latency per file (median of 10 iterations):
 Efficiency score = (Parsing Speed) × (1 + Token Reduction %)
 
 ```
-MYSON Efficiency Score: 275.82
-  = 230.6 MB/s × (1 + 19.6% token reduction vs JSON compact)
-  = 230.6 MB/s × 1.20
+MYSON Efficiency Score: 279.69
+  = 233.9 MB/s × (1 + 19.6% token reduction vs JSON compact)
+  = 233.9 MB/s × 1.20
 ```
 
 > ✅ **Using Real MYSON Zen Grid Format**: Token savings are measured from actual MYSON serialization!
@@ -74,20 +74,20 @@ MYSON Efficiency Score: 275.82
 ### Parsing Speed Rankings
 
 ```
-1. orjson:       466.0 MB/s  (baseline - industry standard)
-2. MYSON:        230.6 MB/s  (0.58x vs orjson, 1.13x vs stdlib)
-3. stdlib json:  217.3 MB/s
+1. orjson:       496.7 MB/s  (baseline - industry standard)
+2. MYSON:        233.9 MB/s  (0.51x vs orjson, 1.12x vs stdlib)
+3. stdlib json:  213.4 MB/s
 ```
 
-**Gap to close**: MYSON needs **2.0x speedup** to match orjson.
+**Gap to close**: MYSON needs **2.1x speedup** to match orjson.
 
-### Token Efficiency (Estimated)
+### Token Efficiency (Actual)
 
 ```
-Format          Token Count    Reduction
-JSON pretty     154,349        baseline
-JSON compact     98,311        36.3%
-MYSON (est)      ~75,000       ~50% (TBD - need serializer)
+Format          Token Count    Reduction vs JSON pretty    vs JSON compact
+JSON pretty       154,349        baseline                 --
+JSON compact       98,311         48.8%                baseline
+MYSON Zen Grid     79,056         48.8%                19.6%
 ```
 
 ---

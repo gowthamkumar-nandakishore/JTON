@@ -427,14 +427,15 @@ def generate_report():
         f.write(f"3. stdlib json: {avg_stdlib_mbps:>6.1f} MB/s\n")
         f.write("```\n\n")
         
-        f.write(f"**Gap to close**: MYSON needs **{avg_orjson_mbps / avg_myson_mbps:.1f}x speedup** to match orjson.\n\n")
+        if avg_orjson_mbps > 0 and avg_myson_mbps > 0:
+            f.write(f"**Gap to close**: MYSON needs **{avg_orjson_mbps / avg_myson_mbps:.1f}x speedup** to match orjson.\n\n")
         
-        f.write("### Token Efficiency (Estimated)\n\n")
+        f.write("### Token Efficiency (Actual)\n\n")
         f.write("```\n")
-        f.write("Format          Token Count    Reduction\n")
-        f.write("JSON pretty     154,349        baseline\n")
-        f.write("JSON compact     98,311        36.3%\n")
-        f.write("MYSON (est)      ~75,000       ~50% (TBD - need serializer)\n")
+        f.write("Format          Token Count    Reduction vs JSON pretty    vs JSON compact\n")
+        f.write(f"JSON pretty     {total_json:>9,}        baseline                 --\n")
+        f.write(f"JSON compact    {total_compact:>9,}        {total_savings_vs_pretty:>5.1f}%                baseline\n")
+        f.write(f"MYSON Zen Grid  {total_myson:>9,}        {total_savings_vs_pretty:>5.1f}%               {total_savings_vs_compact:>5.1f}%\n")
         f.write("```\n\n")
         
         # === Next Steps ===

@@ -24,6 +24,24 @@ ROUNDTRIP_DIR = BASE_DIR / "roundtrip"
 TRANSFORM_DIR = BASE_DIR / "transform"
 
 
+@pytest.fixture(scope="session", autouse=True)
+def log_test_file_counts():
+    counts = {
+        "parsing": len(list(PARSING_DIR.glob("*.json"))),
+        "jsonchecker": len(list(JSONCHECKER_DIR.glob("*.json"))),
+        "roundtrip": len(list(ROUNDTRIP_DIR.glob("*.json"))),
+        "transform": len(list(TRANSFORM_DIR.glob("*.json"))),
+        "root": len(list(BASE_DIR.glob("*.json"))),
+    }
+    counts["total"] = sum(counts.values())
+    print(
+        f"\nMYSON test data counts: parsing={counts['parsing']} "
+        f"jsonchecker={counts['jsonchecker']} roundtrip={counts['roundtrip']} "
+        f"transform={counts['transform']} root={counts['root']} total={counts['total']}"
+    )
+    return counts
+
+
 class TestJSONTestSuite:
     """Tests from JSONTestSuite - comprehensive edge case coverage"""
     
