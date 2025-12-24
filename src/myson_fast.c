@@ -3452,7 +3452,7 @@ typedef struct {
   PyObject *__pyx_slice[1];
   PyObject *__pyx_tuple[2];
   PyObject *__pyx_codeobj_tab[5];
-  PyObject *__pyx_string_tab[159];
+  PyObject *__pyx_string_tab[160];
   PyObject *__pyx_number_tab[4];
 /* #### Code section: module_state_contents ### */
 /* CommonTypesMetaclass.module_state_decls */
@@ -3615,44 +3615,45 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_myson_myson_fast __pyx_string_tab[118]
 #define __pyx_n_u_name __pyx_string_tab[119]
 #define __pyx_n_u_name_2 __pyx_string_tab[120]
-#define __pyx_n_u_ndim __pyx_string_tab[121]
-#define __pyx_n_u_new __pyx_string_tab[122]
-#define __pyx_n_u_obj __pyx_string_tab[123]
-#define __pyx_n_u_pack __pyx_string_tab[124]
-#define __pyx_n_u_parse __pyx_string_tab[125]
-#define __pyx_n_u_parser __pyx_string_tab[126]
-#define __pyx_n_u_pop __pyx_string_tab[127]
-#define __pyx_n_u_pyx_checksum __pyx_string_tab[128]
-#define __pyx_n_u_pyx_state __pyx_string_tab[129]
-#define __pyx_n_u_pyx_type __pyx_string_tab[130]
-#define __pyx_n_u_pyx_unpickle_Enum __pyx_string_tab[131]
-#define __pyx_n_u_pyx_vtable __pyx_string_tab[132]
-#define __pyx_n_u_qualname __pyx_string_tab[133]
-#define __pyx_n_u_reduce __pyx_string_tab[134]
-#define __pyx_n_u_reduce_cython __pyx_string_tab[135]
-#define __pyx_n_u_reduce_ex __pyx_string_tab[136]
-#define __pyx_n_u_register __pyx_string_tab[137]
-#define __pyx_n_u_self __pyx_string_tab[138]
-#define __pyx_n_u_set_name __pyx_string_tab[139]
-#define __pyx_n_u_setdefault __pyx_string_tab[140]
-#define __pyx_n_u_setstate __pyx_string_tab[141]
-#define __pyx_n_u_setstate_cython __pyx_string_tab[142]
-#define __pyx_n_u_shape __pyx_string_tab[143]
-#define __pyx_n_u_size __pyx_string_tab[144]
-#define __pyx_n_u_start __pyx_string_tab[145]
-#define __pyx_n_u_step __pyx_string_tab[146]
-#define __pyx_n_u_stop __pyx_string_tab[147]
-#define __pyx_n_u_struct __pyx_string_tab[148]
-#define __pyx_n_u_test __pyx_string_tab[149]
-#define __pyx_n_u_unpack __pyx_string_tab[150]
-#define __pyx_n_u_update __pyx_string_tab[151]
-#define __pyx_n_u_values __pyx_string_tab[152]
-#define __pyx_n_u_x __pyx_string_tab[153]
-#define __pyx_kp_b_iso88591_A_G7_4vT_4uCt1_aq_T_Q_G7_4vT_4uB __pyx_string_tab[154]
-#define __pyx_kp_b_iso88591_Q __pyx_string_tab[155]
-#define __pyx_kp_b_iso88591_U_Cq_q_Q __pyx_string_tab[156]
-#define __pyx_kp_b_iso88591_z_D_q_1F_A_iq_Zq_6_q __pyx_string_tab[157]
-#define __pyx_n_b_O __pyx_string_tab[158]
+#define __pyx_n_u_nan __pyx_string_tab[121]
+#define __pyx_n_u_ndim __pyx_string_tab[122]
+#define __pyx_n_u_new __pyx_string_tab[123]
+#define __pyx_n_u_obj __pyx_string_tab[124]
+#define __pyx_n_u_pack __pyx_string_tab[125]
+#define __pyx_n_u_parse __pyx_string_tab[126]
+#define __pyx_n_u_parser __pyx_string_tab[127]
+#define __pyx_n_u_pop __pyx_string_tab[128]
+#define __pyx_n_u_pyx_checksum __pyx_string_tab[129]
+#define __pyx_n_u_pyx_state __pyx_string_tab[130]
+#define __pyx_n_u_pyx_type __pyx_string_tab[131]
+#define __pyx_n_u_pyx_unpickle_Enum __pyx_string_tab[132]
+#define __pyx_n_u_pyx_vtable __pyx_string_tab[133]
+#define __pyx_n_u_qualname __pyx_string_tab[134]
+#define __pyx_n_u_reduce __pyx_string_tab[135]
+#define __pyx_n_u_reduce_cython __pyx_string_tab[136]
+#define __pyx_n_u_reduce_ex __pyx_string_tab[137]
+#define __pyx_n_u_register __pyx_string_tab[138]
+#define __pyx_n_u_self __pyx_string_tab[139]
+#define __pyx_n_u_set_name __pyx_string_tab[140]
+#define __pyx_n_u_setdefault __pyx_string_tab[141]
+#define __pyx_n_u_setstate __pyx_string_tab[142]
+#define __pyx_n_u_setstate_cython __pyx_string_tab[143]
+#define __pyx_n_u_shape __pyx_string_tab[144]
+#define __pyx_n_u_size __pyx_string_tab[145]
+#define __pyx_n_u_start __pyx_string_tab[146]
+#define __pyx_n_u_step __pyx_string_tab[147]
+#define __pyx_n_u_stop __pyx_string_tab[148]
+#define __pyx_n_u_struct __pyx_string_tab[149]
+#define __pyx_n_u_test __pyx_string_tab[150]
+#define __pyx_n_u_unpack __pyx_string_tab[151]
+#define __pyx_n_u_update __pyx_string_tab[152]
+#define __pyx_n_u_values __pyx_string_tab[153]
+#define __pyx_n_u_x __pyx_string_tab[154]
+#define __pyx_kp_b_iso88591_A_G7_4vT_4uCt1_aq_T_Q_G7_4vT_4uB __pyx_string_tab[155]
+#define __pyx_kp_b_iso88591_Q __pyx_string_tab[156]
+#define __pyx_kp_b_iso88591_U_Cq_q_Q __pyx_string_tab[157]
+#define __pyx_kp_b_iso88591_z_D_q_1F_A_iq_Zq_6_q __pyx_string_tab[158]
+#define __pyx_n_b_O __pyx_string_tab[159]
 #define __pyx_int_0 __pyx_number_tab[0]
 #define __pyx_int_neg_1 __pyx_number_tab[1]
 #define __pyx_int_1 __pyx_number_tab[2]
@@ -3685,7 +3686,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_slice[i]); }
   for (int i=0; i<2; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<5; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<159; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<160; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<4; ++i) { Py_CLEAR(clear_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_clear_contents ### */
 /* CommonTypesMetaclass.module_state_clear */
@@ -3723,7 +3724,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_slice[i]); }
   for (int i=0; i<2; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<5; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<159; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<160; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<4; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_traverse_contents ### */
 /* CommonTypesMetaclass.module_state_traverse */
@@ -18234,7 +18235,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_va
  *             return self.parse_false()
  *         elif c == 110:  # n (null)             # <<<<<<<<<<<<<<
  *             return self.parse_null()
- *         elif (CTAB[c] & NM) or c == 73:  # number or I (Infinity)
+ *         elif (CTAB[c] & NM) or c == 73 or c == 78:  # number or I/N (Infinity/NaN)
 */
   __pyx_t_1 = (__pyx_v_c == 0x6E);
   if (__pyx_t_1) {
@@ -18243,7 +18244,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_va
  *             return self.parse_false()
  *         elif c == 110:  # n (null)
  *             return self.parse_null()             # <<<<<<<<<<<<<<
- *         elif (CTAB[c] & NM) or c == 73:  # number or I (Infinity)
+ *         elif (CTAB[c] & NM) or c == 73 or c == 78:  # number or I/N (Infinity/NaN)
  *             return self.parse_number()
 */
     __Pyx_XDECREF(__pyx_r);
@@ -18258,14 +18259,14 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_va
  *             return self.parse_false()
  *         elif c == 110:  # n (null)             # <<<<<<<<<<<<<<
  *             return self.parse_null()
- *         elif (CTAB[c] & NM) or c == 73:  # number or I (Infinity)
+ *         elif (CTAB[c] & NM) or c == 73 or c == 78:  # number or I/N (Infinity/NaN)
 */
   }
 
   /* "src/myson_fast.pyx":169
  *         elif c == 110:  # n (null)
  *             return self.parse_null()
- *         elif (CTAB[c] & NM) or c == 73:  # number or I (Infinity)             # <<<<<<<<<<<<<<
+ *         elif (CTAB[c] & NM) or c == 73 or c == 78:  # number or I/N (Infinity/NaN)             # <<<<<<<<<<<<<<
  *             return self.parse_number()
  *         else:
 */
@@ -18275,14 +18276,22 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_va
     __pyx_t_1 = __pyx_t_2;
     goto __pyx_L9_bool_binop_done;
   }
-  __pyx_t_2 = (__pyx_v_c == 73);
+  switch (__pyx_v_c) {
+    case 73:
+    case 78:
+    __pyx_t_2 = 1;
+    break;
+    default:
+    __pyx_t_2 = 0;
+    break;
+  }
   __pyx_t_1 = __pyx_t_2;
   __pyx_L9_bool_binop_done:;
   if (__pyx_t_1) {
 
     /* "src/myson_fast.pyx":170
  *             return self.parse_null()
- *         elif (CTAB[c] & NM) or c == 73:  # number or I (Infinity)
+ *         elif (CTAB[c] & NM) or c == 73 or c == 78:  # number or I/N (Infinity/NaN)
  *             return self.parse_number()             # <<<<<<<<<<<<<<
  *         else:
  *             self.error(f"Unexpected character '{chr(c)}'")
@@ -18297,7 +18306,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_va
     /* "src/myson_fast.pyx":169
  *         elif c == 110:  # n (null)
  *             return self.parse_null()
- *         elif (CTAB[c] & NM) or c == 73:  # number or I (Infinity)             # <<<<<<<<<<<<<<
+ *         elif (CTAB[c] & NM) or c == 73 or c == 78:  # number or I/N (Infinity/NaN)             # <<<<<<<<<<<<<<
  *             return self.parse_number()
  *         else:
 */
@@ -20786,7 +20795,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
  *                 if c >= 48 and c <= 57:  # '0'-'9'
  *                     self.error("Leading zeros not allowed")             # <<<<<<<<<<<<<<
  * 
- *        # Check for Infinity
+ *         # Check for Infinity / NaN (non-standard but used in benchmarks)
 */
         __pyx_f_5myson_10myson_fast_10FastParser_error(__pyx_v_self, __pyx_mstate_global->__pyx_kp_u_Leading_zeros_not_allowed); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 455, __pyx_L1_error)
 
@@ -20819,7 +20828,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 
   /* "src/myson_fast.pyx":458
  * 
- *        # Check for Infinity
+ *         # Check for Infinity / NaN (non-standard but used in benchmarks)
  *         if self.ptr[0] == 73:  # I             # <<<<<<<<<<<<<<
  *             if self.end - self.ptr >= 8:
  *                 if (self.ptr[1] == 110 and self.ptr[2] == 102 and
@@ -20828,7 +20837,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   if (__pyx_t_2) {
 
     /* "src/myson_fast.pyx":459
- *        # Check for Infinity
+ *         # Check for Infinity / NaN (non-standard but used in benchmarks)
  *         if self.ptr[0] == 73:  # I
  *             if self.end - self.ptr >= 8:             # <<<<<<<<<<<<<<
  *                 if (self.ptr[1] == 110 and self.ptr[2] == 102 and
@@ -20922,7 +20931,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
  *                     self.ptr[7] == 121):
  *                     self.ptr += 8             # <<<<<<<<<<<<<<
  *                     return float('inf')
- *         elif self.ptr[0] == 45:  # -
+ *         elif self.ptr[0] == 78:  # N
 */
         __pyx_v_self->ptr = (__pyx_v_self->ptr + 8);
 
@@ -20930,8 +20939,8 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
  *                     self.ptr[7] == 121):
  *                     self.ptr += 8
  *                     return float('inf')             # <<<<<<<<<<<<<<
- *         elif self.ptr[0] == 45:  # -
- *             is_negative = True
+ *         elif self.ptr[0] == 78:  # N
+ *             if self.end - self.ptr >= 3:
 */
         __Pyx_XDECREF(__pyx_r);
         __pyx_t_4 = __Pyx_PyUnicode_AsDouble(__pyx_mstate_global->__pyx_n_u_inf); if (unlikely(__PYX_CHECK_FLOAT_EXCEPTION(__pyx_t_4, ((double)((double)-1))) && PyErr_Occurred())) __PYX_ERR(0, 465, __pyx_L1_error)
@@ -20951,7 +20960,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       }
 
       /* "src/myson_fast.pyx":459
- *        # Check for Infinity
+ *         # Check for Infinity / NaN (non-standard but used in benchmarks)
  *         if self.ptr[0] == 73:  # I
  *             if self.end - self.ptr >= 8:             # <<<<<<<<<<<<<<
  *                 if (self.ptr[1] == 110 and self.ptr[2] == 102 and
@@ -20961,7 +20970,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 
     /* "src/myson_fast.pyx":458
  * 
- *        # Check for Infinity
+ *         # Check for Infinity / NaN (non-standard but used in benchmarks)
  *         if self.ptr[0] == 73:  # I             # <<<<<<<<<<<<<<
  *             if self.end - self.ptr >= 8:
  *                 if (self.ptr[1] == 110 and self.ptr[2] == 102 and
@@ -20972,6 +20981,96 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   /* "src/myson_fast.pyx":466
  *                     self.ptr += 8
  *                     return float('inf')
+ *         elif self.ptr[0] == 78:  # N             # <<<<<<<<<<<<<<
+ *             if self.end - self.ptr >= 3:
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN
+*/
+  __pyx_t_2 = ((__pyx_v_self->ptr[0]) == 78);
+  if (__pyx_t_2) {
+
+    /* "src/myson_fast.pyx":467
+ *                     return float('inf')
+ *         elif self.ptr[0] == 78:  # N
+ *             if self.end - self.ptr >= 3:             # <<<<<<<<<<<<<<
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN
+ *                     self.ptr += 3
+*/
+    __pyx_t_2 = ((__pyx_v_self->end - __pyx_v_self->ptr) >= 3);
+    if (__pyx_t_2) {
+
+      /* "src/myson_fast.pyx":468
+ *         elif self.ptr[0] == 78:  # N
+ *             if self.end - self.ptr >= 3:
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN             # <<<<<<<<<<<<<<
+ *                     self.ptr += 3
+ *                     return float('nan')
+*/
+      __pyx_t_3 = ((__pyx_v_self->ptr[1]) == 97);
+      if (__pyx_t_3) {
+      } else {
+        __pyx_t_2 = __pyx_t_3;
+        goto __pyx_L20_bool_binop_done;
+      }
+      __pyx_t_3 = ((__pyx_v_self->ptr[2]) == 78);
+      __pyx_t_2 = __pyx_t_3;
+      __pyx_L20_bool_binop_done:;
+      if (__pyx_t_2) {
+
+        /* "src/myson_fast.pyx":469
+ *             if self.end - self.ptr >= 3:
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN
+ *                     self.ptr += 3             # <<<<<<<<<<<<<<
+ *                     return float('nan')
+ *         elif self.ptr[0] == 45:  # -
+*/
+        __pyx_v_self->ptr = (__pyx_v_self->ptr + 3);
+
+        /* "src/myson_fast.pyx":470
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN
+ *                     self.ptr += 3
+ *                     return float('nan')             # <<<<<<<<<<<<<<
+ *         elif self.ptr[0] == 45:  # -
+ *             is_negative = True
+*/
+        __Pyx_XDECREF(__pyx_r);
+        __pyx_t_4 = __Pyx_PyUnicode_AsDouble(__pyx_mstate_global->__pyx_n_u_nan); if (unlikely(__PYX_CHECK_FLOAT_EXCEPTION(__pyx_t_4, ((double)((double)-1))) && PyErr_Occurred())) __PYX_ERR(0, 470, __pyx_L1_error)
+        __pyx_t_5 = PyFloat_FromDouble(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 470, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_r = __pyx_t_5;
+        __pyx_t_5 = 0;
+        goto __pyx_L0;
+
+        /* "src/myson_fast.pyx":468
+ *         elif self.ptr[0] == 78:  # N
+ *             if self.end - self.ptr >= 3:
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN             # <<<<<<<<<<<<<<
+ *                     self.ptr += 3
+ *                     return float('nan')
+*/
+      }
+
+      /* "src/myson_fast.pyx":467
+ *                     return float('inf')
+ *         elif self.ptr[0] == 78:  # N
+ *             if self.end - self.ptr >= 3:             # <<<<<<<<<<<<<<
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN
+ *                     self.ptr += 3
+*/
+    }
+
+    /* "src/myson_fast.pyx":466
+ *                     self.ptr += 8
+ *                     return float('inf')
+ *         elif self.ptr[0] == 78:  # N             # <<<<<<<<<<<<<<
+ *             if self.end - self.ptr >= 3:
+ *                 if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN
+*/
+    goto __pyx_L8;
+  }
+
+  /* "src/myson_fast.pyx":471
+ *                     self.ptr += 3
+ *                     return float('nan')
  *         elif self.ptr[0] == 45:  # -             # <<<<<<<<<<<<<<
  *             is_negative = True
  *             if self.end - self.ptr >= 9:
@@ -20979,8 +21078,8 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   __pyx_t_2 = ((__pyx_v_self->ptr[0]) == 45);
   if (__pyx_t_2) {
 
-    /* "src/myson_fast.pyx":467
- *                     return float('inf')
+    /* "src/myson_fast.pyx":472
+ *                     return float('nan')
  *         elif self.ptr[0] == 45:  # -
  *             is_negative = True             # <<<<<<<<<<<<<<
  *             if self.end - self.ptr >= 9:
@@ -20988,7 +21087,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     __pyx_v_is_negative = 1;
 
-    /* "src/myson_fast.pyx":468
+    /* "src/myson_fast.pyx":473
  *         elif self.ptr[0] == 45:  # -
  *             is_negative = True
  *             if self.end - self.ptr >= 9:             # <<<<<<<<<<<<<<
@@ -20998,7 +21097,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
     __pyx_t_2 = ((__pyx_v_self->end - __pyx_v_self->ptr) >= 9);
     if (__pyx_t_2) {
 
-      /* "src/myson_fast.pyx":469
+      /* "src/myson_fast.pyx":474
  *             is_negative = True
  *             if self.end - self.ptr >= 9:
  *                 if (self.ptr[1] == 73 and self.ptr[2] == 110 and             # <<<<<<<<<<<<<<
@@ -21009,16 +21108,16 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L20_bool_binop_done;
+        goto __pyx_L24_bool_binop_done;
       }
       __pyx_t_3 = ((__pyx_v_self->ptr[2]) == 0x6E);
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L20_bool_binop_done;
+        goto __pyx_L24_bool_binop_done;
       }
 
-      /* "src/myson_fast.pyx":470
+      /* "src/myson_fast.pyx":475
  *             if self.end - self.ptr >= 9:
  *                 if (self.ptr[1] == 73 and self.ptr[2] == 110 and
  *                     self.ptr[3] == 102 and self.ptr[4] == 105 and             # <<<<<<<<<<<<<<
@@ -21029,16 +21128,16 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L20_bool_binop_done;
+        goto __pyx_L24_bool_binop_done;
       }
       __pyx_t_3 = ((__pyx_v_self->ptr[4]) == 0x69);
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L20_bool_binop_done;
+        goto __pyx_L24_bool_binop_done;
       }
 
-      /* "src/myson_fast.pyx":471
+      /* "src/myson_fast.pyx":476
  *                 if (self.ptr[1] == 73 and self.ptr[2] == 110 and
  *                     self.ptr[3] == 102 and self.ptr[4] == 105 and
  *                     self.ptr[5] == 110 and self.ptr[6] == 105 and             # <<<<<<<<<<<<<<
@@ -21049,16 +21148,16 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L20_bool_binop_done;
+        goto __pyx_L24_bool_binop_done;
       }
       __pyx_t_3 = ((__pyx_v_self->ptr[6]) == 0x69);
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L20_bool_binop_done;
+        goto __pyx_L24_bool_binop_done;
       }
 
-      /* "src/myson_fast.pyx":472
+      /* "src/myson_fast.pyx":477
  *                     self.ptr[3] == 102 and self.ptr[4] == 105 and
  *                     self.ptr[5] == 110 and self.ptr[6] == 105 and
  *                     self.ptr[7] == 116 and self.ptr[8] == 121):             # <<<<<<<<<<<<<<
@@ -21069,13 +21168,13 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L20_bool_binop_done;
+        goto __pyx_L24_bool_binop_done;
       }
       __pyx_t_3 = ((__pyx_v_self->ptr[8]) == 0x79);
       __pyx_t_2 = __pyx_t_3;
-      __pyx_L20_bool_binop_done:;
+      __pyx_L24_bool_binop_done:;
 
-      /* "src/myson_fast.pyx":469
+      /* "src/myson_fast.pyx":474
  *             is_negative = True
  *             if self.end - self.ptr >= 9:
  *                 if (self.ptr[1] == 73 and self.ptr[2] == 110 and             # <<<<<<<<<<<<<<
@@ -21084,31 +21183,31 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
       if (__pyx_t_2) {
 
-        /* "src/myson_fast.pyx":473
+        /* "src/myson_fast.pyx":478
  *                     self.ptr[5] == 110 and self.ptr[6] == 105 and
  *                     self.ptr[7] == 116 and self.ptr[8] == 121):
  *                     self.ptr += 9             # <<<<<<<<<<<<<<
  *                     return float('-inf')
- * 
+ *             if self.end - self.ptr >= 4:
 */
         __pyx_v_self->ptr = (__pyx_v_self->ptr + 9);
 
-        /* "src/myson_fast.pyx":474
+        /* "src/myson_fast.pyx":479
  *                     self.ptr[7] == 116 and self.ptr[8] == 121):
  *                     self.ptr += 9
  *                     return float('-inf')             # <<<<<<<<<<<<<<
- * 
- *         # Scan number
+ *             if self.end - self.ptr >= 4:
+ *                 if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN
 */
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_4 = __Pyx_PyUnicode_AsDouble(__pyx_mstate_global->__pyx_kp_u_inf_2); if (unlikely(__PYX_CHECK_FLOAT_EXCEPTION(__pyx_t_4, ((double)((double)-1))) && PyErr_Occurred())) __PYX_ERR(0, 474, __pyx_L1_error)
-        __pyx_t_5 = PyFloat_FromDouble(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 474, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyUnicode_AsDouble(__pyx_mstate_global->__pyx_kp_u_inf_2); if (unlikely(__PYX_CHECK_FLOAT_EXCEPTION(__pyx_t_4, ((double)((double)-1))) && PyErr_Occurred())) __PYX_ERR(0, 479, __pyx_L1_error)
+        __pyx_t_5 = PyFloat_FromDouble(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 479, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         __pyx_r = __pyx_t_5;
         __pyx_t_5 = 0;
         goto __pyx_L0;
 
-        /* "src/myson_fast.pyx":469
+        /* "src/myson_fast.pyx":474
  *             is_negative = True
  *             if self.end - self.ptr >= 9:
  *                 if (self.ptr[1] == 73 and self.ptr[2] == 110 and             # <<<<<<<<<<<<<<
@@ -21117,7 +21216,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
       }
 
-      /* "src/myson_fast.pyx":468
+      /* "src/myson_fast.pyx":473
  *         elif self.ptr[0] == 45:  # -
  *             is_negative = True
  *             if self.end - self.ptr >= 9:             # <<<<<<<<<<<<<<
@@ -21126,9 +21225,85 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     }
 
-    /* "src/myson_fast.pyx":466
- *                     self.ptr += 8
- *                     return float('inf')
+    /* "src/myson_fast.pyx":480
+ *                     self.ptr += 9
+ *                     return float('-inf')
+ *             if self.end - self.ptr >= 4:             # <<<<<<<<<<<<<<
+ *                 if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN
+ *                     self.ptr += 4
+*/
+    __pyx_t_2 = ((__pyx_v_self->end - __pyx_v_self->ptr) >= 4);
+    if (__pyx_t_2) {
+
+      /* "src/myson_fast.pyx":481
+ *                     return float('-inf')
+ *             if self.end - self.ptr >= 4:
+ *                 if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN             # <<<<<<<<<<<<<<
+ *                     self.ptr += 4
+ *                     return -float('nan')
+*/
+      __pyx_t_3 = ((__pyx_v_self->ptr[1]) == 78);
+      if (__pyx_t_3) {
+      } else {
+        __pyx_t_2 = __pyx_t_3;
+        goto __pyx_L34_bool_binop_done;
+      }
+      __pyx_t_3 = ((__pyx_v_self->ptr[2]) == 97);
+      if (__pyx_t_3) {
+      } else {
+        __pyx_t_2 = __pyx_t_3;
+        goto __pyx_L34_bool_binop_done;
+      }
+      __pyx_t_3 = ((__pyx_v_self->ptr[3]) == 78);
+      __pyx_t_2 = __pyx_t_3;
+      __pyx_L34_bool_binop_done:;
+      if (__pyx_t_2) {
+
+        /* "src/myson_fast.pyx":482
+ *             if self.end - self.ptr >= 4:
+ *                 if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN
+ *                     self.ptr += 4             # <<<<<<<<<<<<<<
+ *                     return -float('nan')
+ * 
+*/
+        __pyx_v_self->ptr = (__pyx_v_self->ptr + 4);
+
+        /* "src/myson_fast.pyx":483
+ *                 if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN
+ *                     self.ptr += 4
+ *                     return -float('nan')             # <<<<<<<<<<<<<<
+ * 
+ *         # Scan number
+*/
+        __Pyx_XDECREF(__pyx_r);
+        __pyx_t_4 = __Pyx_PyUnicode_AsDouble(__pyx_mstate_global->__pyx_n_u_nan); if (unlikely(__PYX_CHECK_FLOAT_EXCEPTION(__pyx_t_4, ((double)((double)-1))) && PyErr_Occurred())) __PYX_ERR(0, 483, __pyx_L1_error)
+        __pyx_t_5 = PyFloat_FromDouble((-__pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 483, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_r = __pyx_t_5;
+        __pyx_t_5 = 0;
+        goto __pyx_L0;
+
+        /* "src/myson_fast.pyx":481
+ *                     return float('-inf')
+ *             if self.end - self.ptr >= 4:
+ *                 if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN             # <<<<<<<<<<<<<<
+ *                     self.ptr += 4
+ *                     return -float('nan')
+*/
+      }
+
+      /* "src/myson_fast.pyx":480
+ *                     self.ptr += 9
+ *                     return float('-inf')
+ *             if self.end - self.ptr >= 4:             # <<<<<<<<<<<<<<
+ *                 if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN
+ *                     self.ptr += 4
+*/
+    }
+
+    /* "src/myson_fast.pyx":471
+ *                     self.ptr += 3
+ *                     return float('nan')
  *         elif self.ptr[0] == 45:  # -             # <<<<<<<<<<<<<<
  *             is_negative = True
  *             if self.end - self.ptr >= 9:
@@ -21136,7 +21311,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   }
   __pyx_L8:;
 
-  /* "src/myson_fast.pyx":477
+  /* "src/myson_fast.pyx":486
  * 
  *         # Scan number
  *         while self.ptr < self.end and (CTAB[self.ptr[0]] & NM):             # <<<<<<<<<<<<<<
@@ -21148,14 +21323,14 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
     if (__pyx_t_3) {
     } else {
       __pyx_t_2 = __pyx_t_3;
-      goto __pyx_L30_bool_binop_done;
+      goto __pyx_L39_bool_binop_done;
     }
     __pyx_t_3 = (((__pyx_v_5myson_10myson_fast_CTAB[(__pyx_v_self->ptr[0])]) & __pyx_e_5myson_10myson_fast_NM) != 0);
     __pyx_t_2 = __pyx_t_3;
-    __pyx_L30_bool_binop_done:;
+    __pyx_L39_bool_binop_done:;
     if (!__pyx_t_2) break;
 
-    /* "src/myson_fast.pyx":478
+    /* "src/myson_fast.pyx":487
  *         # Scan number
  *         while self.ptr < self.end and (CTAB[self.ptr[0]] & NM):
  *             c = self.ptr[0]             # <<<<<<<<<<<<<<
@@ -21164,7 +21339,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     __pyx_v_c = (__pyx_v_self->ptr[0]);
 
-    /* "src/myson_fast.pyx":479
+    /* "src/myson_fast.pyx":488
  *         while self.ptr < self.end and (CTAB[self.ptr[0]] & NM):
  *             c = self.ptr[0]
  *             if c == 46 or c == 101 or c == 69:  # . e E             # <<<<<<<<<<<<<<
@@ -21176,7 +21351,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       case 0x65:
       case 69:
 
-      /* "src/myson_fast.pyx":480
+      /* "src/myson_fast.pyx":489
  *             c = self.ptr[0]
  *             if c == 46 or c == 101 or c == 69:  # . e E
  *                 is_float = True             # <<<<<<<<<<<<<<
@@ -21185,7 +21360,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
       __pyx_v_is_float = 1;
 
-      /* "src/myson_fast.pyx":479
+      /* "src/myson_fast.pyx":488
  *         while self.ptr < self.end and (CTAB[self.ptr[0]] & NM):
  *             c = self.ptr[0]
  *             if c == 46 or c == 101 or c == 69:  # . e E             # <<<<<<<<<<<<<<
@@ -21196,7 +21371,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       default: break;
     }
 
-    /* "src/myson_fast.pyx":481
+    /* "src/myson_fast.pyx":490
  *             if c == 46 or c == 101 or c == 69:  # . e E
  *                 is_float = True
  *             self.ptr += 1             # <<<<<<<<<<<<<<
@@ -21206,7 +21381,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
     __pyx_v_self->ptr = (__pyx_v_self->ptr + 1);
   }
 
-  /* "src/myson_fast.pyx":483
+  /* "src/myson_fast.pyx":492
  *             self.ptr += 1
  * 
  *         cdef Py_ssize_t length = self.ptr - start             # <<<<<<<<<<<<<<
@@ -21215,7 +21390,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
   __pyx_v_length = (__pyx_v_self->ptr - __pyx_v_start);
 
-  /* "src/myson_fast.pyx":486
+  /* "src/myson_fast.pyx":495
  * 
  *         # Use strtod/strtoll for conversion
  *         if is_float:             # <<<<<<<<<<<<<<
@@ -21224,7 +21399,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
   if (__pyx_v_is_float) {
 
-    /* "src/myson_fast.pyx":487
+    /* "src/myson_fast.pyx":496
  *         # Use strtod/strtoll for conversion
  *         if is_float:
  *             return strtod(<const char*>start, NULL)             # <<<<<<<<<<<<<<
@@ -21232,13 +21407,13 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
  *             errno = 0
 */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_5 = PyFloat_FromDouble(strtod(((char const *)__pyx_v_start), NULL)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 487, __pyx_L1_error)
+    __pyx_t_5 = PyFloat_FromDouble(strtod(((char const *)__pyx_v_start), NULL)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 496, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_r = __pyx_t_5;
     __pyx_t_5 = 0;
     goto __pyx_L0;
 
-    /* "src/myson_fast.pyx":486
+    /* "src/myson_fast.pyx":495
  * 
  *         # Use strtod/strtoll for conversion
  *         if is_float:             # <<<<<<<<<<<<<<
@@ -21247,7 +21422,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
   }
 
-  /* "src/myson_fast.pyx":489
+  /* "src/myson_fast.pyx":498
  *             return strtod(<const char*>start, NULL)
  *         else:
  *             errno = 0             # <<<<<<<<<<<<<<
@@ -21257,7 +21432,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   /*else*/ {
     __pyx_v_errno = 0;
 
-    /* "src/myson_fast.pyx":490
+    /* "src/myson_fast.pyx":499
  *         else:
  *             errno = 0
  *             val = strtoll(<const char*>start, &end_ptr, 10)             # <<<<<<<<<<<<<<
@@ -21266,7 +21441,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     __pyx_v_val = strtoll(((char const *)__pyx_v_start), (&__pyx_v_end_ptr), 10);
 
-    /* "src/myson_fast.pyx":493
+    /* "src/myson_fast.pyx":502
  * 
  *             # Check for overflow: errno set or value is at limits
  *             if errno == ERANGE or val == LLONG_MAX or val == LLONG_MIN:             # <<<<<<<<<<<<<<
@@ -21277,20 +21452,20 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
     if (!__pyx_t_3) {
     } else {
       __pyx_t_2 = __pyx_t_3;
-      goto __pyx_L34_bool_binop_done;
+      goto __pyx_L43_bool_binop_done;
     }
     __pyx_t_3 = (__pyx_v_val == LLONG_MAX);
     if (!__pyx_t_3) {
     } else {
       __pyx_t_2 = __pyx_t_3;
-      goto __pyx_L34_bool_binop_done;
+      goto __pyx_L43_bool_binop_done;
     }
     __pyx_t_3 = (__pyx_v_val == LLONG_MIN);
     __pyx_t_2 = __pyx_t_3;
-    __pyx_L34_bool_binop_done:;
+    __pyx_L43_bool_binop_done:;
     if (__pyx_t_2) {
 
-      /* "src/myson_fast.pyx":495
+      /* "src/myson_fast.pyx":504
  *             if errno == ERANGE or val == LLONG_MAX or val == LLONG_MIN:
  *                 # Integer overflow - use Python arbitrary precision
  *                 num_len = self.ptr - start             # <<<<<<<<<<<<<<
@@ -21299,19 +21474,19 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
       __pyx_v_num_len = (__pyx_v_self->ptr - __pyx_v_start);
 
-      /* "src/myson_fast.pyx":496
+      /* "src/myson_fast.pyx":505
  *                 # Integer overflow - use Python arbitrary precision
  *                 num_len = self.ptr - start
  *                 num_bytes = (<char*>start)[:num_len]             # <<<<<<<<<<<<<<
  *                 return int(num_bytes)
  *             elif end_ptr == <char*>self.ptr:
 */
-      __pyx_t_5 = __Pyx_PyBytes_FromStringAndSize(((char *)__pyx_v_start) + 0, __pyx_v_num_len - 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 496, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyBytes_FromStringAndSize(((char *)__pyx_v_start) + 0, __pyx_v_num_len - 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 505, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __pyx_v_num_bytes = ((PyObject*)__pyx_t_5);
       __pyx_t_5 = 0;
 
-      /* "src/myson_fast.pyx":497
+      /* "src/myson_fast.pyx":506
  *                 num_len = self.ptr - start
  *                 num_bytes = (<char*>start)[:num_len]
  *                 return int(num_bytes)             # <<<<<<<<<<<<<<
@@ -21319,13 +21494,13 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
  *                 # Successful conversion
 */
       __Pyx_XDECREF(__pyx_r);
-      __pyx_t_5 = __Pyx_PyNumber_Int(__pyx_v_num_bytes); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 497, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyNumber_Int(__pyx_v_num_bytes); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 506, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __pyx_r = __pyx_t_5;
       __pyx_t_5 = 0;
       goto __pyx_L0;
 
-      /* "src/myson_fast.pyx":493
+      /* "src/myson_fast.pyx":502
  * 
  *             # Check for overflow: errno set or value is at limits
  *             if errno == ERANGE or val == LLONG_MAX or val == LLONG_MIN:             # <<<<<<<<<<<<<<
@@ -21334,7 +21509,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     }
 
-    /* "src/myson_fast.pyx":498
+    /* "src/myson_fast.pyx":507
  *                 num_bytes = (<char*>start)[:num_len]
  *                 return int(num_bytes)
  *             elif end_ptr == <char*>self.ptr:             # <<<<<<<<<<<<<<
@@ -21344,7 +21519,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
     __pyx_t_2 = (__pyx_v_end_ptr == ((char *)__pyx_v_self->ptr));
     if (__pyx_t_2) {
 
-      /* "src/myson_fast.pyx":501
+      /* "src/myson_fast.pyx":510
  *                 # Successful conversion
  *                 # Use cached small integers
  *                 if val >= -5 and val <= 256:             # <<<<<<<<<<<<<<
@@ -21355,14 +21530,14 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       if (__pyx_t_3) {
       } else {
         __pyx_t_2 = __pyx_t_3;
-        goto __pyx_L38_bool_binop_done;
+        goto __pyx_L47_bool_binop_done;
       }
       __pyx_t_3 = (__pyx_v_val <= 0x100);
       __pyx_t_2 = __pyx_t_3;
-      __pyx_L38_bool_binop_done:;
+      __pyx_L47_bool_binop_done:;
       if (__pyx_t_2) {
 
-        /* "src/myson_fast.pyx":502
+        /* "src/myson_fast.pyx":511
  *                 # Use cached small integers
  *                 if val >= -5 and val <= 256:
  *                     return SMALL_INT_CACHE.get(val, val)             # <<<<<<<<<<<<<<
@@ -21372,13 +21547,13 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
         __Pyx_XDECREF(__pyx_r);
         if (unlikely(__pyx_v_5myson_10myson_fast_SMALL_INT_CACHE == Py_None)) {
           PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "get");
-          __PYX_ERR(0, 502, __pyx_L1_error)
+          __PYX_ERR(0, 511, __pyx_L1_error)
         }
-        __pyx_t_5 = __Pyx_PyLong_From_PY_LONG_LONG(__pyx_v_val); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 502, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyLong_From_PY_LONG_LONG(__pyx_v_val); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 511, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_6 = __Pyx_PyLong_From_PY_LONG_LONG(__pyx_v_val); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 502, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyLong_From_PY_LONG_LONG(__pyx_v_val); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 511, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_7 = __Pyx_PyDict_GetItemDefault(__pyx_v_5myson_10myson_fast_SMALL_INT_CACHE, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 502, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyDict_GetItemDefault(__pyx_v_5myson_10myson_fast_SMALL_INT_CACHE, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 511, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -21386,7 +21561,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
         __pyx_t_7 = 0;
         goto __pyx_L0;
 
-        /* "src/myson_fast.pyx":501
+        /* "src/myson_fast.pyx":510
  *                 # Successful conversion
  *                 # Use cached small integers
  *                 if val >= -5 and val <= 256:             # <<<<<<<<<<<<<<
@@ -21395,7 +21570,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
       }
 
-      /* "src/myson_fast.pyx":503
+      /* "src/myson_fast.pyx":512
  *                 if val >= -5 and val <= 256:
  *                     return SMALL_INT_CACHE.get(val, val)
  *                 return val             # <<<<<<<<<<<<<<
@@ -21403,13 +21578,13 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
  *                 # Parse error - try as float
 */
       __Pyx_XDECREF(__pyx_r);
-      __pyx_t_7 = __Pyx_PyLong_From_PY_LONG_LONG(__pyx_v_val); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 503, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyLong_From_PY_LONG_LONG(__pyx_v_val); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 512, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __pyx_r = __pyx_t_7;
       __pyx_t_7 = 0;
       goto __pyx_L0;
 
-      /* "src/myson_fast.pyx":498
+      /* "src/myson_fast.pyx":507
  *                 num_bytes = (<char*>start)[:num_len]
  *                 return int(num_bytes)
  *             elif end_ptr == <char*>self.ptr:             # <<<<<<<<<<<<<<
@@ -21418,7 +21593,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     }
 
-    /* "src/myson_fast.pyx":506
+    /* "src/myson_fast.pyx":515
  *             else:
  *                 # Parse error - try as float
  *                 return strtod(<const char*>start, NULL)             # <<<<<<<<<<<<<<
@@ -21427,7 +21602,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     /*else*/ {
       __Pyx_XDECREF(__pyx_r);
-      __pyx_t_7 = PyFloat_FromDouble(strtod(((char const *)__pyx_v_start), NULL)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 506, __pyx_L1_error)
+      __pyx_t_7 = PyFloat_FromDouble(strtod(((char const *)__pyx_v_start), NULL)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 515, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __pyx_r = __pyx_t_7;
       __pyx_t_7 = 0;
@@ -21457,7 +21632,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   return __pyx_r;
 }
 
-/* "src/myson_fast.pyx":508
+/* "src/myson_fast.pyx":517
  *                 return strtod(<const char*>start, NULL)
  * 
  *     cdef inline object parse_true(self):             # <<<<<<<<<<<<<<
@@ -21475,7 +21650,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_true", 0);
 
-  /* "src/myson_fast.pyx":510
+  /* "src/myson_fast.pyx":519
  *     cdef inline object parse_true(self):
  *         """Parse true literal"""
  *         if self.end - self.ptr >= 4:             # <<<<<<<<<<<<<<
@@ -21485,7 +21660,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
   __pyx_t_1 = ((__pyx_v_self->end - __pyx_v_self->ptr) >= 4);
   if (__pyx_t_1) {
 
-    /* "src/myson_fast.pyx":511
+    /* "src/myson_fast.pyx":520
  *         """Parse true literal"""
  *         if self.end - self.ptr >= 4:
  *             if self.ptr[1] == 114 and self.ptr[2] == 117 and self.ptr[3] == 101:             # <<<<<<<<<<<<<<
@@ -21509,7 +21684,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
     __pyx_L5_bool_binop_done:;
     if (__pyx_t_1) {
 
-      /* "src/myson_fast.pyx":512
+      /* "src/myson_fast.pyx":521
  *         if self.end - self.ptr >= 4:
  *             if self.ptr[1] == 114 and self.ptr[2] == 117 and self.ptr[3] == 101:
  *                 self.ptr += 4             # <<<<<<<<<<<<<<
@@ -21518,7 +21693,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
 */
       __pyx_v_self->ptr = (__pyx_v_self->ptr + 4);
 
-      /* "src/myson_fast.pyx":513
+      /* "src/myson_fast.pyx":522
  *             if self.ptr[1] == 114 and self.ptr[2] == 117 and self.ptr[3] == 101:
  *                 self.ptr += 4
  *                 return TRUE_OBJ             # <<<<<<<<<<<<<<
@@ -21530,7 +21705,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
       __pyx_r = __pyx_v_5myson_10myson_fast_TRUE_OBJ;
       goto __pyx_L0;
 
-      /* "src/myson_fast.pyx":511
+      /* "src/myson_fast.pyx":520
  *         """Parse true literal"""
  *         if self.end - self.ptr >= 4:
  *             if self.ptr[1] == 114 and self.ptr[2] == 117 and self.ptr[3] == 101:             # <<<<<<<<<<<<<<
@@ -21539,7 +21714,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
 */
     }
 
-    /* "src/myson_fast.pyx":510
+    /* "src/myson_fast.pyx":519
  *     cdef inline object parse_true(self):
  *         """Parse true literal"""
  *         if self.end - self.ptr >= 4:             # <<<<<<<<<<<<<<
@@ -21548,16 +21723,16 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
 */
   }
 
-  /* "src/myson_fast.pyx":514
+  /* "src/myson_fast.pyx":523
  *                 self.ptr += 4
  *                 return TRUE_OBJ
  *         self.error("Invalid literal (expected 'true')")             # <<<<<<<<<<<<<<
  * 
  *     cdef inline object parse_false(self):
 */
-  __pyx_f_5myson_10myson_fast_10FastParser_error(__pyx_v_self, __pyx_mstate_global->__pyx_kp_u_Invalid_literal_expected_true); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 514, __pyx_L1_error)
+  __pyx_f_5myson_10myson_fast_10FastParser_error(__pyx_v_self, __pyx_mstate_global->__pyx_kp_u_Invalid_literal_expected_true); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 523, __pyx_L1_error)
 
-  /* "src/myson_fast.pyx":508
+  /* "src/myson_fast.pyx":517
  *                 return strtod(<const char*>start, NULL)
  * 
  *     cdef inline object parse_true(self):             # <<<<<<<<<<<<<<
@@ -21577,7 +21752,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_tr
   return __pyx_r;
 }
 
-/* "src/myson_fast.pyx":516
+/* "src/myson_fast.pyx":525
  *         self.error("Invalid literal (expected 'true')")
  * 
  *     cdef inline object parse_false(self):             # <<<<<<<<<<<<<<
@@ -21595,7 +21770,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_false", 0);
 
-  /* "src/myson_fast.pyx":518
+  /* "src/myson_fast.pyx":527
  *     cdef inline object parse_false(self):
  *         """Parse false literal"""
  *         if self.end - self.ptr >= 5:             # <<<<<<<<<<<<<<
@@ -21605,7 +21780,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
   __pyx_t_1 = ((__pyx_v_self->end - __pyx_v_self->ptr) >= 5);
   if (__pyx_t_1) {
 
-    /* "src/myson_fast.pyx":519
+    /* "src/myson_fast.pyx":528
  *         """Parse false literal"""
  *         if self.end - self.ptr >= 5:
  *             if (self.ptr[1] == 97 and self.ptr[2] == 108 and             # <<<<<<<<<<<<<<
@@ -21625,7 +21800,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
       goto __pyx_L5_bool_binop_done;
     }
 
-    /* "src/myson_fast.pyx":520
+    /* "src/myson_fast.pyx":529
  *         if self.end - self.ptr >= 5:
  *             if (self.ptr[1] == 97 and self.ptr[2] == 108 and
  *                 self.ptr[3] == 115 and self.ptr[4] == 101):             # <<<<<<<<<<<<<<
@@ -21642,7 +21817,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
     __pyx_t_1 = __pyx_t_2;
     __pyx_L5_bool_binop_done:;
 
-    /* "src/myson_fast.pyx":519
+    /* "src/myson_fast.pyx":528
  *         """Parse false literal"""
  *         if self.end - self.ptr >= 5:
  *             if (self.ptr[1] == 97 and self.ptr[2] == 108 and             # <<<<<<<<<<<<<<
@@ -21651,7 +21826,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
 */
     if (__pyx_t_1) {
 
-      /* "src/myson_fast.pyx":521
+      /* "src/myson_fast.pyx":530
  *             if (self.ptr[1] == 97 and self.ptr[2] == 108 and
  *                 self.ptr[3] == 115 and self.ptr[4] == 101):
  *                 self.ptr += 5             # <<<<<<<<<<<<<<
@@ -21660,7 +21835,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
 */
       __pyx_v_self->ptr = (__pyx_v_self->ptr + 5);
 
-      /* "src/myson_fast.pyx":522
+      /* "src/myson_fast.pyx":531
  *                 self.ptr[3] == 115 and self.ptr[4] == 101):
  *                 self.ptr += 5
  *                 return FALSE_OBJ             # <<<<<<<<<<<<<<
@@ -21672,7 +21847,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
       __pyx_r = __pyx_v_5myson_10myson_fast_FALSE_OBJ;
       goto __pyx_L0;
 
-      /* "src/myson_fast.pyx":519
+      /* "src/myson_fast.pyx":528
  *         """Parse false literal"""
  *         if self.end - self.ptr >= 5:
  *             if (self.ptr[1] == 97 and self.ptr[2] == 108 and             # <<<<<<<<<<<<<<
@@ -21681,7 +21856,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
 */
     }
 
-    /* "src/myson_fast.pyx":518
+    /* "src/myson_fast.pyx":527
  *     cdef inline object parse_false(self):
  *         """Parse false literal"""
  *         if self.end - self.ptr >= 5:             # <<<<<<<<<<<<<<
@@ -21690,16 +21865,16 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
 */
   }
 
-  /* "src/myson_fast.pyx":523
+  /* "src/myson_fast.pyx":532
  *                 self.ptr += 5
  *                 return FALSE_OBJ
  *         self.error("Invalid literal (expected 'false')")             # <<<<<<<<<<<<<<
  * 
  *     cdef inline object parse_null(self):
 */
-  __pyx_f_5myson_10myson_fast_10FastParser_error(__pyx_v_self, __pyx_mstate_global->__pyx_kp_u_Invalid_literal_expected_false); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 523, __pyx_L1_error)
+  __pyx_f_5myson_10myson_fast_10FastParser_error(__pyx_v_self, __pyx_mstate_global->__pyx_kp_u_Invalid_literal_expected_false); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 532, __pyx_L1_error)
 
-  /* "src/myson_fast.pyx":516
+  /* "src/myson_fast.pyx":525
  *         self.error("Invalid literal (expected 'true')")
  * 
  *     cdef inline object parse_false(self):             # <<<<<<<<<<<<<<
@@ -21719,7 +21894,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_fa
   return __pyx_r;
 }
 
-/* "src/myson_fast.pyx":525
+/* "src/myson_fast.pyx":534
  *         self.error("Invalid literal (expected 'false')")
  * 
  *     cdef inline object parse_null(self):             # <<<<<<<<<<<<<<
@@ -21737,7 +21912,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("parse_null", 0);
 
-  /* "src/myson_fast.pyx":527
+  /* "src/myson_fast.pyx":536
  *     cdef inline object parse_null(self):
  *         """Parse null literal"""
  *         if self.end - self.ptr >= 4:             # <<<<<<<<<<<<<<
@@ -21747,7 +21922,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
   __pyx_t_1 = ((__pyx_v_self->end - __pyx_v_self->ptr) >= 4);
   if (__pyx_t_1) {
 
-    /* "src/myson_fast.pyx":528
+    /* "src/myson_fast.pyx":537
  *         """Parse null literal"""
  *         if self.end - self.ptr >= 4:
  *             if self.ptr[1] == 117 and self.ptr[2] == 108 and self.ptr[3] == 108:             # <<<<<<<<<<<<<<
@@ -21771,7 +21946,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
     __pyx_L5_bool_binop_done:;
     if (__pyx_t_1) {
 
-      /* "src/myson_fast.pyx":529
+      /* "src/myson_fast.pyx":538
  *         if self.end - self.ptr >= 4:
  *             if self.ptr[1] == 117 and self.ptr[2] == 108 and self.ptr[3] == 108:
  *                 self.ptr += 4             # <<<<<<<<<<<<<<
@@ -21780,7 +21955,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
       __pyx_v_self->ptr = (__pyx_v_self->ptr + 4);
 
-      /* "src/myson_fast.pyx":530
+      /* "src/myson_fast.pyx":539
  *             if self.ptr[1] == 117 and self.ptr[2] == 108 and self.ptr[3] == 108:
  *                 self.ptr += 4
  *                 return NULL_OBJ             # <<<<<<<<<<<<<<
@@ -21792,7 +21967,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
       __pyx_r = __pyx_v_5myson_10myson_fast_NULL_OBJ;
       goto __pyx_L0;
 
-      /* "src/myson_fast.pyx":528
+      /* "src/myson_fast.pyx":537
  *         """Parse null literal"""
  *         if self.end - self.ptr >= 4:
  *             if self.ptr[1] == 117 and self.ptr[2] == 108 and self.ptr[3] == 108:             # <<<<<<<<<<<<<<
@@ -21801,7 +21976,7 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
     }
 
-    /* "src/myson_fast.pyx":527
+    /* "src/myson_fast.pyx":536
  *     cdef inline object parse_null(self):
  *         """Parse null literal"""
  *         if self.end - self.ptr >= 4:             # <<<<<<<<<<<<<<
@@ -21810,16 +21985,16 @@ static CYTHON_INLINE PyObject *__pyx_f_5myson_10myson_fast_10FastParser_parse_nu
 */
   }
 
-  /* "src/myson_fast.pyx":531
+  /* "src/myson_fast.pyx":540
  *                 self.ptr += 4
  *                 return NULL_OBJ
  *         self.error("Invalid literal (expected 'null')")             # <<<<<<<<<<<<<<
  * 
  * 
 */
-  __pyx_f_5myson_10myson_fast_10FastParser_error(__pyx_v_self, __pyx_mstate_global->__pyx_kp_u_Invalid_literal_expected_null); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 531, __pyx_L1_error)
+  __pyx_f_5myson_10myson_fast_10FastParser_error(__pyx_v_self, __pyx_mstate_global->__pyx_kp_u_Invalid_literal_expected_null); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 540, __pyx_L1_error)
 
-  /* "src/myson_fast.pyx":525
+  /* "src/myson_fast.pyx":534
  *         self.error("Invalid literal (expected 'false')")
  * 
  *     cdef inline object parse_null(self):             # <<<<<<<<<<<<<<
@@ -22043,7 +22218,7 @@ static PyObject *__pyx_pf_5myson_10myson_fast_10FastParser_6__setstate_cython__(
   return __pyx_r;
 }
 
-/* "src/myson_fast.pyx":534
+/* "src/myson_fast.pyx":543
  * 
  * 
  * def loads(data):             # <<<<<<<<<<<<<<
@@ -22091,32 +22266,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_data,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 534, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 543, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 534, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 543, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "loads", 0) < (0)) __PYX_ERR(0, 534, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "loads", 0) < (0)) __PYX_ERR(0, 543, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("loads", 1, 1, 1, i); __PYX_ERR(0, 534, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("loads", 1, 1, 1, i); __PYX_ERR(0, 543, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 534, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 543, __pyx_L3_error)
     }
     __pyx_v_data = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("loads", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 534, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("loads", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 543, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -22151,7 +22326,7 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("loads", 0);
 
-  /* "src/myson_fast.pyx":537
+  /* "src/myson_fast.pyx":546
  *     """Parse JSON string/bytes to Python object - ULTRA FAST"""
  *     cdef bytes b
  *     if isinstance(data, str):             # <<<<<<<<<<<<<<
@@ -22161,7 +22336,7 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
   __pyx_t_1 = PyUnicode_Check(__pyx_v_data); 
   if (__pyx_t_1) {
 
-    /* "src/myson_fast.pyx":538
+    /* "src/myson_fast.pyx":547
  *     cdef bytes b
  *     if isinstance(data, str):
  *         b = data.encode('utf-8')             # <<<<<<<<<<<<<<
@@ -22175,14 +22350,14 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
       PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_utf_8};
       __pyx_t_2 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_encode, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 538, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 547, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     }
-    if (!(likely(PyBytes_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("bytes", __pyx_t_2))) __PYX_ERR(0, 538, __pyx_L1_error)
+    if (!(likely(PyBytes_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("bytes", __pyx_t_2))) __PYX_ERR(0, 547, __pyx_L1_error)
     __pyx_v_b = ((PyObject*)__pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "src/myson_fast.pyx":537
+    /* "src/myson_fast.pyx":546
  *     """Parse JSON string/bytes to Python object - ULTRA FAST"""
  *     cdef bytes b
  *     if isinstance(data, str):             # <<<<<<<<<<<<<<
@@ -22192,7 +22367,7 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
     goto __pyx_L3;
   }
 
-  /* "src/myson_fast.pyx":539
+  /* "src/myson_fast.pyx":548
  *     if isinstance(data, str):
  *         b = data.encode('utf-8')
  *     elif isinstance(data, bytes):             # <<<<<<<<<<<<<<
@@ -22202,7 +22377,7 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
   __pyx_t_1 = PyBytes_Check(__pyx_v_data); 
   if (likely(__pyx_t_1)) {
 
-    /* "src/myson_fast.pyx":540
+    /* "src/myson_fast.pyx":549
  *         b = data.encode('utf-8')
  *     elif isinstance(data, bytes):
  *         b = data             # <<<<<<<<<<<<<<
@@ -22211,11 +22386,11 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
 */
     __pyx_t_2 = __pyx_v_data;
     __Pyx_INCREF(__pyx_t_2);
-    if (!(likely(PyBytes_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("bytes", __pyx_t_2))) __PYX_ERR(0, 540, __pyx_L1_error)
+    if (!(likely(PyBytes_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("bytes", __pyx_t_2))) __PYX_ERR(0, 549, __pyx_L1_error)
     __pyx_v_b = ((PyObject*)__pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "src/myson_fast.pyx":539
+    /* "src/myson_fast.pyx":548
  *     if isinstance(data, str):
  *         b = data.encode('utf-8')
  *     elif isinstance(data, bytes):             # <<<<<<<<<<<<<<
@@ -22225,7 +22400,7 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
     goto __pyx_L3;
   }
 
-  /* "src/myson_fast.pyx":542
+  /* "src/myson_fast.pyx":551
  *         b = data
  *     else:
  *         raise TypeError("Expected str or bytes")             # <<<<<<<<<<<<<<
@@ -22239,16 +22414,16 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
       PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_mstate_global->__pyx_kp_u_Expected_str_or_bytes};
       __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 542, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 551, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     }
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 542, __pyx_L1_error)
+    __PYX_ERR(0, 551, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "src/myson_fast.pyx":544
+  /* "src/myson_fast.pyx":553
  *         raise TypeError("Expected str or bytes")
  * 
  *     cdef FastParser parser = FastParser(b)             # <<<<<<<<<<<<<<
@@ -22260,25 +22435,25 @@ static PyObject *__pyx_pf_5myson_10myson_fast_2loads(CYTHON_UNUSED PyObject *__p
     PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_v_b};
     __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)__pyx_mstate_global->__pyx_ptype_5myson_10myson_fast_FastParser, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 544, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 553, __pyx_L1_error)
     __Pyx_GOTREF((PyObject *)__pyx_t_2);
   }
   __pyx_v_parser = ((struct __pyx_obj_5myson_10myson_fast_FastParser *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "src/myson_fast.pyx":545
+  /* "src/myson_fast.pyx":554
  * 
  *     cdef FastParser parser = FastParser(b)
  *     return parser.parse()             # <<<<<<<<<<<<<<
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = ((struct __pyx_vtabstruct_5myson_10myson_fast_FastParser *)__pyx_v_parser->__pyx_vtab)->parse(__pyx_v_parser, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __pyx_t_2 = ((struct __pyx_vtabstruct_5myson_10myson_fast_FastParser *)__pyx_v_parser->__pyx_vtab)->parse(__pyx_v_parser, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 554, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "src/myson_fast.pyx":534
+  /* "src/myson_fast.pyx":543
  * 
  * 
  * def loads(data):             # <<<<<<<<<<<<<<
@@ -24464,19 +24639,19 @@ __Pyx_RefNannySetupContext("PyInit_myson_fast", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_setstate_cython, __pyx_t_4) < (0)) __PYX_ERR(1, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "src/myson_fast.pyx":534
+  /* "src/myson_fast.pyx":543
  * 
  * 
  * def loads(data):             # <<<<<<<<<<<<<<
  *     """Parse JSON string/bytes to Python object - ULTRA FAST"""
  *     cdef bytes b
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_5myson_10myson_fast_3loads, 0, __pyx_mstate_global->__pyx_n_u_loads, NULL, __pyx_mstate_global->__pyx_n_u_myson_myson_fast, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_5myson_10myson_fast_3loads, 0, __pyx_mstate_global->__pyx_n_u_loads, NULL, __pyx_mstate_global->__pyx_n_u_myson_myson_fast, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 543, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
   #endif
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_loads, __pyx_t_4) < (0)) __PYX_ERR(0, 534, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_loads, __pyx_t_4) < (0)) __PYX_ERR(0, 543, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
   /* "src/myson_fast.pyx":1
@@ -24622,31 +24797,31 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 8; } index[] = {{2},{68},{35},{54},{37},{60},{24},{52},{26},{14},{34},{12},{19},{19},{21},{19},{21},{29},{33},{14},{25},{34},{33},{33},{45},{22},{22},{25},{32},{15},{4},{179},{37},{30},{35},{36},{32},{14},{23},{24},{22},{19},{1},{1},{1},{1},{1},{8},{5},{6},{13},{15},{23},{25},{7},{6},{2},{6},{35},{4},{9},{30},{50},{8},{21},{18},{20},{32},{22},{14},{30},{37},{5},{5},{8},{10},{28},{30},{16},{20},{8},{15},{3},{15},{18},{1},{4},{1},{9},{17},{18},{5},{4},{8},{15},{6},{9},{5},{5},{6},{7},{8},{3},{12},{1},{2},{10},{5},{3},{15},{13},{5},{8},{5},{8},{7},{4},{10},{16},{4},{8},{4},{7},{3},{4},{5},{6},{3},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{4},{12},{10},{12},{19},{5},{4},{5},{4},{4},{6},{8},{6},{6},{6},{1},{96},{9},{24},{67},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1521 bytes) */
-const char* const cstring = "BZh91AY&SYB\245e%\000\000\275\377\363\347\377\351\206s\357\345\327\277\267\377\026\277\377\377\362@@@@@@\000@@\000@\000P\005\276\2670\233\223\002\323\026^\335\247{\3104Bbd\251\351\275I\342OSS\362Dz\23244\3102\006j\000h\3204\311\350\320\231\2226\312\202Q\004\364&\246S\324\324\332\207\240G\2244\032\r\000\000\000\000\001\240\000\000\323@\202)\350\231=I\262\233J\017$\320\006\236\215@\000\006@\031\000d\006\000\311M \232m\036\251\372\223A\211\243\0204h\304\323\0041\001\246\200\032\001\220\031\030\tM$\323S5S\361)\344\305<\223\020=@h\001\241\243@\000\000\000\000d\365\024\035\321\277;\233c\245\243@\245\271\037\361\241\251\nY+,\275C\334'\035\257\243\tz\301HU\206\315\376Q\220 \270r\003@A\203O9\377\013\211\233yc\333C\212=\224\271\370\322\345G\"\221f\334\310$(\312*\364\236L\217\033\366\367\225\035G[8|Kk\374\233\023|\"\3263\235q\262\037b\276\036h\032\177\257z\270?\303X\212}\223\220fw\266\374\007\321\014\330*\177\357\007 \343\301\253\035`\301\020w\353'N\"\003jL\237:,\257|_+\025\306\212\245\210\240{9BRA\2212%A*cd{';\232\240i\320\001\246\355G\363e\343\316h\025d\261 \001\241\236dz\315Ic\202\326\035E\271\246t\342%\215\023r\250\353\256~\260\273\241\275\362\224$\032\207eX\347l\316\274)1\366\324\200)\367`\357$$\2074\257\321\020\215b\362\343QS\212\330\324\2144\332\211\311\267\226\"{\303\270\031\311,\331\371RQ\022\225v\\\353K\013\315\306WX\210\246\001\202\027\366U\213\223\003aCv\205y\335G\036\326\326ih\320\000\202)\346\252#7T+\004\334\250\306\234\335o>\262\353<kXp)\313\316\254\r\366\357g\027{(c\031&\016\002\203\001C\024cI`\310\034\245b\341\021\225\234\256q\031\347\264yn'I\025f\254\327~o\037q\266\273-\265\022\344\333z\000\2114\333\030\264\343s\033\034z\313\314\016\031\241AZB#\215\013\001\256\013\036'\300\024\335p)\302\261flV\nl\350\277\":TT~=\345jT\240\341\223\320\313\254n\211\233\274\242@\007\206\262\234\274\265\245\270\331\365J%\"\313T\037Y\353\351]\032\222s+,:\370\207F\306N(\2445\177\257(\2021\211\302%\257r^\261$\024z\"\024\200\241G\350\300\025\n\312QXP0\r\266\203o$\335%(\263$8\260\027e(""&\214\031\n\021\320\352\030<:\007\257\025\367x\363\336\016r\362\333>6\332\362\247\225\3238zK\325m#R\324\272\335\254(\356\032\212\260I4\306:c\375\".\260@\0362RP!\273)\260A\202n^\250)\233\340\316\355Z \336f\245;\352\032d\357\007\327D\3229AEC\246q\324\"\021\013\0275^v\035BC\000\250\263\232\266\002*\334<N8p\021\247b:\360=\364W\230\202I\017\310\211B.8\360Pz\211\000/5s^\034\352e\306\262\330\251\003I\014\002\3734\361\030N\327\346\265\200\265\310\263\211\205\226A$\025\006'd 2\\d\227\357\035\370\201[\261#BHJ3\255\257\330`\214\325\010opDf\206\244\007(]\022\316\233\311\\.\0164f-\3115U\025Y\204&\024\0101\014\232{\202\326\246F\235\251\230tY\311\265\256\204\226\372(c\n\027<0\2207\036\031T\262a`\005v\t\301:-\311\354\325\022\364\010\242\005W\201\"\220\242\024l\035-x\331\001@\322\022DTFsdJb\025\026\025\377\277N\251\205\021P\222\213;\031\235\020\252\2418\217\024\212i\331\200\255$t\033\240\034\260\222\252\004\214\027\"\0261\003\321\010\251\004d&\310cUQTRLX\024\021\226P\234R\031\360u@\243\r\241\272A]\326\205\243\266\246LbO\020\205H\223A\034J\321\225\002!\234\216\374\200H5m\210k\no\022#\2263Q\006\315c2BCO.\251U\271R\2644S&\227\016\272\233\310\312x\265DS2\010\256\223\241\\x\357\224\354\\\226\336\262.\312\206\317!\320\323Q\244\205OJ\004\002+D\240\205\204(\250\241a\031KX\316\020\230\010R\326\210'\262cM6u\010\032\226<\005s\t$5\217\000\205#\263L\337\\\344\204!V\r8\215\026h\341\210&\032\025H`$t\305\357\326Y9\024\025\013\240\005\350\250\251\267\013\264,\317q\004\007\261K\347\215\210\000\261\010h08\206\013o\337\r\302\200#J7\032\302d5\2207\312t\201\001\365d\035\234P\313\242hP70\031\031\265\332i3d_F\002^fX\202Q(\201\r\210\252\006\277\253f\330a.\371\360[A\325C\004,D\222`\304Z\232\013l\300R\352\336B\010\031\327c\024\246\014\327\213=7:\251}2\005\220i\232E\314\003\250\304V\256\ncM\263\277\202\213B\020\010\276T\337z\236e!\356=\314\345\240o7\256\2555Z\253\266I0T\324\216\273\356HI\204i$\032\354\340!2\277\226\214\016;\276\231\324\242H\201K\327&-l\3338\306\274\332\323La*\027\257OJ\261\203\3508\177e\367""\030\217\177\213\217xc\030}\235Xyy\253\033_\323\315\233\234y\262\345\253\247\265\252\0176\221V80\353V*\254R7~\002\307\244Y`\2449\021\032(@\375\005\004w\377\342\356H\247\n\022\010T\254\244\240";
-    PyObject *data = __Pyx_DecompressString(cstring, 1521, 2);
+    const struct { const unsigned int length: 8; } index[] = {{2},{68},{35},{54},{37},{60},{24},{52},{26},{14},{34},{12},{19},{19},{21},{19},{21},{29},{33},{14},{25},{34},{33},{33},{45},{22},{22},{25},{32},{15},{4},{179},{37},{30},{35},{36},{32},{14},{23},{24},{22},{19},{1},{1},{1},{1},{1},{8},{5},{6},{13},{15},{23},{25},{7},{6},{2},{6},{35},{4},{9},{30},{50},{8},{21},{18},{20},{32},{22},{14},{30},{37},{5},{5},{8},{10},{28},{30},{16},{20},{8},{15},{3},{15},{18},{1},{4},{1},{9},{17},{18},{5},{4},{8},{15},{6},{9},{5},{5},{6},{7},{8},{3},{12},{1},{2},{10},{5},{3},{15},{13},{5},{8},{5},{8},{7},{4},{10},{16},{4},{8},{3},{4},{7},{3},{4},{5},{6},{3},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{4},{12},{10},{12},{19},{5},{4},{5},{4},{4},{6},{8},{6},{6},{6},{1},{96},{9},{24},{67},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1511 bytes) */
+const char* const cstring = "BZh91AY&SY?\253F\356\000\000\275\377\363\347\377\351\206s\357\345\327\277\267\377\026\277\377\377\362@@@@@@\000@@\000@\000P\005\276\334p\216w\270;\327^\363\271\331\324\275\344\032\232\001\032S\036\243\022zj\237\222\023\32120\020\365\001\264\200\304h\304h\364i4\306\2236\224\032ML\214\0252\036\246\324yF\324\000\000\006\200\310\000\000\000\000\320\000i\240\"\023D\312\237\352\246mM\252\007\352F\203M4\365\030\200\000\000\0004\000a4\022(F\202\236\005 \036\246\201\240\000\000\000\000\000\000\000\001\240JjL\2322\251\370\224\360\324dOH\032\003@\r\r\000\000\000\000\0002z\207\235\321\277;\233c\222\321\240Q\334\207\370\320\324\205,\225\226T\367\\'\016l\010\304U`\223O\362\"\350\362\025\301\227]p\203\006\200\210=Q\350]\321U\367eSi2\244\rw\204\rK\036\223\236\335\303\243\341D\023\353\260\270\216\267y\230d\027\005\306\357\373\014r\357\336\205\331\342\246\225s7C\331\267\177\247\003g\363\354[\027\366\355\021_D\346\031\235\357\311\001\365\3036*\235\307\203\230q\336\333\226\340`\210<\226\223\263!\001\266\246o\245,\257ta\235\312\345J\245\210\240\367rt \301\212b\222\364%\215\211\314\224\254\352\001\2370\004\213t\227\321\223\225v\201OfT\000\006m\2421k5\006\304\365\254C5\211$\206P\245\213\205\nf\360.\\\301o7\207~0\200I\036\024\342\225\262C8\240\207\337I\340\322\360>\0373\342\177Ln\270\037\002\304\353\201&\243\r\201\245\000i4\362\231\263\254)\316\020\362\263\2429-cA\224d\246\334u\353,/'9\255\260\352\220\006\007\335\363\247\017E\346\276f\337\026\347u\034\333\333q\253\306\260\004\021^B\2423u\002\260N\n\214k\247\327\362\355.\263\314\266\207\002\270\363\253\003\206\375ZF\017u\014c4\305\300P`(b\214jX2\005#(P\211F\224\252\210\277\034C\014u-\220\233\232\254\373\232\303f;g\253^\214\014\323m\350\002\004\323l\344\324\205\314l\361\244T\300\372\0033\340I!\024\336\205\204\330\005~Ga\nn\270\024\350\220\2636K\0056r0D\2067\326~=\344\224iA\302\035c4\342\3300K0$\200 \002t\014\351\236\327G\024\017&\223U\022\036B\007\262\346\225\005<\252\023sr\353\334B\212f\270\203%\251\255\022\304)\227@J\330\301`\350*\013\"""\221\n@P\243\362`\n\205e(\254(0\r\276\206\377\022pIJY\222\034\\\014\031J\t\246\014\205\010\354:\206\017\016\201\355\321\303\207\203MA\316~3i\314\333\336T\361t\322\036\245\354\267\221\265l]pk\212w\rJ\260I5\224t\207\370D`\260@\036\002RP!\301\224\334 \3058/P\024\321\361gv\265 \324\315U\335P\323'P}\324\233\007\020QP\354\234\266\210\204B\305\315\227\235\207\222H`\025\026tV\231\n\250\277M\345\363!\203+=\330\337+\252\340\241$\207\347f\212$j\315\302\327h\001\357\226\205p=\020\334\264M\361D\022$0x\025\327>`|\016F\203\230\000q\314P(=kKD+\014\216d 4\2564\243\373\277\004\000\223\230\211\241$%\t\311\260Xa\205\255\022\334\344\224\347-\254\2100\276\202\236\234J\257\036P3\254w\252\333cs\230\212\302@\370\217\277S\0318\312\370\3276\337\216\204\\\334\315f*WI\006 \221m\001e\010\024\321$&L'0\000\271D.*\214\237AdM\210\021\205\005\235\241*%\030Q\216Q\320\335\225\320\024\r!$E\204i7D\254\202\242\302\277\365\325\262cH\250IE\236VgD*\250NC\376\221[9qKT\216\301\301\000\343\t\271T\t\031.\262\026\372\202)\0242J\241Y4V\333\033\031T\312B\301M\325*\350R\325\312\032@?\025\241\272A+\255\013G6\363J\361'@(\255\021j\021\303\2222\240E\032\3447\305\001\020\317l\003XSt\010\016,f}\r\232\306d\204\206\236\\\345v\312Oh\263))b>\342\351Ke\2050H\027\204\t\006\263K\343\216\212\331\n$u\024,P\230\2067\036\203w\025\315j5&0\321\004\231\247\254EE5\2322\307\023di\346\"8\342\330\341u\242\265\255\343\214MK\241\021\340\206\333\025\320\210F\222\tZn0\2010\210U\203]\023K4\341\210&\032\025H`$t\206\030u\326Ne\005\202\353\006;x\250\312\345KY\354\356e\365hVNE\342\315\242\006e\315a-+\016J`\325G\003hL\306\342\007!N\200 >\334\303\263\2122\350\232\324\016\014\006fo\203ML\335\027\315\200\230L\313\020J% Cr,\201\260\353]\271L&\017\247\205}gl\314\221JU,\246Q;1v\326\003/\322\300\224\220j\275\365\325V\023\236\003\257D\017L~\310\202\314\032D\201f\360\357 \252\326E\020\"\301]\2755`\367\203\3355\027\\\227\021\242-\311\270\327-\003OU\312\323;Wv\321\026\n\332\221\313\276\342\"L#\032A\260\316\001\t\226\014\257\302\341\316v\241\323|QAK\245\026-l""\333W\215SkM1\210\254/v~uB\367\324~\277f\342\030K\361\315\317\3021\014\036\376\374\037\316\232\205\377\361d\311\324=8\361\323\333\243\250\013&q\252\034\2705\252\024\324(\034\0371\225\310\031r\212\004'Q\036c\217\310H>\257\374]\311\024\341B@\376\255\033\270";
+    PyObject *data = __Pyx_DecompressString(cstring, 1511, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1356 bytes) */
-const char* const cstring = "x\332}VKo\0337\020\256\201$u\232\364\021\024h/\r\300\024H\225\240\261\232\000F\033\004\256\213\304\261\013\027\215\355\324q\017E\013\202\"g%\326\273\344\212\017Y\nP\300G\035\367\250c\216\371I>\372'\364't\206\273z\325\206\017\342\222\303\031r\346\233o\206z\306\236\3479S\272\000\343\2655\236\225\016$(m\272s!\273\257X\021}`\035`\332(\030\202b\302(fl`>\327\250\376\"f\03186\320p\302\224\005\237\266`XZ\017\314\007\247\025\370-a\2305\371\210I\007\"\000\023\254S\033\205\236\010L{&\255\t\272\033m\364x\t+\240\260n\324F+:Jx\257\273\206\005\313\320X\255\245sj\r\272\262Qj\016>q:\210N\016\215B\355T\346lq\225m\n\213\235\350\320caT\002k5\362\340\204\361)\214\271I\255\206\026\032\241\n\013\330\275\\\004L\327 \324J\333E\031F\210\214\214\250\321\254|O\340E!\226\350jf\035\223\243\320\263\246-\234\023\243\355a\211V\010s\353Yk>\177\324b\250\327\372\353\242\350\237\271\010\341&Qg\024\300/\n)\243\307\200'cHL\211 \230\310\002\302\377\313\341\376\336n\212\336\306\300l\306:6\032\345\331\0031\304\020\356\253\207\273\027\003\2553\037\313\322:<}\327\014D\256\025\003/1\242\345\025\363\320\217`$\260?\247\033\271\306kE\316\036\300,\212L\344\036Z\017\257\32001\317\257T\010..\234PX\005\217\330|W\3260!\314\224\320\326#\326\305\000\246\312u\"\220s)\342\2514\032-\361\224&\216_\221:\204\340[p\266\016_\344\271=\001\365\n\215\212H\334\222\321\245\334+(\221\0360\224\000\n\324\306\253\304\233\337\2117\010\356\2365\260g\221\245\211\365[)\345D\025\005\271\356`L\001\220\235\224-\031\352\3220\354`\373`m\375\351z\2528\007\177cD\036\261\357\310\034\213\002+\2152\026u\036\320\177b\256o\263\335\214\215ld\006\357\247\212)Qo\321 \364\300`Z\002MX+\321\\\004t\234\2439\206\330j(\253\007@\326;\224\232\366\376\0225\320\345\246v\205\224\340\247\\9\014P\262B\214\022<\330*\010\2539\215\3368\241s\202P\332\242\020\213\020&\350\211\365W\253\330\016\305~dRm\243g\330/\006\340\260t\003\024\264\236\356\317\262\276\275\277\263\274\232]tQ|\301X\366\204\023)\t\255#\203\237B\0331\257\244\366f\353\341OB)n(\227\224\031\206\351|<\244\021""\273\205&<\321\301<' \261`\332\242#7\026\032\034Y\3240o\376_<\355+\233J{\n\025R\300]\311\036\020g\273\251\245\020\366\204\023\014\003\266\223\324/\347\315zM\233L\373\332L\0218^\277\005\266\361#{|\241\315\030\213\304\313D\314\003\343\334\201\212\0228g*&|\2155k\030\354@c\241q.\265\321\0017k\2406=\344Y\333\210\002\246}\216\210\355\235\374\256\030y\244R&|h\227\243\341F\335\374\325R\300\027eT\234\263\270\227\366\227\245\246\353mt\0226\343\214\005D\020\231\336\023\n(5\266\366%\273u\215\323\211\315s\324\216![{\372\374pkww;\317u\351\265\337A\247\017\204\363\340\346\263\366\014\227\0327\316\227\366\260\214<V\317\245\273%}8?\030\r\361\367\022\013\232\357a\276~\203\354\260i\211\324\023\332\363\366\200\024\231\272\313\353\362\022~d\244\266mi\035\366f\215\000w:\302\203\304lP-s>\235t!P\242i\211Z\\c-#y\241#\344\261\304\222\r\204\n\347\212|\340\212\272\004\327\236\327\231DG\260\313\201\301\207\211\272\0178g]\226\213\256G\256\024\"4\035\223\363,\032\274\027/JC\0354\327Z\341P\3203\200_zD\220{<1E\233\300\245\220\275t\325,\200\232\216\r's+\024\006Q\010\364\227\343\363Jo+5n\\X\025s\372\022\231\332sJ\021\3418oFd<\216p\302)\222\022CM\200\247\301\225\266\344\034\371\307\321\001y\354cQ\257\032\267i\232PH\263hJ-\217\361\272m3\325\033\244?\020\204o?\212\274\276o^ \027(1\023\300\220\246]\355\261aP\205$\2024\376\342\254\251\265\005\332\360K(\224\250J\370\240\330\341\036\224>X\374\271H\351\303W\035G\364\031\003\216%&\026\360\271\212\340\207\247\317\317Wo\217\177\256~\230\334\233\254O\006\357\336\274\277s\266zk\274>\216\325V\025&O\316n\177V\335\250D\325?_\275;y\363\356\253\367\257\377\275\361\301\315\217/\267xQ\251\311\275\005\213O\307\375\323\225\263k\037\215\277\255^\237\256\234_[\035_\037\037U_\343\311\375\263\325/\253\376\344\372\004\345x\340\365\325\323\267\325\235\352\233\311\312\031z\363\262\372\020\367V\316n~^=\251v\360D\224\241\233\237\2145\211\317\257\335\235\374\361\256\377\036\017\2765\376\276\372\242\352\357\377\007\360\032\375\206";
-    PyObject *data = __Pyx_DecompressString(cstring, 1356, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1358 bytes) */
+const char* const cstring = "x\332}VKo\0337\020\256\201$u\232\364\021\024h/\r\300\024H\225\240\261\232\000F\033\004\256\213\304\261\013\027\215\355\324q\017E\013\202\"g%\326\273\344\212\017Y\nP\300G\035\367\250c\216\371I>\372'\364't\206\273z\325\206\017\332\345\0169\344|\337|3\3243\366<\317\231\322\005\030\257\255\361\254t Ai\323\235\033\331}\305\212\350\003\353\000\323F\301\020\024\023F1c\003\363\271\306\345/b\226\201c\003\r'LY\360i\n\206\245\365\300|pZ\201\337\022\206Y\223\217\230t \0020\301:\265S\350\211\300\264g\322\232\240\273\321F\217\207\260\002\n\353Fm\364\242\255\204\367\272kX\260\014\235\325Z\332\247^AG6\213\232\215O\234\016\242\223C\263\240\016*s\266\270\3127\301b':\364X\030\225\300Z\215=8a|\2021w\251\227\241\207F\252\302\002w/\027\t\3235\t\365\242\355\242\014#dFF\\\321|\371\236\300\203B,1\324\314:&G\241gM[8'F\333\303\022\275\220\346\326\263\326|\374\250\305p]\353\257\213\246\177\346&\244\233L\235Q\000\277h\244\214\036\003\356\214\220\230\022A0\221\005\244\377\227\303\375\275\335\204\336\306\300l\306:6\032\345\331\0031D\010\367\325\303\335\213@\353\314\307\262\264\016w\3375\003\221k\305\300KD\264\374\305<\364#\030\t\354\317\351D\256\361X\221\263\0070C\221\211\334C\353\341\025+L\314\363+\027\004\027\027v(\254\202Gl>+k\232\220fJh\353\021\353\"\200\351\342:\021\250\271\204xj\215FK\334\245\301\361+J\207\030|\013\316\326\360E\236\333\023P\257\320\251\210\244-\031]\312\275\202\022\345\001C\t\240@m\274J\272\371\235t\203\344\356Y\003{\026U\232T\277\225RNRQ\220\353\016b\n\200\352\244l\311P\227\206a\007\333\007k\353O\327S\3059\370\033\021y\344\276#s,\n\2544\312X\324y\300\370I\271\276\315v36\262\221\031<\237*\246\304u\213\016\241\007\006\323\022h\300ZI\346\"`\340\034\335\021b\253\221\254\036\000y\357Pj\332\373K\322\300\220\233\332\025R\202\237j\3450@\311\n1J\364`\253 \256\3462z\343\204\316\211Bi\213B,R\230\250'\325_\275\304v\010\373\221I\265\215\221a\277\030\200\303\322\rP\320\367t~\226\365\355\375\235\345\257\331A\027\315\027\234eO8\221\222\320:2\370*\264\021\363Jjo\266\036\376$\224\342\206rI""\231a\230\316\307Czb\267\320\304'\006\230\347D$\026L[t\344\306B\203#\217\232\346\315\377\233\247}eSiOP!\001\356J\366\2004\333M-\205\270'\236`\030\260\235\244~9o\326k\332d\332\327n\212\310\361\372-\260\215\037\331\343\013m\306X\024^&b\036\030\347\016T\224\3009S1\361k\254YC\260\003\215\205\306\271\324F\007\234\254\211\332\364\220gm#\n\230\3669\022\266w\362\273b\344QJ\231\360\241]\216\206\033u\363WK\200/\332\2508g\270\227\346\227\255\246\353mt\0226\343L\005$\020\231\356\023\002\224\032[\373\222\331\272\306i\307\346:j\307\220\255=}~\270\265\273\273\235\347\272\364\332\357`\320\007\302yp\363Q{\306K\315\033\347KsXF\036\253\347\322\331\222^\234\037\214\206\370{\211\005\315\3670_\277Av\330\264D\352\t\355y{@\211L\303\345uy\t?2R\333\266\264\016{\263F\202;\035\341Ab6\250\2269\237\016\272\020(\321\364\211\253\270\306ZF\361BG\310c\211%\033\210\025\316\025\305\300\025u\t\256=\2573\211\201`\227\003\203\027\023u\037p\316\272,\027]\217Z)Dh:&\347Y4x.\036\224\0365h\256\265\302GA\327\000\276\351\022A\355\361\244\024m\002\227B\366\322Q3\000\265\034\033M\346V(\004Q\010\214\227\343\365Jw+5n\374\260*\346\364&1\265\347\222\"\301q>}\032\324\006b6p\302\tL\211h\023\347\351\341J[r\216\022\344\030\203<\366\261\250\277\232\310i\230\210H\243hJ-\217\361\304m3]7H\377!\210\342~\024y}\344\274F.\250bf\200!\r\273\332c\317\240\"I\032iB\306QSn\013\312\341\227\250(\251\225(B\263\3039(}\260\370s\2212\210\027;>1f\004\034K\314-\340\215\025\301\017O\237\237\257\336\036\377\\\3750\2717Y\237\014\336\275y\177\347l\365\326x}\034\253\255*L\236\234\335\376\254\272Q\211\252\177\276zw\362\346\335W\357_\377{\343\203\233\037_\356\361\242R\223{\013\036\237\216\373\247+g\327>\032\177[\275>]9\277\266:\276>>\252\276\306\235\373g\253_V\375\311\365\t\332q\303\353\253\247o\253;\3257\223\2253\214\346e\365!\316\255\234\335\374\274zR\355\340\216h\3030?\031k2\237_\273;\371\343]\377=n|k\374}\365E\325\337\377\017\002\222\376\303";
+    PyObject *data = __Pyx_DecompressString(cstring, 1358, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (2702 bytes) */
-const char* const bytes = ": All dimensions preceding dimension %d must be indexed and not slicedBuffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty documentEmpty shape tuple for cython.arrayExpected ':'Expected ',' or ']'Expected ',' or '}'Expected str or bytesExpected string keyExtra data after JSONIndex out of bounds (axis %d)Indirect dimensions not supportedInvalid escapeInvalid escape sequence \\Invalid literal (expected 'false')Invalid literal (expected 'null')Invalid literal (expected 'true')Invalid mode, expected 'c' or 'fortran', got Invalid shape in axis Invalid unicode escapeLeading zeros not allowedMaximum recursion depth exceeded<MemoryView of NoneNote that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Step may not be zero (axis %d)Trailing comma not allowed in arrayTrailing comma not allowed in objectUnable to convert item to objectUnexpected EOFUnexpected EOF in arrayUnexpected EOF in objectUnexpected character 'Unterminated string.>')?add_note and  at 0x at position collections.abc<contiguous and direct><contiguous and indirect>disableenablegc (got got differing extents in dimension -infisenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object>self.name is not Nonesrc/myson_fast.pyx<strided and direct><strided and direct or indirect><strided and indirect><stringsource>unable to allocate array data.unable to allocate shape and strides.utf-8ASCIIEllipsisFastParserFastParser.__reduce_cython__FastParser.__setstate_cython__FastParser.parse__Pyx_PyDict_NextRefSequenceView.MemoryViewabcallocate_bufferasyncio.coroutinesbbasec__class____class_getitem__c""line_in_tracebackcountdata__dict__dtype_is_objectencodeenumerateerrorflagsformatfortran__func__get__getstate__iid__import__indexinf_init_int_cache_is_coroutineitemsitemsizeloads__main__memviewmode__module__myson.myson_fastname__name__ndim__new__objpackparseparserpop__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerself__set_name__setdefault__setstate____setstate_cython__shapesizestartstepstopstruct__test__unpackupdatevaluesx\200A\340\010\014\210G\2207\230!\2304\230v\240T\250\021\330\010\013\2104\210u\220C\220t\2301\330\014\020\220\006\220a\220q\340\010\035\230T\240\034\250Q\360\006\000\t\r\210G\2207\230!\2304\230v\240T\250\021\330\010\013\2104\210u\220B\220d\230!\330\014\020\220\006\220a\220q\340\010\017\210q\200\001\330\004\n\210+\220Q\200\001\340\004\010\210\005\210U\220\"\220C\220q\330\010\027\220q\230\005\230Q\200\001\360\006\000\005\010\200z\220\021\220&\230\001\330\010\014\210D\220\007\220q\230\001\330\t\023\2201\220F\230!\330\010\014\210A\340\010\016\210i\220q\230\001\340\004\035\230Z\240q\250\001\330\004\013\2106\220\026\220qO";
+    #else /* compression: none (2705 bytes) */
+const char* const bytes = ": All dimensions preceding dimension %d must be indexed and not slicedBuffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty documentEmpty shape tuple for cython.arrayExpected ':'Expected ',' or ']'Expected ',' or '}'Expected str or bytesExpected string keyExtra data after JSONIndex out of bounds (axis %d)Indirect dimensions not supportedInvalid escapeInvalid escape sequence \\Invalid literal (expected 'false')Invalid literal (expected 'null')Invalid literal (expected 'true')Invalid mode, expected 'c' or 'fortran', got Invalid shape in axis Invalid unicode escapeLeading zeros not allowedMaximum recursion depth exceeded<MemoryView of NoneNote that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Step may not be zero (axis %d)Trailing comma not allowed in arrayTrailing comma not allowed in objectUnable to convert item to objectUnexpected EOFUnexpected EOF in arrayUnexpected EOF in objectUnexpected character 'Unterminated string.>')?add_note and  at 0x at position collections.abc<contiguous and direct><contiguous and indirect>disableenablegc (got got differing extents in dimension -infisenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object>self.name is not Nonesrc/myson_fast.pyx<strided and direct><strided and direct or indirect><strided and indirect><stringsource>unable to allocate array data.unable to allocate shape and strides.utf-8ASCIIEllipsisFastParserFastParser.__reduce_cython__FastParser.__setstate_cython__FastParser.parse__Pyx_PyDict_NextRefSequenceView.MemoryViewabcallocate_bufferasyncio.coroutinesbbasec__class____class_getitem__c""line_in_tracebackcountdata__dict__dtype_is_objectencodeenumerateerrorflagsformatfortran__func__get__getstate__iid__import__indexinf_init_int_cache_is_coroutineitemsitemsizeloads__main__memviewmode__module__myson.myson_fastname__name__nanndim__new__objpackparseparserpop__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerself__set_name__setdefault__setstate____setstate_cython__shapesizestartstepstopstruct__test__unpackupdatevaluesx\200A\340\010\014\210G\2207\230!\2304\230v\240T\250\021\330\010\013\2104\210u\220C\220t\2301\330\014\020\220\006\220a\220q\340\010\035\230T\240\034\250Q\360\006\000\t\r\210G\2207\230!\2304\230v\240T\250\021\330\010\013\2104\210u\220B\220d\230!\330\014\020\220\006\220a\220q\340\010\017\210q\200\001\330\004\n\210+\220Q\200\001\340\004\010\210\005\210U\220\"\220C\220q\330\010\027\220q\230\005\230Q\200\001\360\006\000\005\010\200z\220\021\220&\230\001\330\010\014\210D\220\007\220q\230\001\330\t\023\2201\220F\230!\330\010\014\210A\340\010\016\210i\220q\230\001\340\004\035\230Z\240q\250\001\330\004\013\2106\220\026\220qO";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
     PyObject **stringtab = __pyx_mstate->__pyx_string_tab;
     Py_ssize_t pos = 0;
-    for (int i = 0; i < 154; i++) {
+    for (int i = 0; i < 155; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyUnicode_DecodeUTF8(bytes + pos, bytes_length, NULL);
       if (likely(string) && i >= 73) PyUnicode_InternInPlace(&string);
@@ -24657,7 +24832,7 @@ const char* const bytes = ": All dimensions preceding dimension %d must be index
       stringtab[i] = string;
       pos += bytes_length;
     }
-    for (int i = 154; i < 159; i++) {
+    for (int i = 155; i < 160; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyBytes_FromStringAndSize(bytes + pos, bytes_length);
       stringtab[i] = string;
@@ -24668,14 +24843,14 @@ const char* const bytes = ": All dimensions preceding dimension %d must be index
       }
     }
     Py_XDECREF(data);
-    for (Py_ssize_t i = 0; i < 159; i++) {
+    for (Py_ssize_t i = 0; i < 160; i++) {
       if (unlikely(PyObject_Hash(stringtab[i]) == -1)) {
         __PYX_ERR(0, 1, __pyx_L1_error)
       }
     }
     #if CYTHON_IMMORTAL_CONSTANTS
     {
-      PyObject **table = stringtab + 154;
+      PyObject **table = stringtab + 155;
       for (Py_ssize_t i=0; i<5; ++i) {
         #if CYTHON_COMPILING_IN_CPYTHON_FREETHREADING
         Py_SET_REFCNT(table[i], _Py_IMMORTAL_REFCNT_LOCAL);
@@ -24755,7 +24930,7 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
     __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_stringsource, __pyx_mstate->__pyx_n_u_setstate_cython, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 534};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 543};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_data, __pyx_mstate->__pyx_n_u_b, __pyx_mstate->__pyx_n_u_parser};
     __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_myson_fast_pyx, __pyx_mstate->__pyx_n_u_loads, __pyx_mstate->__pyx_kp_b_iso88591_z_D_q_1F_A_iq_Zq_6_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }

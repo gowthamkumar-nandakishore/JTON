@@ -166,7 +166,7 @@ cdef class FastParser:
             return self.parse_false()
         elif c == 110:  # n (null)
             return self.parse_null()
-        elif (CTAB[c] & NM) or c == 73:  # number or I (Infinity)
+        elif (CTAB[c] & NM) or c == 73 or c == 78:  # number or I/N (Infinity/NaN)
             return self.parse_number()
         else:
             self.error(f"Unexpected character '{chr(c)}'")
@@ -454,7 +454,7 @@ cdef class FastParser:
                 if c >= 48 and c <= 57:  # '0'-'9'
                     self.error("Leading zeros not allowed")
         
-       # Check for Infinity
+        # Check for Infinity / NaN (non-standard but used in benchmarks)
         if self.ptr[0] == 73:  # I
             if self.end - self.ptr >= 8:
                 if (self.ptr[1] == 110 and self.ptr[2] == 102 and 
@@ -463,6 +463,11 @@ cdef class FastParser:
                     self.ptr[7] == 121):
                     self.ptr += 8
                     return float('inf')
+        elif self.ptr[0] == 78:  # N
+            if self.end - self.ptr >= 3:
+                if self.ptr[1] == 97 and self.ptr[2] == 78:  # aN
+                    self.ptr += 3
+                    return float('nan')
         elif self.ptr[0] == 45:  # -
             is_negative = True
             if self.end - self.ptr >= 9:
@@ -472,6 +477,10 @@ cdef class FastParser:
                     self.ptr[7] == 116 and self.ptr[8] == 121):
                     self.ptr += 9
                     return float('-inf')
+            if self.end - self.ptr >= 4:
+                if self.ptr[1] == 78 and self.ptr[2] == 97 and self.ptr[3] == 78:  # -NaN
+                    self.ptr += 4
+                    return -float('nan')
         
         # Scan number
         while self.ptr < self.end and (CTAB[self.ptr[0]] & NM):
