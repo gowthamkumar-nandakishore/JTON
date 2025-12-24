@@ -122,14 +122,35 @@ description: "Tasks for MYSON parser implementation"
 
 ---
 
+## Phase 6: User Story 4 - High Performance and Compatibility (Priority: P1)
+
+**Goal**: Optimize parser performance to exceed standard `json` module speed.
+
+**Independent Test**: Benchmarks show `myson` is faster than `json` for large files.
+
+### Tests for User Story 4
+
+- [X] T038 [P] [US4] Create benchmark script comparing `myson` vs `json` in benchmarks/performance_test.py
+
+### Implementation for User Story 4
+
+- [X] T039 [US4] Implement high-performance Cython core in src/myson_core.pyx
+- [X] T040 [US4] Optimize number parsing and string interning in Cython
+- [X] T041 [US4] Integrate Cython core into main package and ensure fallback/compatibility
+
+**Checkpoint**: User Story 4 fully functional and performance goals met
+
+---
+
 ## Phase N: Polish & Cross-Cutting Concerns
 
 - [X] T032 [P] Add CLI demo entrypoint in src/cli/__init__.py (myson-parse) matching contracts/api.md
 - [X] T033 [P] Update docs in specs/001-short-name-myson/quickstart.md with final examples and CLI usage
 - [X] T034 Add coverage for empty tables and mixed comments in tests/unit/test_parser_table_comments.py
 - [X] T035 Perform refactor/cleanup and ensure spec/grammar.ebnf, src/tokenizer.py, src/parser.py stay in sync
-- [ ] T036 Add performance benchmark in benchmarks/performance_test.py generating a 5MB mixed JSON/table MYSON file and assert parse time <3s on reference 4-core/8GB machine
+- [X] T036 Add performance benchmark in benchmarks/performance_test.py generating a 5MB mixed JSON/table MYSON file and assert parse time <3s on reference 4-core/8GB machine
 - [ ] T037 Add token/byte savings analysis in benchmarks/token_savings_analysis.py comparing JSON vs MYSON (Zen table) representations
+
 
 ---
 

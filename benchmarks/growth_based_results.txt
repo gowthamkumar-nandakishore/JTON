@@ -1,0 +1,77 @@
+Growth-Based Pre-Allocation Results
+===================================
+
+Date: 2024-12-24
+Approach: Hybrid growth-based pre-allocation with PyList_SET_ITEM
+
+## Attempts
+
+### Attempt 1: Prescan + PyList_NEW + SET_ITEM
+- Strategy: Two-pass (prescan to count, then allocate exact size)
+- Result: ~74 MB/s (regression from 104 MB/s baseline)
+- Issue: Prescan overhead > pre-allocation benefit
+
+### Attempt 2: Optimized prescan (fast comma counting)
+- Strategy: Simplified prescan (just count commas at depth 0)
+- Result: ~87 MB/s (still regression)
+- Issue: Still scanning data twice
+
+### Attempt 3: Growth-based with manual resize
+- Strategy: Start with capacity 16, double when exceeded
+- Result: Segmentation fault
+- Issue: _PyList_Resize is internal API, incorrect usage
+
+### Attempt 4: Hybrid (SET_ITEM up to capacity, then Append)
+- Strategy: PyList_New(32), use SET_ITEM while < 32, fallback to Append
+- Result: ~87 MB/s
+- Issue: Trim overhead (del arr[size:]) too expensive
+
+### Attempt 5: Higher initial capacity (256)
+- Strategy: Reduce trim frequency with larger initial size
+- Result: ~71 MB/s (worse!)
+- Issue: Memory allocation + trim still expensive
+
+### Attempt 6: Simple Cython-optimized append
+- Strategy: Use Python list.append(), let Cython optimize
+- Result: **143 MB/s** (37% improvement from original 104 MB/s baseline!)
+- Success: Cython converts list.append to efficient C-API calls
+
+## Key Learnings
+
+1. **Pre-scanning is counterproductive** for general JSON parsing
+   - Works for msgspec because they optimize other parts first
+   - For us, prescan overhead > allocation benefit
+
+2. **Cython list.append is already fast**
+   - Cython automatically uses PyList_Append C-API
+   - Python's list growth strategy (over-allocate) is already optimized
+   - Manual pre-allocation with trimming adds overhead
+
+3. **Real bottlenecks are elsewhere**:
+   - Character-by-character indexed access: `self.buf[self.pos]`
+   - Python object creation (PyLong, PyFloat, PyUnicode)
+   - Bounds checking on array access
+   - Function call overhead
+
+## Path to 1 GB/s
+
+Current: 143 MB/s
+Target: 1000 MB/s (7x speedup needed)
+
+Next optimizations (in order of impact):
+1. **Pointer arithmetic** (2-3x): Convert all `self.buf[self.pos]` to raw pointers
+2. **SIMD string scanning** (1.5-2x): Use SIMD for finding quotes, braces
+3. **Lookup tables** (1.3-1.5x): Character classification via 256-byte table
+4. **Inline number parsing** (1.2x): Custom int/float parsing instead of strtoll/strtod
+5. **Object pooling** (1.1x): Reuse common objects (True, False, None, small ints)
+
+Combined: 2.5 * 1.7 * 1.4 * 1.2 * 1.1 = 6.5x * 143 MB/s = **930 MB/s**
+
+With additional polish and compiler optimizations: **1+ GB/s achievable**
+
+## Implementation Status
+
+✅ Growth-based approach evaluated (not beneficial at this stage)
+✅ Baseline improved from 104 → 143 MB/s (37% gain)
+⏳ Next: Implement pointer arithmetic optimization (Phase 4)
+🎯 Ultimate goal: 1 GB/s through layered optimizations

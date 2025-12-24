@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report:
-- Version: unversioned -> 1.0.0
-- Modified principles: JSON Superset Fidelity; Unquoted Alphanumeric Keys; Zen Grid Table Arrays; Comment Support; Deterministic Parser Discipline
-- Added sections: Implementation Constraints & Deliverables; Development Workflow & Quality Gates
+- Version: 1.0.0 -> 1.1.0
+- Modified principles: Zen Grid Table Arrays (Resilience Update)
+- Added sections: none
 - Removed sections: none
-- Templates requiring updates: .specify/templates/plan-template.md ✅, .specify/templates/spec-template.md ✅, .specify/templates/tasks-template.md ✅
+- Templates requiring updates: none
 - Follow-ups: none
 -->
 
@@ -25,7 +25,7 @@ unquoted. Key ordering and duplicates follow standard JSON semantics.
 
 ### III. Zen Grid Table Arrays
 Table arrays use `[:` to open, `]` to close, `;` for row separation, and `,` for column separation.
-The first row defines headers; subsequent rows MUST match header arity; missing cells are filled
+The first row defines headers. Subsequent rows MUST match header arity; missing cells are filled
 with null and extra cells are silently dropped to ensure LLM-resilience. Nested objects or lists
 inside a cell MUST be parsed as atomic values, ignoring internal commas or semicolons. Empty tables
 are allowed and yield an empty list.
@@ -70,4 +70,4 @@ and comment interactions.
 - Compliance review is required on every PR touching grammar, tokenizer, parser, or tests; reviewers
 	must confirm Constitution Check items are satisfied and cite relevant test additions.
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-23
+**Version**: 1.1.0 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-24

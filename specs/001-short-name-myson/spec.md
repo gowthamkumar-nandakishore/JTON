@@ -137,6 +137,12 @@ Capture the MYSON-specific boundaries at minimum:
   unquoted strings, to preserve JSON parity and avoid surprising stringification.
 - **FR-014**: Parser MUST enforce a MAX_NESTING_DEPTH of 100 (objects, arrays, tables combined) and
   raise a ParseError with line/column when exceeded to avoid RecursionErrors.
+- **FR-025**: The parser MUST be implemented using Cython or a C-extension to achieve performance
+  superior to the standard library `json` module.
+- **FR-026**: The package MUST provide a `loads` function that is API-compatible with `json.loads`
+  for standard JSON inputs.
+- **FR-027**: The parser MUST employ optimization techniques such as string interning and direct
+  number parsing to minimize object creation overhead.
 
 *Assumptions (implicit unless revised later):*
 
@@ -171,3 +177,17 @@ Capture the MYSON-specific boundaries at minimum:
 - **SC-004**: Parsing throughput sustains O(n) behavior with at least 5 MB of mixed JSON/table data
   processed in under 3 seconds on a reference machine, with memory usage remaining linear to input
   size.
+
+### User Story 4 - High Performance and Compatibility (Priority: P1)
+
+A developer can use `myson` as a drop-in replacement for `json` with high performance.
+
+**Why this priority**: Critical for adoption in high-throughput environments.
+
+**Independent Test**: Run benchmarks comparing `myson` vs `json`. Verify `myson.loads` and `myson.dumps` API compatibility.
+
+**Acceptance Scenarios**:
+1. **Given** a large JSON file, **When** parsed with `myson`, **Then** it is faster than standard `json`.
+2. **Given** code using `json.loads`, **When** replaced with `myson.loads`, **Then** it works without changes.
+3. **Given** a `MysonModel` class, **When** `from_json` is called, **Then** it returns a populated instance.
+

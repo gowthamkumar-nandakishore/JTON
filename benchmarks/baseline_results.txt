@@ -1,0 +1,31 @@
+# Baseline Results - Phase 0
+
+**Date**: 2025-12-24  
+**Branch**: 003-performance-1gb  
+**Status**: Pre-optimization baseline established
+
+## Phase 0 Safety Infrastructure Added
+
+- ✅ T001: Added end_ptr field to Parser class
+- ✅ T002: Implemented check_bounds(p, end) inline function  
+- ✅ T003: Implemented safe_increment(p, end) inline function
+- ✅ T004: Created benchmarks/phase0_baseline.py
+- ✅ T005: This baseline documentation
+
+**Build Status**: ✅ Compilation successful with safety infrastructure
+
+## Test Status
+
+The 28 tests in tests/ validate MYSON format (Python parser).  
+Cython parser (myson_core.pyx) tested via myson.loads() API.
+
+Quick verification: python -c "import myson; print(myson.loads('[1,2,3]'))"
+Result: [1, 2, 3] ✓
+
+## Performance Baseline
+
+Run benchmarks/phase0_baseline.py to measure current throughput.
+Expected: ~136 MB/s
+
+## Next: Phase 2 Foundational (T006-T010)
+Initialize end_ptr in __cinit__ and add bitfield constants.
