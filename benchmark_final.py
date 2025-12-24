@@ -42,7 +42,7 @@ def load_test_file(filepath):
     with open(filepath, 'rb') as f:
         return f.read()
 
-def benchmark_parser(name, data_bytes, parse_fn, iterations=50, warmup=10, timeout_seconds=30):
+def benchmark_parser(name, data_bytes, parse_fn, iterations=50, warmup=10, timeout_seconds=10):
     """Benchmark a single parser on data with timeout protection"""
     size_mb = len(data_bytes) / (1024 * 1024)
     
@@ -50,24 +50,25 @@ def benchmark_parser(name, data_bytes, parse_fn, iterations=50, warmup=10, timeo
     if size_mb > 50:
         iterations = 3
         warmup = 1
-        timeout_seconds = 120  # 2 minutes for very large files
+        timeout_seconds = 30  # 30 seconds max for very large files
     elif size_mb > 10:
         iterations = 5
         warmup = 2
-        timeout_seconds = 60
+        timeout_seconds = 20
     elif size_mb > 5:
         iterations = 10
         warmup = 3
-        timeout_seconds = 30
+        timeout_seconds = 15
     
-    # Test single parse first with timeout
+    # Test single parse first with timeout (max 5 seconds for initial test)
+    max_single_parse_time = min(5.0, timeout_seconds * 0.5)
     try:
         start_test = time.perf_counter()
         parse_fn(data_bytes)
         elapsed_test = time.perf_counter() - start_test
         
-        # If single parse takes >80% of timeout, skip benchmarking
-        if elapsed_test > timeout_seconds * 0.8:
+        # If single parse is too slow, skip benchmarking
+        if elapsed_test > max_single_parse_time:
             return None
     except Exception:
         return None  # Parser failed
@@ -88,8 +89,9 @@ def benchmark_parser(name, data_bytes, parse_fn, iterations=50, warmup=10, timeo
             end = time.perf_counter()
             elapsed = end - start
             
-            # Abort if any iteration is too slow
-            if elapsed > timeout_seconds * 0.5:
+            # Abort if any iteration is too slow (max 3 seconds per iteration)
+            max_iteration_time = min(3.0, timeout_seconds * 0.3)
+            if elapsed > max_iteration_time:
                 if len(times) == 0:
                     return None  # Too slow, can't benchmark
                 break  # Use what we have

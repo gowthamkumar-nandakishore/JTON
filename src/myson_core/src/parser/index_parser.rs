@@ -150,23 +150,12 @@ impl<'a> FastIndexParser<'a> {
             return Ok(unsafe { PyObject::from_owned_ptr(py, empty_list) });
         }
         
-        // NITRO: Pre-count elements using structural index for exact allocation
-        let array_start = self.pos;
-        let mut estimated_size = 1; // At least one element
+        // NITRO: Start with small allocation, will grow if needed
+        // For now, use conservative estimate to avoid over-allocation
+        let estimated_size = 16; // Start small, Python lists resize efficiently
         
-        // Count commas at this level to estimate size
-        for &comma_pos in &self.index.commas {
-            if comma_pos > array_start {
-                // Simple heuristic: count nearby commas
-                estimated_size += 1;
-                if estimated_size > 64 {
-                    break; // Cap estimate
-                }
-            }
-        }
-        
-        // NITRO: Create list with exact capacity using direct FFI
-        let list_ptr = unsafe { ffi::PyList_New(estimated_size as isize) };
+        // NITRO: Create list with initial capacity using direct FFI
+        let list_ptr = unsafe { ffi::PyList_New(0) }; // Start empty, append will resize
         if list_ptr.is_null() {
             return Err(pyo3::exceptions::PyMemoryError::new_err("Failed to create list"));
         }
@@ -177,19 +166,11 @@ impl<'a> FastIndexParser<'a> {
         loop {
             let value = self.parse_value(py)?;
             
-            // NITRO: Direct insertion using SET_ITEM (no bounds check!)
-            if idx < estimated_size {
-                unsafe {
-                    ffi::Py_INCREF(value.as_ptr()); // SET_ITEM steals reference
-                    ffi::PyList_SET_ITEM(list_ptr, idx as isize, value.as_ptr());
-                }
-            } else {
-                // Fell back to safe append if we underestimated
-                unsafe {
-                    if ffi::PyList_Append(list_ptr, value.as_ptr()) < 0 {
-                        ffi::Py_DECREF(list_ptr);
-                        return Err(pyo3::exceptions::PyRuntimeError::new_err("List append failed"));
-                    }
+            // NITRO: Direct append using PyList_Append (Python's resizing is efficient)
+            unsafe {
+                if ffi::PyList_Append(list_ptr, value.as_ptr()) < 0 {
+                    ffi::Py_DECREF(list_ptr);
+                    return Err(pyo3::exceptions::PyRuntimeError::new_err("List append failed"));
                 }
             }
             idx += 1;
