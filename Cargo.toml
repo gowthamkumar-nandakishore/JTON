@@ -1,0 +1,32 @@
+[package]
+name = "myson_core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+
+[lib]
+name = "myson_core"
+crate-type = ["cdylib"]
+path = "src/myson_core/src/lib.rs"
+
+[dependencies]
+pyo3 = { version = "0.20", features = ["extension-module"] }
+lazy_static = "1.4"
+lexical-core = "0.8"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "simd_bench"
+harness = false
+path = "tests/rust/benches/simd_bench.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+panic = "abort"
+
+[profile.bench]
+opt-level = 3

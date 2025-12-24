@@ -1,11 +1,11 @@
 <!--
 Sync Impact Report:
 - Version: 1.0.0 -> 1.1.0
-- Modified principles: Zen Grid Table Arrays (Resilience Update)
-- Added sections: none
+- Modified principles: Added "Nitro" Performance Mandate, Zen Grid Resilience Update
+- Added sections: Implementation Constraints & Deliverables, Quality Gates & CI
 - Removed sections: none
 - Templates requiring updates: none
-- Follow-ups: none
+- Follow-ups: Rust migration, Cython deprecation
 -->
 
 # MYSON Constitution
@@ -13,61 +13,42 @@ Sync Impact Report:
 ## Core Principles
 
 ### I. JSON Superset Fidelity (NON-NEGOTIABLE)
-Every valid JSON document MUST parse as-is under MYSON with identical semantics and data types.
-No extension (comments, unquoted keys, tables) may introduce ambiguity or break JSON compatibility.
-Error messaging MUST clearly distinguish JSON violations from MYSON-only violations to protect
-backward compatibility.
+Every valid JSON document MUST parse as-is under MYSON with identical semantics. Extension features (comments, tables) MUST NOT break backward compatibility. Error messaging MUST distinguish between JSON and MYSON-only violations.
 
-### II. Unquoted Alphanumeric Keys
-Object keys MAY omit quotes only when composed of ASCII letters and digits; quoted keys remain
-accepted. The tokenizer MUST reject keys containing punctuation, whitespace, or Unicode when
-unquoted. Key ordering and duplicates follow standard JSON semantics.
+### II. The "Nitro" Performance Mandate
+The core engine MUST target a minimum throughput of 1.5 GB/s. Implementation MUST prioritize Rust with AVX2/AVX-512 SIMD intrinsics. Scalar fallbacks are rejected; hardware that does not support AVX2 (pre-2013) is explicitly unsupported to prevent code bloat.
 
-### III. Zen Grid Table Arrays
-Table arrays use `[:` to open, `]` to close, `;` for row separation, and `,` for column separation.
-The first row defines headers. Subsequent rows MUST match header arity; missing cells are filled
-with null and extra cells are silently dropped to ensure LLM-resilience. Nested objects or lists
-inside a cell MUST be parsed as atomic values, ignoring internal commas or semicolons. Empty tables
-are allowed and yield an empty list.
+### III. Zen Grid Arrays (Resilience Update)
+Zen Grid arrays use `[:` to open, `]` to close, `;` for row separation, and `,` for column separation.
 
-### IV. Comment Support
-C-style line (`//`) and block (`/* ... */`) comments are accepted wherever whitespace is valid and
-MUST be removed prior to semantic parsing. Comments inside string literals are forbidden. Line and
-column tracking MUST remain accurate after comment stripping.
+**Arity Enforcement**: The first row defines the header. Subsequent rows MUST match header count.
 
-### V. Deterministic Parser Discipline
-Tokenization uses an explicit state machine (no regex-driven main loop) with modes for JSON,
-strings, numbers, comments, and table arrays. Parsing is recursive descent that preserves
-structure, emits precise errors with line/column, and resists exponential blowups on nested input.
-Tests MUST pin behavior for empty tables, trailing commas, deeply nested mixes of JSON and tables,
-and comment interactions.
+**Resilience**: Missing cells are null-filled; extra cells are silently truncated (±32 byte error margin accepted for SIMD speed).
+
+**Pre-allocation**: The parser MUST pre-allocate memory based on a semicolon scan, capped at 1 million rows for OOM safety.
+
+### IV. Unquoted Alphanumeric Keys
+Object keys MAY omit quotes if they consist strictly of ASCII letters and digits. Tokenization MUST reject unquoted keys containing punctuation, whitespace, or Unicode.
+
+### V. Comment & Whitespace Discipline
+C-style line (`//`) and block (`/* */`) comments are accepted wherever whitespace is valid. The SIMD scanner MUST skip comments and whitespace at a rate of 32 bytes per cycle.
 
 ## Implementation Constraints & Deliverables
-- Python implementation targeting the active toolchain for this repo; use only deterministic,
-	library-free parsing in the core loop.
-- Authoritative grammar lives in spec/grammar.ebnf and MUST stay in sync with tokenizer and parser.
-- Tokenizer implementation resides in src/tokenizer.py and follows the state-machine discipline.
-- Recursive descent parser resides in src/parser.py and outputs Python dicts/lists with JSON fidelity
-	plus table array semantics.
-- Tests in tests/ MUST cover JSON superset compatibility, unquoted key boundaries, Zen Grid table
-	arrays (including nesting and empty tables), comment handling, and trailing delimiter cases.
 
-## Development Workflow & Quality Gates
-- Constitution Check precedes design and coding: prove JSON compatibility is preserved, unquoted key
-	constraints are enforced, table array semantics are covered, comments do not alter semantics, and
-	tokenizer/parser discipline is respected.
-- Test-first: add failing cases for grammar updates (JSON parity, tables, comments, edge nesting),
-	then implement, then refactor while keeping grammar.ebnf synchronized.
-- Each change MUST document impacts on grammar, tokenizer states, and parser productions in the
-	relevant plan/spec/tasks artifacts before merge.
+- **Language**: Rust (via PyO3 and maturin). The Python `myson_core.pyx` is officially deprecated and removed.
+- **Memory Model**: Zero-copy utilizing the Python Buffer Protocol. String interning is mandatory for headers and categorical fields.
+- **Parallelism**: Phase 2 introduces Rayon-based multi-threading for chunked parsing of Zen Grids.
+- **Schema-Guided Mode**: When a schema is provided, the parser MUST bypass key-hashing and positional-scan JSON/Tables directly.
+
+## Quality Gates & CI
+
+- **Performance Gate**: Every PR MUST pass a benchmark check. Throughput MUST NOT drop below the 233.9 MB/s baseline; final merges require ≥1.5 GB/s.
+- **Test Parity**: All 400+ comprehensive tests (Zen Grid nesting, empty tables, unquoted keys) MUST pass 100% in the Rust engine.
+- **Approximate Errors**: For a 20% speed gain, error locations are permitted a ±32 byte variance from the exact point of failure.
 
 ## Governance
-- This constitution is the authoritative contract for MYSON. Conflicts with other docs resolve in
-	favor of this file.
-- Amendments require an explicit PR note, updated grammar/test coverage, and a semantic version bump
-	here. Backward-incompatible governance or principle changes bump MAJOR; new principles or material
-	expansions bump MINOR; clarifications bump PATCH.
-- Compliance review is required on every PR touching grammar, tokenizer, parser, or tests; reviewers
-	must confirm Constitution Check items are satisfied and cite relevant test additions.
+
+- **Authoritative Source**: This document overrides all other specifications, plans, or READMEs.
+- **Versioning**: Minor bump (1.1.0) for the Rust transition and Zen Grid truncation logic. Major bump required for any change breaking JSON compatibility.
 
 **Version**: 1.1.0 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-24
