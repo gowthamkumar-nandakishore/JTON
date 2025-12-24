@@ -1,0 +1,89 @@
+ESCAPE SEQUENCE BUG FIX - RESULTS
+================================================================================
+
+DATE: Post-escape-fix
+COMMIT: Fixed string escape detection using memchr
+
+BUG DESCRIPTION:
+- Fast path incorrectly assumed no escapes if quote wasn't escaped
+- Only checked has_escape flag set when escaped quote found
+- Missed \n, \t, \\, etc. that weren't at quote position
+
+FIX IMPLEMENTED:
+- Scan for ANY backslash in string using memchr before fast path
+- If backslash found anywhere, use decode_string_with_escapes()
+- Only use fast path if no backslashes at all
+
+CORRECTNESS RESULTS:
+================================================================================
+Tests passed: 4/4 ✅
+
+File                    Size      Result
+================================================================================
+canada.json             2.15 MB   ✅ PASS
+citm_catalog.json       1.65 MB   ✅ PASS
+github.json             0.05 MB   ✅ PASS (was failing before fix)
+twitter.json            0.60 MB   ✅ PASS (was failing before fix)
+
+PERFORMANCE IMPACT:
+================================================================================
+
+File                    Size      Throughput      Notes
+================================================================================
+canada.json             2.15 MB     92.87 MB/s    Number-heavy (bottleneck)
+citm_catalog.json       1.65 MB    273.34 MB/s    Mixed content
+github.json             0.05 MB    355.55 MB/s    String-heavy (fastest)
+twitter.json            0.60 MB    221.27 MB/s    Unicode + objects
+
+Overall throughput: 138.98 MB/s
+Average throughput: 235.76 MB/s
+
+BASELINE COMPARISON:
+- Before escape fix: 143 MB/s (incorrect output)
+- After escape fix: 139 MB/s (correct output)
+- Overhead: ~3% (acceptable for correctness)
+
+KEY INSIGHTS:
+================================================================================
+
+1. Performance varies widely by content type:
+   - String-heavy: 356 MB/s (3.8x faster than number-heavy)
+   - Number-heavy: 93 MB/s (bottleneck)
+
+2. canada.json (2.15 MB, 48% of test data) dominates overall metric
+   - It's all floating-point coordinates
+   - Number parsing is the bottleneck
+
+3. String parsing is already fast:
+   - github.json: 356 MB/s
+   - Escape handling is not the bottleneck
+
+NEXT OPTIMIZATION TARGETS:
+================================================================================
+
+Priority 1: Fast number parsing
+- canada.json shows strtoll/strtod is bottleneck
+- Estimated 2-3x speedup for number-heavy JSON
+- Would bring canada.json from 93 MB/s → 186-279 MB/s
+
+Priority 2: String interning for dict keys
+- Would help citm_catalog/twitter
+- Estimated 1.2-1.3x speedup
+
+Priority 3: SIMD for whitespace/structural scanning  
+- Would help all cases
+- Estimated 1.3-1.5x speedup
+
+PROJECTED PERFORMANCE:
+================================================================================
+
+With all optimizations:
+- canada.json: 93 → 280-420 MB/s
+- citm_catalog: 273 → 400-550 MB/s
+- github: 356 → 500-700 MB/s
+- twitter: 221 → 320-440 MB/s
+
+Overall: 139 → 400-600 MB/s (realistic)
+Peak (small files): 700-1000 MB/s (achievable)
+
+STATUS: ✅ Correctness validated, ready for optimization phase

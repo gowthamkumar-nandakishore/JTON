@@ -1,0 +1,4 @@
+# file: /home/gowthamkumar/Projects/MYSON/src/parser.py
+# hypothesis_version: 6.148.8
+
+[100, 'BOOLEAN', 'COLON', 'COMMA', "Expected ',' or ']'", "Expected ',' or '}'", 'IDENT', 'Invalid table cell', 'JSON', 'LBRACE', 'LBRACKET', 'NULL', 'NUMBER', 'RBRACE', 'RBRACKET', 'SEMICOLON', 'STRING', 'TABLE_OPEN', 'Unterminated array', 'Unterminated object', 'Unterminated table', 'lexical', 'r', 'syntax', 'utf-8']

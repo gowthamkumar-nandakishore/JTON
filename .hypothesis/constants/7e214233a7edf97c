@@ -1,0 +1,4 @@
+# file: /home/gowthamkumar/Projects/MYSON/src/tokenizer.py
+# hypothesis_version: 6.148.8
+
+['"', '*', '+', ',', '-', '-0123456789', '.', '/', '0', '0123456789+-.eE', '9', ':', ';', 'BOOLEAN', 'COLON', 'COMMA', 'Dangling escape', 'E', 'Empty unquoted token', 'IDENT', 'Invalid integer', 'Invalid number', 'JSON', 'LBRACE', 'LBRACKET', 'NULL', 'NUMBER', 'RBRACE', 'RBRACKET', 'SEMICOLON', 'STRING', 'TABLE', 'TABLE_OPEN', 'Unterminated escape', 'Unterminated string', '[', '[:', '\\', ']', 'e', 'false', 'lexical', 'null', 'true', '{', '}']

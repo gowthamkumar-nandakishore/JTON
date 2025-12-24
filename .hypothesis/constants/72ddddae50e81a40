@@ -1,0 +1,4 @@
+# file: /home/gowthamkumar/Projects/MYSON/src/serializer.py
+# hypothesis_version: 6.148.8
+
+[0.7, ', ', '; ', '[', '[:', ']', 'false', 'null', 'true', '{', '}']
