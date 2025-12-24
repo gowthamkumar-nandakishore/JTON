@@ -67,33 +67,34 @@
 
 ### Edge Cases
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
+Capture the MYSON-specific boundaries at minimum:
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+- JSON compatibility for numbers, strings, escapes, and deeply nested arrays/objects.
+- Unquoted key handling for ASCII alphanumeric names and rejection of punctuation/Unicode.
+- Zen Grid tables: header arity enforcement, nested object/list cells, empty tables, delimiter
+  collisions with strings.
+- Comment handling (`//`, `/* */`) including adjacency to values and prohibition inside strings.
+- Trailing commas around tables, arrays, objects, and mixed with comments.
 
 ## Requirements *(mandatory)*
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
-
 ### Functional Requirements
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-001**: Parser MUST accept all valid JSON with identical semantics and data types.
+- **FR-002**: Parser MUST accept unquoted object keys composed solely of ASCII alphanumerics; all
+  other unquoted keys MUST be rejected with clear errors.
+- **FR-003**: Parser MUST support Zen Grid table arrays (`[: ... ]`) with header arity enforcement and
+  nested value protection.
+- **FR-004**: Parser MUST support `//` and `/* */` comments wherever whitespace is valid without
+  altering line/column fidelity.
+- **FR-005**: Tokenizer MUST use a state-machine main loop (no regex) and feed a recursive descent
+  parser; outputs MUST be Python dicts/lists.
 
 *Example of marking unclear requirements:*
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-006**: Error messaging MUST surface [NEEDS CLARIFICATION: expected format for line/column and
+  excerpt?]
+- **FR-007**: Performance targets MUST state [NEEDS CLARIFICATION: max file size, latency budget].
 
 ### Key Entities *(include if feature involves data)*
 

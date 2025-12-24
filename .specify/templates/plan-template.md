@@ -31,7 +31,17 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- JSON superset fidelity: planned changes preserve strict JSON compatibility with identical
+  semantics and types.
+- Unquoted keys: tokenizer plan enforces ASCII alphanumeric-only unquoted keys; error cases covered.
+- Zen Grid tables: grammar, tokenizer, and parser plans handle headers, arity checks, nesting, and
+  empty tables.
+- Comments: `//` and `/* */` handling preserves line/column accuracy and ignores content inside
+  strings.
+- Deterministic parser discipline: tokenizer uses an explicit state machine (no regex main loop);
+  parser is recursive descent with precise errors; grammar.ebnf kept in sync.
+- Tests: add cases for empty tables, trailing commas, deep nesting, and comment interactions before
+  implementation.
 
 ## Project Structure
 

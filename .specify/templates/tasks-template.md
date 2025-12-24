@@ -12,6 +12,15 @@ description: "Task list template for feature implementation"
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
+## Constitution Alignment (must be reflected in generated tasks)
+
+- Include grammar updates in spec/grammar.ebnf plus matching tokenizer/parser changes.
+- Enforce JSON superset compatibility, unquoted ASCII-alphanumeric keys, Zen Grid table arrays, and
+  C-style comments with line/column fidelity.
+- Tokenizer main loop MUST be a state machine (no regex); parser MUST be recursive descent.
+- Tests MUST cover empty tables, header arity errors, trailing commas, nested structures, and comment
+  interactions.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
@@ -62,12 +71,13 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T004 Author/refresh spec/grammar.ebnf with current rules (JSON + MYSON extensions)
+- [ ] T005 [P] Implement tokenizer state machine in src/tokenizer.py (no regex main loop)
+- [ ] T006 [P] Implement recursive descent skeleton in src/parser.py
+- [ ] T007 Establish error reporting with line/column tracking
+- [ ] T008 Configure test harness (e.g., pytest) and fixtures for grammar/tokenizer/parser
+- [ ] T009 Add baseline tests for JSON parity, unquoted keys, Zen Grid tables, comments, and trailing
+  delimiters
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

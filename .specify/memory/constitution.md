@@ -1,50 +1,73 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version: unversioned -> 1.0.0
+- Modified principles: JSON Superset Fidelity; Unquoted Alphanumeric Keys; Zen Grid Table Arrays; Comment Support; Deterministic Parser Discipline
+- Added sections: Implementation Constraints & Deliverables; Development Workflow & Quality Gates
+- Removed sections: none
+- Templates requiring updates: .specify/templates/plan-template.md ✅, .specify/templates/spec-template.md ✅, .specify/templates/tasks-template.md ✅
+- Follow-ups: none
+-->
+
+# MYSON Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. JSON Superset Fidelity (NON-NEGOTIABLE)
+Every valid JSON document MUST parse as-is under MYSON with identical semantics and data types.
+No extension (comments, unquoted keys, tables) may introduce ambiguity or break JSON compatibility.
+Error messaging MUST clearly distinguish JSON violations from MYSON-only violations to protect
+backward compatibility.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Unquoted Alphanumeric Keys
+Object keys MAY omit quotes only when composed of ASCII letters and digits; quoted keys remain
+accepted. The tokenizer MUST reject keys containing punctuation, whitespace, or Unicode when
+unquoted. Key ordering and duplicates follow standard JSON semantics.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Zen Grid Table Arrays
+Table arrays use `[:` to open, `]` to close, `;` for row separation, and `,` for column separation.
+The first row defines headers; subsequent rows MUST match header arity; missing cells are filled
+with null and extra cells are silently dropped to ensure LLM-resilience. Nested objects or lists
+inside a cell MUST be parsed as atomic values, ignoring internal commas or semicolons. Empty tables
+are allowed and yield an empty list.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Comment Support
+C-style line (`//`) and block (`/* ... */`) comments are accepted wherever whitespace is valid and
+MUST be removed prior to semantic parsing. Comments inside string literals are forbidden. Line and
+column tracking MUST remain accurate after comment stripping.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Deterministic Parser Discipline
+Tokenization uses an explicit state machine (no regex-driven main loop) with modes for JSON,
+strings, numbers, comments, and table arrays. Parsing is recursive descent that preserves
+structure, emits precise errors with line/column, and resists exponential blowups on nested input.
+Tests MUST pin behavior for empty tables, trailing commas, deeply nested mixes of JSON and tables,
+and comment interactions.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Implementation Constraints & Deliverables
+- Python implementation targeting the active toolchain for this repo; use only deterministic,
+	library-free parsing in the core loop.
+- Authoritative grammar lives in spec/grammar.ebnf and MUST stay in sync with tokenizer and parser.
+- Tokenizer implementation resides in src/tokenizer.py and follows the state-machine discipline.
+- Recursive descent parser resides in src/parser.py and outputs Python dicts/lists with JSON fidelity
+	plus table array semantics.
+- Tests in tests/ MUST cover JSON superset compatibility, unquoted key boundaries, Zen Grid table
+	arrays (including nesting and empty tables), comment handling, and trailing delimiter cases.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Workflow & Quality Gates
+- Constitution Check precedes design and coding: prove JSON compatibility is preserved, unquoted key
+	constraints are enforced, table array semantics are covered, comments do not alter semantics, and
+	tokenizer/parser discipline is respected.
+- Test-first: add failing cases for grammar updates (JSON parity, tables, comments, edge nesting),
+	then implement, then refactor while keeping grammar.ebnf synchronized.
+- Each change MUST document impacts on grammar, tokenizer states, and parser productions in the
+	relevant plan/spec/tasks artifacts before merge.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+- This constitution is the authoritative contract for MYSON. Conflicts with other docs resolve in
+	favor of this file.
+- Amendments require an explicit PR note, updated grammar/test coverage, and a semantic version bump
+	here. Backward-incompatible governance or principle changes bump MAJOR; new principles or material
+	expansions bump MINOR; clarifications bump PATCH.
+- Compliance review is required on every PR touching grammar, tokenizer, parser, or tests; reviewers
+	must confirm Constitution Check items are satisfied and cite relevant test additions.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-23 | **Last Amended**: 2025-12-23
