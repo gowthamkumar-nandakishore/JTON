@@ -30,6 +30,15 @@ const POW10_U64: [u64; 20] = [
     10_000_000_000_000_000_000,
 ];
 
+#[inline(always)]
+fn equals_ascii_ci(bytes: &[u8], keyword: &[u8]) -> bool {
+    bytes.len() == keyword.len()
+        && bytes
+            .iter()
+            .zip(keyword.iter())
+            .all(|(&candidate, &expected)| candidate.to_ascii_lowercase() == expected.to_ascii_lowercase())
+}
+
 /// Three-path number parser: detect type early and route to specialized parser
 #[inline]
 pub fn parse_number_fast(py: Python, bytes: &[u8]) -> PyResult<PyObject> {
@@ -37,40 +46,45 @@ pub fn parse_number_fast(py: Python, bytes: &[u8]) -> PyResult<PyObject> {
         return Err(pyo3::exceptions::PyValueError::new_err("Empty number"));
     }
 
+    if bytes[0] == b'+' {
+        return Err(pyo3::exceptions::PyValueError::new_err("Invalid number"));
+    }
+
     let mut pos = 0;
     let is_negative = bytes[0] == b'-';
     
-    if is_negative || bytes[0] == b'+' {
+    if is_negative {
         pos = 1;
         if pos >= bytes.len() {
             return Err(pyo3::exceptions::PyValueError::new_err("Invalid number"));
         }
     }
 
-    // Special values (Infinity, NaN)
-    match bytes[pos] {
-        b'I' | b'i' => {
-            let value = if is_negative { f64::NEG_INFINITY } else { f64::INFINITY };
-            return unsafe {
-                let py_obj = ffi::PyFloat_FromDouble(value);
-                if py_obj.is_null() {
-                    ffi::PyErr_Clear();
-                    return Err(pyo3::exceptions::PyValueError::new_err("Failed to create float"));
-                }
-                Ok(PyObject::from_owned_ptr(py, py_obj))
-            };
+    let literal = &bytes[pos..];
+    if equals_ascii_ci(literal, b"nan") {
+        let mut value = f64::NAN;
+        if is_negative {
+            value = -value;
         }
-        b'N' | b'n' => {
-            return unsafe {
-                let py_obj = ffi::PyFloat_FromDouble(f64::NAN);
-                if py_obj.is_null() {
-                    ffi::PyErr_Clear();
-                    return Err(pyo3::exceptions::PyValueError::new_err("Failed to create float"));
-                }
-                Ok(PyObject::from_owned_ptr(py, py_obj))
-            };
-        }
-        _ => {}
+        return unsafe {
+            let py_obj = ffi::PyFloat_FromDouble(value);
+            if py_obj.is_null() {
+                ffi::PyErr_Clear();
+                return Err(pyo3::exceptions::PyValueError::new_err("Failed to create float"));
+            }
+            Ok(PyObject::from_owned_ptr(py, py_obj))
+        };
+    }
+    if equals_ascii_ci(literal, b"inf") || equals_ascii_ci(literal, b"infinity") {
+        let value = if is_negative { f64::NEG_INFINITY } else { f64::INFINITY };
+        return unsafe {
+            let py_obj = ffi::PyFloat_FromDouble(value);
+            if py_obj.is_null() {
+                ffi::PyErr_Clear();
+                return Err(pyo3::exceptions::PyValueError::new_err("Failed to create float"));
+            }
+            Ok(PyObject::from_owned_ptr(py, py_obj))
+        };
     }
 
     // TYPE DETECTION: Scan to detect if this is integer or float

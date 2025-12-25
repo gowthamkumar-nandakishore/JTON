@@ -5,7 +5,7 @@ mod types;
 mod simd;
 mod parser;
 
-use types::ParseContext;
+use types::{ParseContext, FieldDescriptor, FieldType};
 
 /// Parse MYSON/JSON data from bytes or string
 /// 
@@ -24,8 +24,8 @@ use types::ParseContext;
 ///     {'key': 'value'}
 ///     >>> myson.loads(b'[1, 2, 3]')
 ///     [1, 2, 3]
-#[pyfunction]
-fn loads(py: Python, data: &PyAny) -> PyResult<PyObject> {
+#[pyfunction(signature = (data, schema=None))]
+fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject> {
     // Convert input to bytes
     let bytes: &[u8] = if let Ok(py_bytes) = data.downcast::<PyBytes>() {
         // Zero-copy path for bytes input
@@ -39,8 +39,22 @@ fn loads(py: Python, data: &PyAny) -> PyResult<PyObject> {
         ));
     };
     
-    // Create parse context (no schema for now)
-    let mut ctx = ParseContext::new(None);
+    // Optional schema-mode: schema is a sequence of field names
+    // (position is inferred from order). This activates the Nitro-Path in the index parser.
+    let schema_vec: Option<Vec<FieldDescriptor>> = match schema {
+        None => None,
+        Some(s) if s.is_none() => None,
+        Some(s) => {
+            let mut out: Vec<FieldDescriptor> = Vec::new();
+            for (pos, item) in s.iter()?.enumerate() {
+                let name: String = item?.extract()?;
+                out.push(FieldDescriptor::new(py, name, FieldType::String, pos, true));
+            }
+            Some(out)
+        }
+    };
+
+    let mut ctx = ParseContext::new(schema_vec);
     
     // Parse the input
     parser::parse(py, bytes, &mut ctx)

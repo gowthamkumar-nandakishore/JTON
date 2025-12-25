@@ -1,3 +1,6 @@
+use pyo3::prelude::*;
+use pyo3::types::PyString;
+
 // Field type enumeration for schema-guided parsing
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FieldType {
@@ -13,8 +16,11 @@ pub enum FieldType {
 // Field descriptor for schema compilation
 #[derive(Debug, Clone)]
 pub struct FieldDescriptor {
-    /// Field name (will use InternedString in future)
+    /// Field name for diagnostics
     pub name: String,
+
+    /// Interned PyUnicode handle used for zero-hash dict insertion
+    pub interned_key: Py<PyString>,
     
     /// Expected type for validation
     pub ty: FieldType,
@@ -27,9 +33,12 @@ pub struct FieldDescriptor {
 }
 
 impl FieldDescriptor {
-    pub fn new(name: String, ty: FieldType, position: usize, nullable: bool) -> Self {
+    pub fn new(py: Python, name: String, ty: FieldType, position: usize, nullable: bool) -> Self {
+        let key_ptr = crate::parser::string_cache::get_cached_key(name.as_bytes());
+        let interned_key = unsafe { Py::from_owned_ptr(py, key_ptr) };
         Self {
             name,
+            interned_key,
             ty,
             position,
             nullable,

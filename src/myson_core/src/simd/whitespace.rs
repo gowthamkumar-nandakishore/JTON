@@ -68,29 +68,47 @@ pub unsafe fn skip_whitespace_simd(input: &[u8], pos: &mut usize) {
 pub fn skip_whitespace_scalar(input: &[u8], pos: &mut usize) {
     while *pos < input.len() {
         match unsafe { *input.get_unchecked(*pos) } {
+            0xEF if *pos == 0 && input.len() >= 3 && &input[..3] == [0xEF, 0xBB, 0xBF] => {
+                *pos += 3;
+            }
             b' ' | b'\n' | b'\r' | b'\t' => *pos += 1,
             b'/' if *pos + 1 < input.len() => {
                 match unsafe { *input.get_unchecked(*pos + 1) } {
                     b'/' => {
                         // Single-line comment
                         *pos += 2;
-                        while *pos < input.len() && unsafe { *input.get_unchecked(*pos) } != b'\n' {
+                        while *pos < input.len() {
+                            let c = unsafe { *input.get_unchecked(*pos) };
+                            if c == b'\n' {
+                                *pos += 1;
+                                break;
+                            }
+                            if c == b'\r' {
+                                *pos += 1;
+                                if *pos < input.len() && unsafe { *input.get_unchecked(*pos) } == b'\n' {
+                                    *pos += 1;
+                                }
+                                break;
+                            }
                             *pos += 1;
-                        }
-                        if *pos < input.len() {
-                            *pos += 1; // Skip newline
                         }
                     }
                     b'*' => {
                         // Block comment
                         *pos += 2;
+                        let mut terminated = false;
                         while *pos + 1 < input.len() {
                             if unsafe { *input.get_unchecked(*pos) } == b'*'
-                                && unsafe { *input.get_unchecked(*pos + 1) } == b'/' {
+                                && unsafe { *input.get_unchecked(*pos + 1) } == b'/'
+                            {
                                 *pos += 2;
+                                terminated = true;
                                 break;
                             }
                             *pos += 1;
+                        }
+                        if !terminated {
+                            *pos = input.len();
                         }
                     }
                     _ => break,

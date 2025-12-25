@@ -10,9 +10,13 @@ crate-type = ["cdylib"]
 path = "src/myson_core/src/lib.rs"
 
 [dependencies]
-pyo3 = { version = "0.20", features = ["extension-module"] }
+pyo3 = { version = "0.20" }
 lazy_static = "1.4"
 lexical-core = "0.8"
+
+[features]
+default = ["extension-module"]
+extension-module = ["pyo3/extension-module"]
 
 [dev-dependencies]
 criterion = "0.5"
