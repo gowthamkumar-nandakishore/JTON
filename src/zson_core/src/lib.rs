@@ -72,6 +72,11 @@ fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject>
 ///     unquoted_keys: If True, dict keys that are valid identifiers are written
 ///                    without surrounding quotes (saves ~2 chars/key).
 ///     indent: If an integer, pretty-print with that many spaces per indent level.
+///     bare_strings: If True, string values that are valid identifiers are written
+///                   without surrounding quotes in Zen Grid cells (e.g. `Alice`
+///                   instead of `"Alice"`). Saves ~2 tokens per eligible cell.
+///     implicit_null: If True, missing Zen Grid cells are written as empty instead
+///                    of explicit `null` (saves 1 token per null/missing cell).
 ///
 /// Returns:
 ///     str — the serialized ZSON/JSON string
@@ -84,17 +89,19 @@ fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject>
 ///     >>> zson.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}])
 ///     '[: id, x; 1, 10; 2, 20 ]'
 ///
-///     >>> zson.dumps({"key": "val"}, unquoted_keys=True)
-///     '{key:"val"}'
-#[pyfunction(signature = (data, *, zen_grid=true, unquoted_keys=false, indent=None))]
+///     >>> zson.dumps([{"name":"Alice","dept":"Eng"},{"name":"Bob","dept":"Mkt"}], bare_strings=True)
+///     '[: name, dept; Alice, Eng; Bob, Mkt ]'
+#[pyfunction(signature = (data, *, zen_grid=true, unquoted_keys=false, indent=None, bare_strings=false, implicit_null=false))]
 fn dumps(
     py: Python,
     data: &PyAny,
     zen_grid: bool,
     unquoted_keys: bool,
     indent: Option<usize>,
+    bare_strings: bool,
+    implicit_null: bool,
 ) -> PyResult<String> {
-    let opts = serializer::DumpsOptions { zen_grid, unquoted_keys, indent };
+    let opts = serializer::DumpsOptions { zen_grid, unquoted_keys, indent, bare_strings, implicit_null };
     let obj: PyObject = data.to_object(py);
     serializer::serialize(py, &obj, &opts)
 }

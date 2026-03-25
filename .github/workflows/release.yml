@@ -1,0 +1,143 @@
+name: Release
+
+# Triggered by a version tag: git tag v0.2.0 && git push --tags
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write   # to create a GitHub Release
+
+jobs:
+  # ── Build wheels for all platforms ─────────────────────────────────────────
+  build-wheels:
+    name: Build wheels (${{ matrix.target }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x86_64 — manylinux_2_17 (broadest compatibility)
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            manylinux: auto
+            os_label: linux-x86_64
+
+          # Linux aarch64 (cross-compile via QEMU)
+          - runner: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            manylinux: auto
+            os_label: linux-aarch64
+
+          # macOS Intel
+          - runner: macos-13
+            target: x86_64-apple-darwin
+            manylinux: ""
+            os_label: macos-x86_64
+
+          # macOS Apple Silicon
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            manylinux: ""
+            os_label: macos-aarch64
+
+          # Windows x86_64
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            manylinux: ""
+            os_label: windows-x86_64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build wheels (maturin-action)
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux || 'auto' }}
+          args: >-
+            --release
+            --out dist
+            --interpreter python3.10 python3.11 python3.12 python3.13
+          # PYO3 ABI3 forward compat needed for Python 3.13 with pyo3 0.20
+          before-script-linux: |
+            echo "PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1" >> $GITHUB_ENV
+        env:
+          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os_label }}
+          path: dist/
+          if-no-files-found: error
+
+  # ── Build pure-Python sdist (for source installs / PyPI completeness) ───────
+  build-sdist:
+    name: Build sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install maturin
+        run: pip install maturin
+
+      - name: Build sdist
+        run: maturin sdist --out dist
+
+      - name: Upload sdist
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/
+          if-no-files-found: error
+
+  # ── Publish to PyPI ──────────────────────────────────────────────────────────
+  publish-pypi:
+    name: Publish to PyPI
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/zson
+    permissions:
+      id-token: write   # for OIDC trusted publishing (no API token needed)
+    steps:
+      - name: Download all wheels + sdist
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # Uses OIDC trusted publishing — no PYPI_API_TOKEN secret needed.
+        # Configure at: https://pypi.org/manage/account/publishing/
+
+  # ── Create GitHub Release ────────────────────────────────────────────────────
+  github-release:
+    name: Create GitHub Release
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          # Draft the release so you can review before making public
+          draft: true

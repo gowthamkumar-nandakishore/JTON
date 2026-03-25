@@ -23,17 +23,12 @@ pub struct StructuralIndex {
     /// Positions of `}`
     pub close_braces: Vec<usize>,
     
-    /// Positions of `"` (string delimiters) - NITRO optimization
+    /// Positions of `"` (string delimiters) — enables zero-copy string extraction
     /// Allows direct jumping between quotes for zero-copy string extraction
     pub quotes: Vec<usize>,
 }
 
 impl StructuralIndex {
-    #[allow(dead_code)]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// Create with pre-allocated capacity based on input size.
     /// Avoids repeated Vec reallocations during SIMD scanning.
     /// Capacities are tuned for typical JSON density (~1 structural char per 4 bytes).

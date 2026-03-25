@@ -3,7 +3,7 @@
 **ZSON (Zero-overhead Serialized Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python.
 
 [![Tests](https://img.shields.io/badge/tests-622%20passing-brightgreen)](./tests/)
-[![Performance](https://img.shields.io/badge/loads-65%20MB%2Fs-yellow)](#performance)
+[![Performance](https://img.shields.io/badge/loads-193%20MB%2Fs-green)](#performance)
 [![SIMD](https://img.shields.io/badge/SIMD-AVX2%20%2B%20AVX--512-blue)](#simd-acceleration)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./NOTICE)
 
@@ -27,12 +27,13 @@ ZSON is a JSON superset designed for LLM applications and high-throughput data p
 ### Installation
 
 ```bash
-# Prerequisites: Python 3.11+, Rust 1.70+ (https://rustup.rs/)
-pip install maturin
+# From PyPI (once published)
+pip install zson
 
-# Clone and build
+# From source (requires Rust 1.70+ — https://rustup.rs/)
 git clone https://github.com/gowthamkumar-nandakishore/ZSON.git
 cd ZSON
+pip install maturin
 maturin develop --release
 ```
 
@@ -197,17 +198,18 @@ Aliases for `dumps` / `loads` — familiar for users of `orjson` or `msgspec`.
 
 ## Performance
 
-### Speed Comparison (large.json, 7.88 MB, 100K rows)
+### Speed Comparison (synthetic datasets, string-heavy / number-heavy / mixed)
 
 | Library | `loads` | `dumps` | Notes |
 |---------|---------|---------|-------|
-| [stdlib `json`](https://docs.python.org/3/library/json.html) | 40 MB/s | 83 MB/s | Pure Python |
-| **ZSON** | **65 MB/s** | **133 MB/s** | Rust/SIMD, JSON mode |
-| **ZSON Zen Grid** | — | **106 MB/s** | Rust, table output |
-| [orjson](https://github.com/ijl/orjson) | 87 MB/s | 586 MB/s | Rust, JSON only |
+| [stdlib `json`](https://docs.python.org/3/library/json.html) | 40–60 MB/s | 83–100 MB/s | Pure Python |
+| **ZSON** | **117–193 MB/s** | **238–309 MB/s** | Rust/SIMD, JSON mode |
+| **ZSON Zen Grid** | — | **397–616 MB/s** | Rust, table output |
+| [orjson](https://github.com/ijl/orjson) | 500–730 MB/s | 400–586 MB/s | Rust, JSON only |
 
-- ZSON `loads` is **1.6× faster** than stdlib
-- ZSON `dumps` (JSON mode) is **1.6× faster** than stdlib
+- ZSON `loads` is **3–5× faster** than stdlib
+- ZSON `dumps` (JSON mode) is **3–4× faster** than stdlib
+- ZSON Zen Grid `dumps` reaches **600+ MB/s** on string-heavy tabular data
 - ZSON adds Zen Grid token reduction that orjson cannot provide
 
 ### SIMD Acceleration
@@ -477,6 +479,35 @@ benchmarks/
 - **Arity tolerance**: Extra table columns are silently dropped; missing columns are filled with `null`
 - **Memory safety**: All unsafe Rust code is in clearly marked blocks using PyO3 FFI patterns
 - **No allocation on GIL drop**: ZSON never releases the GIL mid-parse, avoiding data races
+
+---
+
+## CI / Publishing
+
+Three GitHub Actions workflows are included:
+
+| Workflow | File | Trigger | Purpose |
+|----------|------|---------|---------|
+| **CI** | `.github/workflows/ci.yml` | Push / PR | Build + test on Linux, Windows, macOS × Python 3.10–3.13 |
+| **Release** | `.github/workflows/release.yml` | `git push --tags v*` | Build manylinux/macOS/Windows wheels, publish to PyPI via OIDC, draft GitHub Release |
+| **Security Audit** | `.github/workflows/audit.yml` | Weekly (Mon 08:00 UTC) | `cargo audit` against RustSec advisory database |
+
+### Publishing to PyPI
+
+The release workflow uses **PyPI Trusted Publishing (OIDC)** — no API token needed:
+
+1. Go to [pypi.org/manage/account/publishing](https://pypi.org/manage/account/publishing/)
+2. Add a new publisher:
+   - **Owner**: your GitHub username
+   - **Repository**: `ZSON`
+   - **Workflow**: `release.yml`
+   - **Environment**: `pypi`
+3. Push a version tag to trigger the release:
+   ```bash
+   git tag v0.2.0
+   git push --tags
+   ```
+4. The workflow builds wheels for all platforms, publishes to PyPI, and creates a draft GitHub Release with wheel files attached.
 
 ---
 

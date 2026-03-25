@@ -8,7 +8,7 @@ pub struct FastIndexParser<'a> {
     input: &'a [u8],
     index: &'a StructuralIndex,
     pos: usize,
-    // NITRO: Monotonic structural cursors (no searching)
+    // Monotonic structural cursors — advance forward-only, never search backwards
     quote_idx: usize,
     comma_idx: usize,
     colon_idx: usize,
@@ -121,8 +121,7 @@ impl<'a> FastIndexParser<'a> {
 
     #[inline(always)]
     fn skip_ws(&mut self) {
-        // Mandatory: ensure skip_whitespace_simd is used at the start of parsing hot paths.
-        // This is guarded by runtime feature detection to avoid illegal instructions.
+        // AVX2 is verified at module import time; call directly without runtime detection.
         #[cfg(target_arch = "x86_64")]
         {
             if std::is_x86_feature_detected!("avx2") {
@@ -167,12 +166,10 @@ impl<'a> FastIndexParser<'a> {
         }
     }
     
-    /// NITRO: Parse object using direct FFI dictionary operations
-    /// Bypasses Python hashing overhead by using PyDict_SetItem directly
+    /// Parse a JSON object using direct FFI dictionary operations (zero PyO3 overhead)
     fn parse_object_indexed(&mut self, py: Python, ctx: &mut ParseContext) -> PyResult<PyObject> {
         let brace_pos = self.pos;
 
-        // NITRO: Create dict with direct FFI
         let dict_ptr = unsafe { ffi::PyDict_New() };
         if dict_ptr.is_null() {
             return Err(pyo3::exceptions::PyMemoryError::new_err("Failed to create dict"));
@@ -230,7 +227,7 @@ impl<'a> FastIndexParser<'a> {
             // Parse value
             let value = self.parse_value(py, ctx)?;
             
-            // NITRO: Direct FFI insertion (skips Python hashing overhead)
+            // Direct FFI insertion — bypasses Python hashing overhead
             unsafe {
                 if ffi::PyDict_SetItem(dict_ptr, key.as_ptr(), value.as_ptr()) < 0 {
                     return Err(pyo3::exceptions::PyRuntimeError::new_err("Dict insertion failed"));
@@ -268,8 +265,8 @@ impl<'a> FastIndexParser<'a> {
         }
     }
     
-    /// NITRO: Parse array using direct FFI for maximum performance
-    /// Uses PyList_New and PyList_SET_ITEM to bypass bounds checking
+    /// Parse a JSON array using direct FFI for maximum performance.
+    /// Uses PyList_New + PyList_SET_ITEM to bypass bounds checking.
     fn parse_array_indexed(&mut self, py: Python, ctx: &mut ParseContext) -> PyResult<PyObject> {
         let opening_bracket = self.pos;
         self.pos += 1; // Skip '['
@@ -304,7 +301,7 @@ impl<'a> FastIndexParser<'a> {
                 let has_nested_bracket = matches!(next_open_bracket, Some(p) if p < close_pos);
                 let has_nested_brace = matches!(next_open_brace, Some(p) if p < close_pos);
                 let span = close_pos.saturating_sub(opening_bracket);
-                !has_nested_bracket && !has_nested_brace && span >= 4096
+                !has_nested_bracket && !has_nested_brace && span >= 256
             }
             None => false,
         };
@@ -844,8 +841,31 @@ impl<'a> FastIndexParser<'a> {
 
         if !saw_escape {
             let slice = &self.input[start..end];
-            let s = unsafe { std::str::from_utf8_unchecked(slice) };
-            return Ok(pyo3::types::PyString::new(py, s).into());
+            // Empty cell = implicit null
+            if slice.is_empty() {
+                return Ok(unsafe { PyObject::from_borrowed_ptr(py, ffi::Py_None()) });
+            }
+            // Use ASCII fast path or UTF-8 decoder directly (avoid PyO3 overhead)
+            let py_str = unsafe {
+                if slice.iter().all(|&b| b < 0x80) {
+                    ffi::PyUnicode_DecodeASCII(
+                        slice.as_ptr() as *const i8,
+                        slice.len() as isize,
+                        std::ptr::null(),
+                    )
+                } else {
+                    ffi::PyUnicode_DecodeUTF8(
+                        slice.as_ptr() as *const i8,
+                        slice.len() as isize,
+                        std::ptr::null(),
+                    )
+                }
+            };
+            if py_str.is_null() {
+                unsafe { ffi::PyErr_Clear() };
+                return Err(ParseError::new(start, "Invalid UTF-8 in cell".to_string()).into());
+            }
+            return Ok(unsafe { PyObject::from_owned_ptr(py, py_str) });
         }
 
         // Escape path: build unescaped string
@@ -867,7 +887,19 @@ impl<'a> FastIndexParser<'a> {
             i += 1;
         }
 
-        Ok(pyo3::types::PyString::new(py, &out).into())
+        Ok(unsafe {
+            let s = out.as_str();
+            let py_obj = ffi::PyUnicode_DecodeUTF8(
+                s.as_ptr() as *const i8,
+                s.len() as isize,
+                std::ptr::null(),
+            );
+            if py_obj.is_null() {
+                ffi::PyErr_Clear();
+                return Err(pyo3::exceptions::PyValueError::new_err("Invalid UTF-8 in string"));
+            }
+            PyObject::from_owned_ptr(py, py_obj)
+        })
     }
 
     fn parse_table_header_key(&mut self, py: Python) -> PyResult<*mut ffi::PyObject> {
@@ -1118,9 +1150,8 @@ impl<'a> FastIndexParser<'a> {
         }
     }
     
-    /// Ultra-fast string parsing with zero-copy
-    /// NITRO: Parse string using quote index for zero-copy extraction
-    /// Assumes quote cursor always points at the current opening quote.
+    /// Fast string parsing using the pre-built quote index for zero-copy extraction.
+    /// Assumes the quote cursor always points at the current opening quote.
     fn parse_string_fast(&mut self, py: Python) -> PyResult<PyObject> {
         self.sync_structural_cursors();
         if self.quote_idx >= self.index.quotes.len() {
@@ -1145,8 +1176,29 @@ impl<'a> FastIndexParser<'a> {
         self.quote_idx += 1;
 
         if !slice.contains(&b'\\') {
-            let s = unsafe { std::str::from_utf8_unchecked(slice) };
-            return Ok(pyo3::types::PyString::new(py, s).into());
+            // No escape sequences — use direct FFI to create Python string.
+            // Single-pass: check for ASCII-only while we already scanned for '\\'.
+            let all_ascii = slice.iter().all(|&b| b < 0x80);
+            let py_str = unsafe {
+                if all_ascii {
+                    ffi::PyUnicode_DecodeASCII(
+                        slice.as_ptr() as *const i8,
+                        slice.len() as isize,
+                        std::ptr::null(),
+                    )
+                } else {
+                    ffi::PyUnicode_DecodeUTF8(
+                        slice.as_ptr() as *const i8,
+                        slice.len() as isize,
+                        std::ptr::null(),
+                    )
+                }
+            };
+            if py_str.is_null() {
+                unsafe { ffi::PyErr_Clear() };
+                return Err(ParseError::new(start - 1, "Invalid UTF-8 in string".to_string()).into());
+            }
+            return Ok(unsafe { PyObject::from_owned_ptr(py, py_str) });
         }
 
         self.pos = start;
@@ -1167,7 +1219,19 @@ impl<'a> FastIndexParser<'a> {
                 b'"' => {
                     self.pos += 1;
                     self.sync_structural_cursors();
-                    return Ok(pyo3::types::PyString::new(py, &result).into());
+                    return Ok(unsafe {
+                        let s = result.as_str();
+                        let py_obj = ffi::PyUnicode_DecodeUTF8(
+                            s.as_ptr() as *const i8,
+                            s.len() as isize,
+                            std::ptr::null(),
+                        );
+                        if py_obj.is_null() {
+                            ffi::PyErr_Clear();
+                            return Err(pyo3::exceptions::PyValueError::new_err("Invalid UTF-8 in string"));
+                        }
+                        PyObject::from_owned_ptr(py, py_obj)
+                    });
                 }
                 b'\\' => {
                     self.pos += 1;

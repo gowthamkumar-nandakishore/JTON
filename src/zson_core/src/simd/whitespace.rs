@@ -16,27 +16,27 @@ use std::arch::x86_64::*;
 pub unsafe fn skip_whitespace_simd(input: &[u8], pos: &mut usize) {
     let len = input.len();
     
+    // Hoist comparison vectors outside the loop — computed once, reused every 32 bytes
+    let v_space   = _mm256_set1_epi8(b' ' as i8);
+    let v_tab     = _mm256_set1_epi8(b'\t' as i8);
+    let v_newline = _mm256_set1_epi8(b'\n' as i8);
+    let v_cr      = _mm256_set1_epi8(b'\r' as i8);
+
     // Process 32-byte chunks with AVX2
     while *pos + 32 <= len {
         // Load 32 bytes
         let chunk = _mm256_loadu_si256(input.as_ptr().add(*pos) as *const __m256i);
         
-        // Create comparison vectors for whitespace characters
-        let space = _mm256_set1_epi8(b' ' as i8);
-        let tab = _mm256_set1_epi8(b'\t' as i8);
-        let newline = _mm256_set1_epi8(b'\n' as i8);
-        let carriage = _mm256_set1_epi8(b'\r' as i8);
-        
-        // Compare and combine results
-        let is_space = _mm256_cmpeq_epi8(chunk, space);
-        let is_tab = _mm256_cmpeq_epi8(chunk, tab);
-        let is_newline = _mm256_cmpeq_epi8(chunk, newline);
-        let is_carriage = _mm256_cmpeq_epi8(chunk, carriage);
+        // Compare against each whitespace character
+        let is_space   = _mm256_cmpeq_epi8(chunk, v_space);
+        let is_tab     = _mm256_cmpeq_epi8(chunk, v_tab);
+        let is_newline = _mm256_cmpeq_epi8(chunk, v_newline);
+        let is_cr      = _mm256_cmpeq_epi8(chunk, v_cr);
         
         // Combine all whitespace matches
         let is_ws = _mm256_or_si256(
             _mm256_or_si256(is_space, is_tab),
-            _mm256_or_si256(is_newline, is_carriage)
+            _mm256_or_si256(is_newline, is_cr)
         );
         
         // Extract bitmask

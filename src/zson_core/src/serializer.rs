@@ -10,10 +10,14 @@
 //   • ryu   — fastest f64 → shortest-round-trip string (same as orjson)
 //   • pyo3 direct FFI type checks — minimal Python overhead for dispatch
 //   • Pre-allocated Vec<u8> output buffer — single allocation per call
+//   • SIMD escape scan (AVX2) — scan 32 bytes/cycle for chars needing escaping
 
 use pyo3::prelude::*;
 use pyo3::ffi;
 use pyo3::types::{PyDict, PyList, PyTuple};
+
+#[cfg(target_arch = "x86_64")]
+use std::arch::x86_64::*;
 
 // ── Public options struct ─────────────────────────────────────────────────────
 
@@ -21,6 +25,14 @@ pub struct DumpsOptions {
     pub zen_grid: bool,
     pub unquoted_keys: bool,
     pub indent: Option<usize>,
+    /// Write identifier-like string values without surrounding quotes in Zen Grid cells.
+    /// Identifiers: start with [a-zA-Z_$], followed by [a-zA-Z0-9_$-].
+    /// Saves ~2 tokens per bare string cell (e.g. `Alice` instead of `"Alice"`).
+    pub bare_strings: bool,
+    /// Write missing Zen Grid cells as empty (`,,,`) instead of explicit `null`.
+    /// Empty cell = null on decode. Saves 1 token per null cell — significant for
+    /// sparse tables (e.g. optional columns with 30%+ null rate).
+    pub implicit_null: bool,
 }
 
 // ── Main entry point ──────────────────────────────────────────────────────────
@@ -110,9 +122,77 @@ unsafe fn write_str(ptr: *mut ffi::PyObject, buf: &mut Vec<u8>) -> PyResult<()> 
 }
 
 /// Write raw bytes as JSON string value with JSON escape sequences.
-/// Fast path: scan 8 bytes at a time for characters that need escaping.
+/// AVX2 fast path: scans 32 bytes/cycle for characters needing escaping.
+/// Falls back to scalar for non-AVX2 or tail bytes.
 #[inline]
 fn write_escaped_str(s: &[u8], buf: &mut Vec<u8>) {
+    #[cfg(target_arch = "x86_64")]
+    {
+        if std::is_x86_feature_detected!("avx2") {
+            return unsafe { write_escaped_str_avx2(s, buf) };
+        }
+    }
+    write_escaped_str_scalar(s, buf);
+}
+
+/// SIMD AVX2 escape scanner: finds the next byte requiring escaping in
+/// 32-byte chunks, bulk-copies clean spans with `extend_from_slice`.
+#[cfg(target_arch = "x86_64")]
+#[target_feature(enable = "avx2")]
+unsafe fn write_escaped_str_avx2(s: &[u8], buf: &mut Vec<u8>) {
+    // Characters requiring escaping: < 0x20 (control), 0x22 ('"'), 0x5C ('\\')
+    let v_quote = _mm256_set1_epi8(b'"' as i8);
+    let v_slash = _mm256_set1_epi8(b'\\' as i8);
+    // Detect control chars (0x00–0x1F) using bias trick:
+    //   add 0x80 to each byte, then compare with signed 0x80+0x20 = 0xA0 (as i8: -96)
+    //   bytes 0x00-0x1F become 0x80-0x9F, which are all < 0xA0 in unsigned / < -96 in signed
+
+    let mut i = 0usize;
+    let mut start = 0usize;
+
+    while i + 32 <= s.len() {
+        let chunk = _mm256_loadu_si256(s.as_ptr().add(i) as *const __m256i);
+
+        // Detect '"' and '\\'
+        let m_quote = _mm256_cmpeq_epi8(chunk, v_quote);
+        let m_slash = _mm256_cmpeq_epi8(chunk, v_slash);
+
+        // Detect control chars (0x00–0x1F): _mm256_cmpgt_epi8(0x20, chunk) but signed
+        // Add 0x80 to both sides to make unsigned comparison via signed gt:
+        //   byte + 0x80 < 0xA0  →  byte < 0x20
+        let biased = _mm256_add_epi8(chunk, _mm256_set1_epi8(-128_i8)); // +0x80
+        let v_ctrl_biased = _mm256_set1_epi8((-128_i8).wrapping_add(0x20)); // 0x80+0x20-0x100 as i8
+        let m_ctrl = _mm256_cmpgt_epi8(v_ctrl_biased, biased);
+
+        let m_any = _mm256_or_si256(m_quote, _mm256_or_si256(m_slash, m_ctrl));
+        let mask = _mm256_movemask_epi8(m_any) as u32;
+
+        if mask == 0 {
+            // No escape needed in this 32-byte chunk — just advance
+            i += 32;
+            continue;
+        }
+
+        // Process up to the first byte that needs escaping
+        let first = mask.trailing_zeros() as usize;
+        if start < i + first {
+            buf.extend_from_slice(&s[start..i + first]);
+        }
+        // Handle the single escape at position i + first
+        write_escaped_str_scalar(&s[i + first..i + first + 1], buf);
+        i += first + 1;
+        start = i;
+    }
+
+    // Scalar tail (< 32 bytes remaining)
+    if start < s.len() {
+        write_escaped_str_scalar(&s[start..], buf);
+    }
+}
+
+/// Scalar fallback for write_escaped_str (used on non-AVX2 and for tail bytes).
+#[inline]
+fn write_escaped_str_scalar(s: &[u8], buf: &mut Vec<u8>) {
     let mut i = 0;
     let mut start = 0;
 
@@ -127,9 +207,7 @@ fn write_escaped_str(s: &[u8], buf: &mut Vec<u8>) {
             0x08  => b"\\b",
             0x0C  => b"\\f",
             0x00..=0x1F => {
-                // Flush clean span
                 buf.extend_from_slice(&s[start..i]);
-                // Emit \uXXXX
                 write_unicode_escape(b, buf);
                 i += 1;
                 start = i;
@@ -309,18 +387,22 @@ fn write_key<'py>(
 ) -> PyResult<()> {
     use pyo3::types::PyString;
 
-    // Fast path: string keys (most common case)
-    if let Ok(py_str) = key.downcast::<PyString>() {
-        let s = py_str.to_str()?;
-        let bytes = s.as_bytes();
-        if opts.unquoted_keys && is_valid_identifier(bytes) {
-            buf.extend_from_slice(bytes);
-        } else {
-            buf.push(b'"');
-            write_escaped_str(bytes, buf);
-            buf.push(b'"');
+    // Fast path: string keys — use FFI directly to avoid PyO3 UTF-8 validation overhead
+    if key.is_instance_of::<PyString>() {
+        let mut len: ffi::Py_ssize_t = 0;
+        let data = unsafe { ffi::PyUnicode_AsUTF8AndSize(key.as_ptr(), &mut len) };
+        if !data.is_null() {
+            let bytes = unsafe { std::slice::from_raw_parts(data as *const u8, len as usize) };
+            if opts.unquoted_keys && is_valid_identifier(bytes) {
+                buf.extend_from_slice(bytes);
+            } else {
+                buf.push(b'"');
+                write_escaped_str(bytes, buf);
+                buf.push(b'"');
+            }
+            return Ok(());
         }
-        return Ok(());
+        unsafe { ffi::PyErr_Clear() };
     }
 
     // Non-string key: convert to str, then recurse once
@@ -613,25 +695,44 @@ fn write_zen_grid_row<'py>(
     opts: &DumpsOptions,
     depth: usize,
 ) -> PyResult<()> {
+    use pyo3::types::PyString;
     for (i, key) in keys.iter().enumerate() {
         if i > 0 {
             buf.extend_from_slice(b", ");
         }
-        // Direct FFI lookup: the key ptr is a pre-created PyString (no allocation).
-        // PyDict_GetItemWithError returns a borrowed reference (no INCREF).
         let val_ptr = unsafe {
             ffi::PyDict_GetItemWithError(row.as_ptr(), key.as_ptr())
         };
         if val_ptr.is_null() {
             if unsafe { ffi::PyErr_Occurred().is_null() } {
-                // Key not found → emit null
-                buf.extend_from_slice(b"null");
+                // Key not found → emit empty cell (implicit null) or "null"
+                if !opts.implicit_null {
+                    buf.extend_from_slice(b"null");
+                }
+                // If implicit_null: write nothing — empty cell means null on decode
             } else {
                 return Err(PyErr::fetch(py));
             }
         } else {
-            // Wrap as borrowed &PyAny (no INCREF/DECREF) for the duration of this call
             let val: &PyAny = unsafe { py.from_borrowed_ptr(val_ptr) };
+            // implicit_null: treat explicit None values as empty cells too
+            if opts.implicit_null && val.is_none() {
+                continue; // empty cell = null on decode
+            }
+            // bare_strings: write identifier-like string values without quotes
+            if opts.bare_strings && val.is_instance_of::<PyString>() {
+                let mut str_len: ffi::Py_ssize_t = 0;
+                let data = unsafe { ffi::PyUnicode_AsUTF8AndSize(val_ptr, &mut str_len) };
+                if !data.is_null() {
+                    let bytes = unsafe { std::slice::from_raw_parts(data as *const u8, str_len as usize) };
+                    if is_valid_identifier(bytes) {
+                        buf.extend_from_slice(bytes);
+                        continue;
+                    }
+                } else {
+                    unsafe { ffi::PyErr_Clear() };
+                }
+            }
             write_value(py, val, buf, opts, depth + 1)?;
         }
     }
@@ -650,8 +751,6 @@ fn write_zen_grid_header_key(key: &str, buf: &mut Vec<u8>, _opts: &DumpsOptions)
         buf.push(b'"');
     }
 }
-
-// ── Pydantic / dataclass fallback ─────────────────────────────────────────────
 
 // ── Pydantic / dataclass fallback ─────────────────────────────────────────────
 
