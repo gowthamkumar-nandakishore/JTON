@@ -188,7 +188,7 @@ fn extract_context(input: &[u8], position: usize) -> String {
     context.push('\n');
     context.push_str("  | ");
     context.push_str(&" ".repeat(caret_pos));
-    context.push_str("^");
+    context.push('^');
 
     context
 }

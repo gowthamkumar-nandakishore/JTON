@@ -386,7 +386,7 @@ fn write_dict_indented<'py>(
 /// Write a dict key — either quoted JSON string or unquoted ZSON identifier.
 #[inline]
 fn write_key<'py>(
-    py: Python<'py>,
+    _py: Python<'py>,
     key: &'py PyAny,
     buf: &mut Vec<u8>,
     opts: &DumpsOptions,
@@ -413,7 +413,7 @@ fn write_key<'py>(
 
     // Non-string key: convert to str, then recurse once
     let s = key.str()?;
-    write_key(py, s.as_ref(), buf, opts)
+    write_key(_py, s.as_ref(), buf, opts)
 }
 
 /// Returns true if `bytes` is a valid unquoted ZSON identifier.
@@ -522,9 +522,11 @@ where
             buf.push(b',');
         }
     }
-    if opts.indent.is_some() && len > 0 {
-        buf.push(b'\n');
-        write_indent(buf, depth * opts.indent.unwrap());
+    if let Some(indent) = opts.indent {
+        if len > 0 {
+            buf.push(b'\n');
+            write_indent(buf, depth * indent);
+        }
     }
     buf.push(b']');
     Ok(())
@@ -540,7 +542,7 @@ where
 ///   - all items are dicts
 ///   - first item has at least 1 key
 ///   - ≥70% of items contain all the header keys from the first item
-fn detect_zen_grid_candidate<'py>(list: &'py PyList) -> PyResult<Option<Vec<String>>> {
+fn detect_zen_grid_candidate(list: &PyList) -> PyResult<Option<Vec<String>>> {
     let len = list.len();
     if len < 2 {
         return Ok(None);
@@ -598,7 +600,7 @@ fn detect_zen_grid_candidate<'py>(list: &'py PyList) -> PyResult<Option<Vec<Stri
 
     // Slow path: coverage check on up to 50 rows (avoids O(n) scan on huge lists)
     let check_size = len.min(50);
-    let threshold = (check_size * 7 + 9) / 10; // ceil(check_size * 0.7)
+    let threshold = (check_size * 7).div_ceil(10); // ceil(check_size * 0.7)
     let mut matching = 0usize;
 
     for i in 0..check_size {

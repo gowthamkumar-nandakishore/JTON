@@ -68,7 +68,7 @@ pub unsafe fn skip_whitespace_simd(input: &[u8], pos: &mut usize) {
 pub fn skip_whitespace_scalar(input: &[u8], pos: &mut usize) {
     while *pos < input.len() {
         match unsafe { *input.get_unchecked(*pos) } {
-            0xEF if *pos == 0 && input.len() >= 3 && &input[..3] == [0xEF, 0xBB, 0xBF] => {
+            0xEF if *pos == 0 && input.len() >= 3 && input[..3] == [0xEF, 0xBB, 0xBF] => {
                 *pos += 3;
             }
             b' ' | b'\n' | b'\r' | b'\t' => *pos += 1,

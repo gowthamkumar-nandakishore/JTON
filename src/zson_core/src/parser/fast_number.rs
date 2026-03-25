@@ -12,9 +12,7 @@ fn equals_ascii_ci(bytes: &[u8], keyword: &[u8]) -> bool {
         && bytes
             .iter()
             .zip(keyword.iter())
-            .all(|(&candidate, &expected)| {
-                candidate.to_ascii_lowercase() == expected.to_ascii_lowercase()
-            })
+            .all(|(&candidate, &expected)| candidate.eq_ignore_ascii_case(&expected))
 }
 
 /// Three-path number parser: detect type early and route to specialized parser
