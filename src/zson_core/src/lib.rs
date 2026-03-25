@@ -114,7 +114,8 @@ fn dumps(
 fn zson_core(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     
-    // Check CPU features at module import
+    // On x86_64, require at least AVX2.  On other architectures (aarch64, etc.)
+    // check_cpu_features() always returns true — NEON / scalar are always available.
     if !simd::check_cpu_features() {
         return Err(pyo3::exceptions::PyRuntimeError::new_err(
             "CPU does not support AVX2 (requires Intel Haswell 2013+ or AMD Excavator 2015+)"
