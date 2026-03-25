@@ -160,39 +160,48 @@ pub fn parse_number_fast(py: Python, bytes: &[u8]) -> PyResult<PyObject> {
     }
 }
 
-/// Fast integer parsing using power-of-10 table
-/// This is dramatically faster than character-by-character multiplication
+/// Fast integer parsing — accumulates decimal digits into u64, then routes to FFI.
 #[inline(always)]
 fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult<PyObject> {
     let len = bytes.len();
-    
+
     if len == 0 {
         return Err(pyo3::exceptions::PyValueError::new_err("Invalid number"));
     }
 
-    // Fast path for small integers (up to 19 digits fits in u64)
+    // Fast path for integers up to 19 digits.
+    // u64::MAX = 18_446_744_073_709_551_615 (20 digits), so any 19-digit decimal
+    // fits. We still use checked arithmetic as a safety net — if a bug upstream
+    // somehow passed a larger value, we fall through to parse_large_integer
+    // rather than producing silently-wrapped garbage.
     if len <= 19 {
         let mut value: u64 = 0;
+        let mut overflow = false;
 
-        // Streaming accumulation: value = value * 10 + digit
-        // Better cache behaviour than a power-of-10 table lookup per digit.
         for &b in bytes {
             if !b.is_ascii_digit() {
                 return Err(pyo3::exceptions::PyValueError::new_err("Invalid integer"));
             }
-            value = value * 10 + (b - b'0') as u64;
+            match value.checked_mul(10).and_then(|v| v.checked_add((b - b'0') as u64)) {
+                Some(v) => value = v,
+                None => {
+                    overflow = true;
+                    break;
+                }
+            }
         }
 
-        // Check for overflow when applying sign
+        if overflow {
+            return parse_large_integer(py, bytes, is_negative);
+        }
+
+        // Apply sign and choose the right Python int type
         if is_negative {
-            // i64::MIN is -9223372036854775808
+            // i64::MIN = -9_223_372_036_854_775_808
             if value > 9_223_372_036_854_775_808 {
-                // Too large for i64, fall through to string conversion
                 return parse_large_integer(py, bytes, is_negative);
             }
             let signed_value = -(value as i64);
-            
-            // DIRECT FFI: PyLong_FromLongLong
             unsafe {
                 let py_obj = ffi::PyLong_FromLongLong(signed_value);
                 if py_obj.is_null() {
@@ -202,9 +211,8 @@ fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult
                 Ok(PyObject::from_owned_ptr(py, py_obj))
             }
         } else {
-            // Positive integer
             if value > i64::MAX as u64 {
-                // Use unsigned path
+                // Positive but too large for i64 — use unsigned path
                 unsafe {
                     let py_obj = ffi::PyLong_FromUnsignedLongLong(value);
                     if py_obj.is_null() {
@@ -214,7 +222,6 @@ fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult
                     Ok(PyObject::from_owned_ptr(py, py_obj))
                 }
             } else {
-                // Fits in signed i64
                 unsafe {
                     let py_obj = ffi::PyLong_FromLongLong(value as i64);
                     if py_obj.is_null() {
@@ -226,7 +233,6 @@ fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult
             }
         }
     } else {
-        // Large integer (>19 digits) - use Python's string conversion
         parse_large_integer(py, bytes, is_negative)
     }
 }

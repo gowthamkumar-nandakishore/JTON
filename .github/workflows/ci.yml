@@ -36,16 +36,16 @@ jobs:
         with:
           key: ${{ matrix.os }}-py${{ matrix.python-version }}
 
-      - name: Install maturin
-        run: pip install maturin
+      - name: Install maturin + test dependencies
+        run: pip install maturin pytest
 
-      - name: Build extension (dev mode)
-        run: maturin develop --release
+      # pip install -e . invokes maturin as the PEP 517 build backend.
+      # This works without a manually-activated virtualenv — pip manages the
+      # environment itself and passes the correct interpreter to maturin.
+      - name: Build and install extension
+        run: pip install -e . --no-build-isolation
         env:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
-
-      - name: Install test dependencies
-        run: pip install pytest
 
       - name: Run tests
         run: python -m pytest tests/ -q --tb=short
@@ -55,6 +55,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # clippy compiles the pyo3 extension, which needs Python headers.
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - name: Install Rust toolchain with clippy + rustfmt
         uses: dtolnay/rust-toolchain@stable
@@ -69,3 +75,5 @@ jobs:
 
       - name: Run Clippy
         run: cargo clippy -- -D warnings
+        env:
+          PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
