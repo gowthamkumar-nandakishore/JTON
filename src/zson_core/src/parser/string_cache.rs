@@ -106,6 +106,14 @@ impl StringCache {
 
 impl Drop for StringCache {
     fn drop(&mut self) {
+        // Thread-locals are destroyed during thread teardown, which can happen
+        // after Python has already finalized.  Calling Py_DECREF on objects
+        // whose interpreter is gone causes a SIGSEGV (exit code 139).
+        // When Python shuts down it reclaims every object it allocated, so
+        // skipping the explicit DECREFs here is safe — no memory is leaked.
+        if unsafe { ffi::Py_IsInitialized() } == 0 {
+            return;
+        }
         for cached in self.cache.values() {
             unsafe {
                 ffi::Py_DECREF(cached.ptr);
