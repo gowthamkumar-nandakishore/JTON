@@ -23,13 +23,13 @@ pub struct FieldDescriptor {
 
     /// Interned PyUnicode handle used for zero-hash dict insertion
     pub interned_key: Py<PyString>,
-    
+
     /// Expected type for validation
     pub ty: FieldType,
-    
+
     /// Position in schema-defined field order (0-indexed)
     pub position: usize,
-    
+
     /// Whether field is nullable
     pub nullable: bool,
 }

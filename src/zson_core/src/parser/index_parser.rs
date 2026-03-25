@@ -1,7 +1,7 @@
-use pyo3::prelude::*;
-use pyo3::ffi;
-use crate::types::{ParseContext, StructuralIndex};
 use crate::parser::error::ParseError;
+use crate::types::{ParseContext, StructuralIndex};
+use pyo3::ffi;
+use pyo3::prelude::*;
 
 /// Ultra-fast parser that jumps between structural character positions
 pub struct FastIndexParser<'a> {
@@ -114,7 +114,9 @@ impl<'a> FastIndexParser<'a> {
         while self.comma_idx < self.index.commas.len() && self.index.commas[self.comma_idx] < p {
             self.comma_idx += 1;
         }
-        while self.semicolon_idx < self.index.semicolons.len() && self.index.semicolons[self.semicolon_idx] < p {
+        while self.semicolon_idx < self.index.semicolons.len()
+            && self.index.semicolons[self.semicolon_idx] < p
+        {
             self.semicolon_idx += 1;
         }
     }
@@ -135,27 +137,29 @@ impl<'a> FastIndexParser<'a> {
     /// Parse top-level value
     pub fn parse(&mut self, py: Python, ctx: &mut ParseContext) -> PyResult<PyObject> {
         self.skip_ws();
-        
+
         if self.pos >= self.input.len() {
             return Err(ParseError::unexpected_eof(self.pos).into());
         }
-        
+
         let value = self.parse_value(py, ctx)?;
         self.skip_ws();
         if self.pos < self.input.len() {
-            return Err(ParseError::new(self.pos, "Trailing content after document".to_string()).into());
+            return Err(
+                ParseError::new(self.pos, "Trailing content after document".to_string()).into(),
+            );
         }
         Ok(value)
     }
-    
+
     fn parse_value(&mut self, py: Python, ctx: &mut ParseContext) -> PyResult<PyObject> {
         self.skip_ws();
         self.sync_structural_cursors();
-        
+
         if self.pos >= self.input.len() {
             return Err(ParseError::unexpected_eof(self.pos).into());
         }
-        
+
         match unsafe { *self.input.get_unchecked(self.pos) } {
             b'{' => self.parse_object_indexed(py, ctx),
             b'[' => self.parse_array_indexed(py, ctx),
@@ -165,14 +169,16 @@ impl<'a> FastIndexParser<'a> {
             c => Err(ParseError::invalid_char(self.pos, c as char).into()),
         }
     }
-    
+
     /// Parse a JSON object using direct FFI dictionary operations (zero PyO3 overhead)
     fn parse_object_indexed(&mut self, py: Python, ctx: &mut ParseContext) -> PyResult<PyObject> {
         let brace_pos = self.pos;
 
         let dict_ptr = unsafe { ffi::PyDict_New() };
         if dict_ptr.is_null() {
-            return Err(pyo3::exceptions::PyMemoryError::new_err("Failed to create dict"));
+            return Err(pyo3::exceptions::PyMemoryError::new_err(
+                "Failed to create dict",
+            ));
         }
 
         // Nitro-Path (Schema-Mode): bypass key parsing/interning
@@ -189,7 +195,7 @@ impl<'a> FastIndexParser<'a> {
         let dict = unsafe { PyObject::from_owned_ptr(py, dict_ptr) };
 
         self.skip_ws();
-        
+
         // Empty object
         if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b'}' {
             let close_pos = self.pos;
@@ -197,15 +203,15 @@ impl<'a> FastIndexParser<'a> {
             self.consume_close_brace(close_pos);
             return Ok(dict);
         }
-        
+
         // Parse key-value pairs
         loop {
             self.skip_ws();
-            
+
             if self.pos >= self.input.len() {
                 return Err(ParseError::unexpected_eof(self.pos).into());
             }
-            
+
             // Check for closing brace
             if unsafe { *self.input.get_unchecked(self.pos) } == b'}' {
                 let close_pos = self.pos;
@@ -213,41 +219,47 @@ impl<'a> FastIndexParser<'a> {
                 self.consume_close_brace(close_pos);
                 return Ok(dict);
             }
-            
+
             // Parse key (using cached/interned strings)
             let key = self.parse_key(py)?;
-            
+
             // Jump to ':' using monotonic colon cursor (no searching)
             let colon_pos = self.take_colon()?;
-            if colon_pos >= self.input.len() || unsafe { *self.input.get_unchecked(colon_pos) } != b':' {
+            if colon_pos >= self.input.len()
+                || unsafe { *self.input.get_unchecked(colon_pos) } != b':'
+            {
                 return Err(ParseError::expected_char(self.pos, ':').into());
             }
             self.pos = colon_pos + 1;
-            
+
             // Parse value
             let value = self.parse_value(py, ctx)?;
-            
+
             // Direct FFI insertion — bypasses Python hashing overhead
             unsafe {
                 if ffi::PyDict_SetItem(dict_ptr, key.as_ptr(), value.as_ptr()) < 0 {
-                    return Err(pyo3::exceptions::PyRuntimeError::new_err("Dict insertion failed"));
+                    return Err(pyo3::exceptions::PyRuntimeError::new_err(
+                        "Dict insertion failed",
+                    ));
                 }
             }
-            
+
             // Check for ',' or '}'
             self.skip_ws();
-            
+
             if self.pos >= self.input.len() {
                 return Err(ParseError::unexpected_eof(self.pos).into());
             }
-            
+
             match unsafe { *self.input.get_unchecked(self.pos) } {
                 b',' => {
                     let comma_pos = self.pos;
                     self.pos += 1;
                     self.consume_comma(comma_pos);
                     self.skip_ws();
-                    if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b'}' {
+                    if self.pos < self.input.len()
+                        && unsafe { *self.input.get_unchecked(self.pos) } == b'}'
+                    {
                         let close_pos = self.pos;
                         self.pos += 1;
                         self.consume_close_brace(close_pos);
@@ -264,20 +276,20 @@ impl<'a> FastIndexParser<'a> {
             }
         }
     }
-    
+
     /// Parse a JSON array using direct FFI for maximum performance.
     /// Uses PyList_New + PyList_SET_ITEM to bypass bounds checking.
     fn parse_array_indexed(&mut self, py: Python, ctx: &mut ParseContext) -> PyResult<PyObject> {
         let opening_bracket = self.pos;
         self.pos += 1; // Skip '['
         self.consume_open_bracket(opening_bracket);
-        
+
         // Check for Zen Grid
         self.skip_ws();
         if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b':' {
             return self.parse_zen_grid_indexed(py, ctx, opening_bracket);
         }
-        
+
         // Empty array check
         self.skip_ws();
         if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b']' {
@@ -292,7 +304,11 @@ impl<'a> FastIndexParser<'a> {
         // Only use PyList_New + PyList_SET_ITEM when we can prove there are no nested
         // arrays/objects before the next matching ']'. This avoids heavy prescans for
         // canada-like nested workloads.
-        let next_close = self.index.close_brackets.get(self.close_bracket_idx).copied();
+        let next_close = self
+            .index
+            .close_brackets
+            .get(self.close_bracket_idx)
+            .copied();
         let next_open_bracket = self.index.open_brackets.get(self.open_bracket_idx).copied();
         let next_open_brace = self.index.open_braces.get(self.open_brace_idx).copied();
 
@@ -341,7 +357,9 @@ impl<'a> FastIndexParser<'a> {
 
             let list_ptr = unsafe { ffi::PyList_New(capacity as isize) };
             if list_ptr.is_null() {
-                return Err(pyo3::exceptions::PyMemoryError::new_err("Failed to create list"));
+                return Err(pyo3::exceptions::PyMemoryError::new_err(
+                    "Failed to create list",
+                ));
             }
 
             let mut idx: usize = 0;
@@ -349,13 +367,17 @@ impl<'a> FastIndexParser<'a> {
                 if idx >= capacity {
                     // Consume optional trailing comma and close.
                     self.skip_ws();
-                    if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b',' {
+                    if self.pos < self.input.len()
+                        && unsafe { *self.input.get_unchecked(self.pos) } == b','
+                    {
                         let comma_pos = self.pos;
                         self.pos += 1;
                         self.consume_comma(comma_pos);
                         self.skip_ws();
                     }
-                    if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b']' {
+                    if self.pos < self.input.len()
+                        && unsafe { *self.input.get_unchecked(self.pos) } == b']'
+                    {
                         let close_pos = self.pos;
                         self.pos += 1;
                         self.consume_close_bracket(close_pos);
@@ -384,13 +406,20 @@ impl<'a> FastIndexParser<'a> {
                         self.pos += 1;
                         self.consume_comma(comma_pos);
                         self.skip_ws();
-                        if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b']' {
+                        if self.pos < self.input.len()
+                            && unsafe { *self.input.get_unchecked(self.pos) } == b']'
+                        {
                             // Trailing comma
                             let close_pos = self.pos;
                             self.pos += 1;
                             self.consume_close_bracket(close_pos);
                             unsafe {
-                                ffi::PyList_SetSlice(list_ptr, idx as isize, capacity as isize, std::ptr::null_mut());
+                                ffi::PyList_SetSlice(
+                                    list_ptr,
+                                    idx as isize,
+                                    capacity as isize,
+                                    std::ptr::null_mut(),
+                                );
                             }
                             break;
                         }
@@ -401,7 +430,12 @@ impl<'a> FastIndexParser<'a> {
                         self.consume_close_bracket(close_pos);
                         if idx < capacity {
                             unsafe {
-                                ffi::PyList_SetSlice(list_ptr, idx as isize, capacity as isize, std::ptr::null_mut());
+                                ffi::PyList_SetSlice(
+                                    list_ptr,
+                                    idx as isize,
+                                    capacity as isize,
+                                    std::ptr::null_mut(),
+                                );
                             }
                         }
                         break;
@@ -419,7 +453,9 @@ impl<'a> FastIndexParser<'a> {
         // Default (nested/small arrays): fast append path
         let list_ptr = unsafe { ffi::PyList_New(0) };
         if list_ptr.is_null() {
-            return Err(pyo3::exceptions::PyMemoryError::new_err("Failed to create list"));
+            return Err(pyo3::exceptions::PyMemoryError::new_err(
+                "Failed to create list",
+            ));
         }
 
         loop {
@@ -427,7 +463,9 @@ impl<'a> FastIndexParser<'a> {
             unsafe {
                 if ffi::PyList_Append(list_ptr, value.as_ptr()) < 0 {
                     ffi::Py_DECREF(list_ptr);
-                    return Err(pyo3::exceptions::PyRuntimeError::new_err("List append failed"));
+                    return Err(pyo3::exceptions::PyRuntimeError::new_err(
+                        "List append failed",
+                    ));
                 }
             }
 
@@ -443,7 +481,9 @@ impl<'a> FastIndexParser<'a> {
                     self.pos += 1;
                     self.consume_comma(comma_pos);
                     self.skip_ws();
-                    if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b']' {
+                    if self.pos < self.input.len()
+                        && unsafe { *self.input.get_unchecked(self.pos) } == b']'
+                    {
                         let close_pos = self.pos;
                         self.pos += 1;
                         self.consume_close_bracket(close_pos);
@@ -492,7 +532,9 @@ impl<'a> FastIndexParser<'a> {
             self.sync_structural_cursors();
 
             let colon_pos = self.take_colon()?;
-            if colon_pos >= self.input.len() || unsafe { *self.input.get_unchecked(colon_pos) } != b':' {
+            if colon_pos >= self.input.len()
+                || unsafe { *self.input.get_unchecked(colon_pos) } != b':'
+            {
                 return Err(ParseError::expected_char(self.pos, ':').into());
             }
             self.pos = colon_pos + 1;
@@ -504,7 +546,9 @@ impl<'a> FastIndexParser<'a> {
 
             unsafe {
                 if ffi::PyDict_SetItem(dict_ptr, field.interned_key.as_ptr(), value.as_ptr()) < 0 {
-                    return Err(pyo3::exceptions::PyRuntimeError::new_err("Dict insertion failed"));
+                    return Err(pyo3::exceptions::PyRuntimeError::new_err(
+                        "Dict insertion failed",
+                    ));
                 }
             }
 
@@ -565,7 +609,8 @@ impl<'a> FastIndexParser<'a> {
         if colon_pos != self.pos {
             self.pos = colon_pos;
         }
-        if colon_pos >= self.input.len() || unsafe { *self.input.get_unchecked(colon_pos) } != b':' {
+        if colon_pos >= self.input.len() || unsafe { *self.input.get_unchecked(colon_pos) } != b':'
+        {
             return Err(ParseError::expected_char(self.pos, ':').into());
         }
         self.pos = colon_pos + 1;
@@ -626,7 +671,9 @@ impl<'a> FastIndexParser<'a> {
             for k in headers {
                 unsafe { ffi::Py_DECREF(k) };
             }
-            return Err(ParseError::new(self.pos, "Zen Grid exceeds 1M rows limit".to_string()).into());
+            return Err(
+                ParseError::new(self.pos, "Zen Grid exceeds 1M rows limit".to_string()).into(),
+            );
         }
 
         let list_ptr = unsafe { ffi::PyList_New(estimated_rows as isize) };
@@ -634,7 +681,9 @@ impl<'a> FastIndexParser<'a> {
             for k in headers {
                 unsafe { ffi::Py_DECREF(k) };
             }
-            return Err(pyo3::exceptions::PyMemoryError::new_err("Failed to create list"));
+            return Err(pyo3::exceptions::PyMemoryError::new_err(
+                "Failed to create list",
+            ));
         }
 
         let mut row_idx: usize = 0;
@@ -662,7 +711,9 @@ impl<'a> FastIndexParser<'a> {
                 for k in headers {
                     unsafe { ffi::Py_DECREF(k) };
                 }
-                return Err(pyo3::exceptions::PyMemoryError::new_err("Failed to create row dict"));
+                return Err(pyo3::exceptions::PyMemoryError::new_err(
+                    "Failed to create row dict",
+                ));
             }
 
             // Parse row values
@@ -683,7 +734,9 @@ impl<'a> FastIndexParser<'a> {
                                     for kk in headers {
                                         ffi::Py_DECREF(kk)
                                     }
-                                    return Err(pyo3::exceptions::PyRuntimeError::new_err("Row dict insertion failed"));
+                                    return Err(pyo3::exceptions::PyRuntimeError::new_err(
+                                        "Row dict insertion failed",
+                                    ));
                                 }
                                 ffi::Py_DECREF(none);
                             }
@@ -714,7 +767,9 @@ impl<'a> FastIndexParser<'a> {
                         for k in headers {
                             ffi::Py_DECREF(k)
                         }
-                        return Err(pyo3::exceptions::PyRuntimeError::new_err("Row dict insertion failed"));
+                        return Err(pyo3::exceptions::PyRuntimeError::new_err(
+                            "Row dict insertion failed",
+                        ));
                     }
                 }
 
@@ -778,7 +833,8 @@ impl<'a> FastIndexParser<'a> {
             row_idx += 1;
 
             self.skip_ws();
-            if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b']' {
+            if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b']'
+            {
                 let close_pos = self.pos;
                 self.pos += 1;
                 self.consume_close_bracket(close_pos);
@@ -789,7 +845,12 @@ impl<'a> FastIndexParser<'a> {
         // Shrink in case of trailing separators / early close
         if row_idx < estimated_rows {
             unsafe {
-                ffi::PyList_SetSlice(list_ptr, row_idx as isize, estimated_rows as isize, std::ptr::null_mut());
+                ffi::PyList_SetSlice(
+                    list_ptr,
+                    row_idx as isize,
+                    estimated_rows as isize,
+                    std::ptr::null_mut(),
+                );
             }
         }
 
@@ -896,7 +957,9 @@ impl<'a> FastIndexParser<'a> {
             );
             if py_obj.is_null() {
                 ffi::PyErr_Clear();
-                return Err(pyo3::exceptions::PyValueError::new_err("Invalid UTF-8 in string"));
+                return Err(pyo3::exceptions::PyValueError::new_err(
+                    "Invalid UTF-8 in string",
+                ));
             }
             PyObject::from_owned_ptr(py, py_obj)
         })
@@ -937,7 +1000,9 @@ impl<'a> FastIndexParser<'a> {
                 if !slice.contains(&b'\\') {
                     let key_ptr = crate::parser::string_cache::get_cached_key(slice);
                     if key_ptr.is_null() {
-                        return Err(ParseError::new(start, "Invalid UTF-8 in header".to_string()).into());
+                        return Err(
+                            ParseError::new(start, "Invalid UTF-8 in header".to_string()).into(),
+                        );
                     }
                     Ok(key_ptr)
                 } else {
@@ -963,7 +1028,9 @@ impl<'a> FastIndexParser<'a> {
                 let slice = &self.input[start..end];
                 let key_ptr = crate::parser::string_cache::get_cached_key(slice);
                 if key_ptr.is_null() {
-                    return Err(ParseError::new(start, "Invalid UTF-8 in header".to_string()).into());
+                    return Err(
+                        ParseError::new(start, "Invalid UTF-8 in header".to_string()).into(),
+                    );
                 }
                 Ok(key_ptr)
             }
@@ -1088,11 +1155,11 @@ impl<'a> FastIndexParser<'a> {
     fn parse_key(&mut self, py: Python) -> PyResult<PyObject> {
         crate::simd::whitespace::skip_whitespace(self.input, &mut self.pos);
         self.sync_structural_cursors();
-        
+
         if self.pos >= self.input.len() {
             return Err(ParseError::unexpected_eof(self.pos).into());
         }
-        
+
         match unsafe { *self.input.get_unchecked(self.pos) } {
             b'"' => {
                 if self.quote_idx >= self.index.quotes.len() {
@@ -1119,7 +1186,9 @@ impl<'a> FastIndexParser<'a> {
                 if !slice.contains(&b'\\') {
                     let cached_key = crate::parser::string_cache::get_cached_key(slice);
                     if cached_key.is_null() {
-                        return Err(ParseError::new(start, "Invalid UTF-8 in key".to_string()).into());
+                        return Err(
+                            ParseError::new(start, "Invalid UTF-8 in key".to_string()).into()
+                        );
                     }
                     return Ok(unsafe { PyObject::from_owned_ptr(py, cached_key) });
                 }
@@ -1149,7 +1218,7 @@ impl<'a> FastIndexParser<'a> {
             c => Err(ParseError::invalid_char(self.pos, c as char).into()),
         }
     }
-    
+
     /// Fast string parsing using the pre-built quote index for zero-copy extraction.
     /// Assumes the quote cursor always points at the current opening quote.
     fn parse_string_fast(&mut self, py: Python) -> PyResult<PyObject> {
@@ -1196,7 +1265,9 @@ impl<'a> FastIndexParser<'a> {
             };
             if py_str.is_null() {
                 unsafe { ffi::PyErr_Clear() };
-                return Err(ParseError::new(start - 1, "Invalid UTF-8 in string".to_string()).into());
+                return Err(
+                    ParseError::new(start - 1, "Invalid UTF-8 in string".to_string()).into(),
+                );
             }
             return Ok(unsafe { PyObject::from_owned_ptr(py, py_str) });
         }
@@ -1204,16 +1275,16 @@ impl<'a> FastIndexParser<'a> {
         self.pos = start;
         self.parse_string_with_escapes(py, start)
     }
-    
+
     /// String parsing with escape handling
     fn parse_string_with_escapes(&mut self, py: Python, start: usize) -> PyResult<PyObject> {
         let mut result = String::with_capacity(256);
-        
+
         // Add content before backslash
         if self.pos > start {
             result.push_str(unsafe { std::str::from_utf8_unchecked(&self.input[start..self.pos]) });
         }
-        
+
         while self.pos < self.input.len() {
             match unsafe { *self.input.get_unchecked(self.pos) } {
                 b'"' => {
@@ -1228,7 +1299,9 @@ impl<'a> FastIndexParser<'a> {
                         );
                         if py_obj.is_null() {
                             ffi::PyErr_Clear();
-                            return Err(pyo3::exceptions::PyValueError::new_err("Invalid UTF-8 in string"));
+                            return Err(pyo3::exceptions::PyValueError::new_err(
+                                "Invalid UTF-8 in string",
+                            ));
                         }
                         PyObject::from_owned_ptr(py, py_obj)
                     });
@@ -1238,7 +1311,7 @@ impl<'a> FastIndexParser<'a> {
                     if self.pos >= self.input.len() {
                         return Err(ParseError::unexpected_eof(self.pos).into());
                     }
-                    
+
                     match unsafe { *self.input.get_unchecked(self.pos) } {
                         b'"' => result.push('"'),
                         b'\\' => result.push('\\'),
@@ -1260,8 +1333,8 @@ impl<'a> FastIndexParser<'a> {
                                     self.pos += 2;
                                     let low = self.parse_unicode_escape()?;
                                     if (0xDC00..=0xDFFF).contains(&low) {
-                                        let scalar = 0x1_0000
-                                            + (((code - 0xD800) << 10) | (low - 0xDC00));
+                                        let scalar =
+                                            0x1_0000 + (((code - 0xD800) << 10) | (low - 0xDC00));
                                         if let Some(ch) = char::from_u32(scalar) {
                                             result.push(ch);
                                             continue;
@@ -1286,17 +1359,21 @@ impl<'a> FastIndexParser<'a> {
                 _ => {
                     let ch_start = self.pos;
                     self.pos += 1;
-                    while self.pos < self.input.len() && (unsafe { *self.input.get_unchecked(self.pos) } & 0xC0 == 0x80) {
+                    while self.pos < self.input.len()
+                        && (unsafe { *self.input.get_unchecked(self.pos) } & 0xC0 == 0x80)
+                    {
                         self.pos += 1;
                     }
-                    result.push_str(unsafe { std::str::from_utf8_unchecked(&self.input[ch_start..self.pos]) });
+                    result.push_str(unsafe {
+                        std::str::from_utf8_unchecked(&self.input[ch_start..self.pos])
+                    });
                 }
             }
         }
-        
+
         Err(ParseError::unexpected_eof(self.pos).into())
     }
-    
+
     fn parse_unicode_escape(&mut self) -> Result<u32, ParseError> {
         let mut code = 0u32;
         for _ in 0..4 {
@@ -1304,17 +1381,18 @@ impl<'a> FastIndexParser<'a> {
                 return Err(ParseError::unexpected_eof(self.pos));
             }
             let digit = unsafe { *self.input.get_unchecked(self.pos) };
-            code = code * 16 + match digit {
-                b'0'..=b'9' => (digit - b'0') as u32,
-                b'a'..=b'f' => (digit - b'a' + 10) as u32,
-                b'A'..=b'F' => (digit - b'A' + 10) as u32,
-                _ => return Err(ParseError::invalid_unicode(self.pos)),
-            };
+            code = code * 16
+                + match digit {
+                    b'0'..=b'9' => (digit - b'0') as u32,
+                    b'a'..=b'f' => (digit - b'a' + 10) as u32,
+                    b'A'..=b'F' => (digit - b'A' + 10) as u32,
+                    _ => return Err(ParseError::invalid_unicode(self.pos)),
+                };
             self.pos += 1;
         }
         Ok(code)
     }
-    
+
     /// Fast number parsing — single-pass scan then delegate to fast_number
     #[inline(always)]
     fn parse_number_fast(&mut self, py: Python) -> PyResult<PyObject> {
@@ -1324,15 +1402,27 @@ impl<'a> FastIndexParser<'a> {
         // need to find the token boundary here.
         while self.pos < self.input.len() {
             match unsafe { *self.input.get_unchecked(self.pos) } {
-                b'-' | b'+' | b'0'..=b'9' | b'.' | b'e' | b'E'
-                | b'I' | b'N' | b'a' | b'f' | b'n' | b'i' | b't' | b'y' => self.pos += 1,
+                b'-'
+                | b'+'
+                | b'0'..=b'9'
+                | b'.'
+                | b'e'
+                | b'E'
+                | b'I'
+                | b'N'
+                | b'a'
+                | b'f'
+                | b'n'
+                | b'i'
+                | b't'
+                | b'y' => self.pos += 1,
                 _ => break,
             }
         }
         let bytes = &self.input[start..self.pos];
         crate::parser::fast_number::parse_number_fast(py, bytes)
     }
-    
+
     /// Parse literal (true, false, null)
     fn parse_literal(&mut self, py: Python) -> PyResult<PyObject> {
         if self.pos + 4 <= self.input.len() {
@@ -1346,12 +1436,16 @@ impl<'a> FastIndexParser<'a> {
                 return Ok(py.None());
             }
         }
-        
+
         if self.pos + 5 <= self.input.len() && &self.input[self.pos..self.pos + 5] == b"false" {
             self.pos += 5;
             return Ok(false.to_object(py));
         }
-        
-        Err(ParseError::invalid_char(self.pos, unsafe { *self.input.get_unchecked(self.pos) } as char).into())
+
+        Err(
+            ParseError::invalid_char(self.pos, unsafe { *self.input.get_unchecked(self.pos) }
+                as char)
+            .into(),
+        )
     }
 }

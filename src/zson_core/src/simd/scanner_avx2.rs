@@ -53,7 +53,7 @@ pub unsafe fn scan_avx2(input: &[u8]) -> StructuralIndex {
         0, 0, 0, 0, 0, 0, 0, 0, -64_i8, 0, 48_i8, 0, 12_i8, 3_i8, 0, 0, // lane 1
         0, 0, 0, 0, 0, 0, 0, 0, -64_i8, 0, 48_i8, 0, 12_i8, 3_i8, 0, 0, // lane 0
     );
-    let v_0f   = _mm256_set1_epi8(0x0F_u8 as i8);
+    let v_0f = _mm256_set1_epi8(0x0F_u8 as i8);
     let v_zero = _mm256_setzero_si256();
 
     while pos + 32 <= len {
@@ -65,9 +65,9 @@ pub unsafe fn scan_avx2(input: &[u8]) -> StructuralIndex {
         let hi_nibble = _mm256_and_si256(_mm256_srli_epi16(chunk, 4), v_0f);
 
         // Classify: result[i] != 0  ⟺  byte i is a structural character
-        let lo_class    = _mm256_shuffle_epi8(lo_lut, lo_nibble);
-        let hi_class    = _mm256_shuffle_epi8(hi_lut, hi_nibble);
-        let structural  = _mm256_and_si256(lo_class, hi_class);
+        let lo_class = _mm256_shuffle_epi8(lo_lut, lo_nibble);
+        let hi_class = _mm256_shuffle_epi8(hi_lut, hi_nibble);
+        let structural = _mm256_and_si256(lo_class, hi_class);
 
         // Bitmask of structural positions (bit i = 1 if byte i is structural)
         let mut mask = !(_mm256_movemask_epi8(_mm256_cmpeq_epi8(structural, v_zero)) as u32);
@@ -84,7 +84,7 @@ pub unsafe fn scan_avx2(input: &[u8]) -> StructuralIndex {
                 b';' => index.semicolons.push(pos + offset),
                 b',' => index.commas.push(pos + offset),
                 b'"' => index.quotes.push(pos + offset),
-                _   => {} // nibble false-positive (none expected for valid UTF-8)
+                _ => {} // nibble false-positive (none expected for valid UTF-8)
             }
             mask &= mask - 1; // clear lowest set bit
         }
@@ -110,4 +110,3 @@ pub unsafe fn scan_avx2(input: &[u8]) -> StructuralIndex {
 
     index
 }
-

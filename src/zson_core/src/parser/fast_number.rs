@@ -3,8 +3,8 @@
 // Integers: streaming accumulation (value = value * 10 + digit)
 // Floats: lexical-core (same algorithm used by orjson)
 
-use pyo3::prelude::*;
 use pyo3::ffi;
+use pyo3::prelude::*;
 
 #[inline(always)]
 fn equals_ascii_ci(bytes: &[u8], keyword: &[u8]) -> bool {
@@ -12,7 +12,9 @@ fn equals_ascii_ci(bytes: &[u8], keyword: &[u8]) -> bool {
         && bytes
             .iter()
             .zip(keyword.iter())
-            .all(|(&candidate, &expected)| candidate.to_ascii_lowercase() == expected.to_ascii_lowercase())
+            .all(|(&candidate, &expected)| {
+                candidate.to_ascii_lowercase() == expected.to_ascii_lowercase()
+            })
 }
 
 /// Three-path number parser: detect type early and route to specialized parser
@@ -28,7 +30,7 @@ pub fn parse_number_fast(py: Python, bytes: &[u8]) -> PyResult<PyObject> {
 
     let mut pos = 0;
     let is_negative = bytes[0] == b'-';
-    
+
     if is_negative {
         pos = 1;
         if pos >= bytes.len() {
@@ -46,18 +48,26 @@ pub fn parse_number_fast(py: Python, bytes: &[u8]) -> PyResult<PyObject> {
             let py_obj = ffi::PyFloat_FromDouble(value);
             if py_obj.is_null() {
                 ffi::PyErr_Clear();
-                return Err(pyo3::exceptions::PyValueError::new_err("Failed to create float"));
+                return Err(pyo3::exceptions::PyValueError::new_err(
+                    "Failed to create float",
+                ));
             }
             Ok(PyObject::from_owned_ptr(py, py_obj))
         };
     }
     if equals_ascii_ci(literal, b"inf") || equals_ascii_ci(literal, b"infinity") {
-        let value = if is_negative { f64::NEG_INFINITY } else { f64::INFINITY };
+        let value = if is_negative {
+            f64::NEG_INFINITY
+        } else {
+            f64::INFINITY
+        };
         return unsafe {
             let py_obj = ffi::PyFloat_FromDouble(value);
             if py_obj.is_null() {
                 ffi::PyErr_Clear();
-                return Err(pyo3::exceptions::PyValueError::new_err("Failed to create float"));
+                return Err(pyo3::exceptions::PyValueError::new_err(
+                    "Failed to create float",
+                ));
             }
             Ok(PyObject::from_owned_ptr(py, py_obj))
         };
@@ -182,7 +192,10 @@ fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult
             if !b.is_ascii_digit() {
                 return Err(pyo3::exceptions::PyValueError::new_err("Invalid integer"));
             }
-            match value.checked_mul(10).and_then(|v| v.checked_add((b - b'0') as u64)) {
+            match value
+                .checked_mul(10)
+                .and_then(|v| v.checked_add((b - b'0') as u64))
+            {
                 Some(v) => value = v,
                 None => {
                     overflow = true;
@@ -206,7 +219,9 @@ fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult
                 let py_obj = ffi::PyLong_FromLongLong(signed_value);
                 if py_obj.is_null() {
                     ffi::PyErr_Clear();
-                    return Err(pyo3::exceptions::PyValueError::new_err("Failed to create integer"));
+                    return Err(pyo3::exceptions::PyValueError::new_err(
+                        "Failed to create integer",
+                    ));
                 }
                 Ok(PyObject::from_owned_ptr(py, py_obj))
             }
@@ -217,7 +232,9 @@ fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult
                     let py_obj = ffi::PyLong_FromUnsignedLongLong(value);
                     if py_obj.is_null() {
                         ffi::PyErr_Clear();
-                        return Err(pyo3::exceptions::PyValueError::new_err("Failed to create integer"));
+                        return Err(pyo3::exceptions::PyValueError::new_err(
+                            "Failed to create integer",
+                        ));
                     }
                     Ok(PyObject::from_owned_ptr(py, py_obj))
                 }
@@ -226,7 +243,9 @@ fn parse_integer_direct(py: Python, bytes: &[u8], is_negative: bool) -> PyResult
                     let py_obj = ffi::PyLong_FromLongLong(value as i64);
                     if py_obj.is_null() {
                         ffi::PyErr_Clear();
-                        return Err(pyo3::exceptions::PyValueError::new_err("Failed to create integer"));
+                        return Err(pyo3::exceptions::PyValueError::new_err(
+                            "Failed to create integer",
+                        ));
                     }
                     Ok(PyObject::from_owned_ptr(py, py_obj))
                 }
@@ -246,13 +265,15 @@ fn parse_large_integer(py: Python, bytes: &[u8], is_negative: bool) -> PyResult<
     } else {
         num_str.to_string()
     };
-    
+
     unsafe {
         let c_str = std::ffi::CString::new(py_str).unwrap();
         let py_obj = ffi::PyLong_FromString(c_str.as_ptr(), std::ptr::null_mut(), 10);
         if py_obj.is_null() {
             ffi::PyErr_Clear();
-            return Err(pyo3::exceptions::PyValueError::new_err("Failed to create large integer"));
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Failed to create large integer",
+            ));
         }
         Ok(PyObject::from_owned_ptr(py, py_obj))
     }
@@ -269,7 +290,9 @@ fn parse_float_direct(py: Python, bytes: &[u8]) -> PyResult<PyObject> {
             let py_obj = ffi::PyFloat_FromDouble(value);
             if py_obj.is_null() {
                 ffi::PyErr_Clear();
-                return Err(pyo3::exceptions::PyValueError::new_err("Failed to create float"));
+                return Err(pyo3::exceptions::PyValueError::new_err(
+                    "Failed to create float",
+                ));
             }
             Ok(PyObject::from_owned_ptr(py, py_obj))
         },

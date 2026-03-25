@@ -1,24 +1,24 @@
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 
-mod types;
-mod simd;
 mod parser;
 mod serializer;
+mod simd;
+mod types;
 
-use types::{ParseContext, FieldDescriptor, FieldType};
+use types::{FieldDescriptor, FieldType, ParseContext};
 
 /// Parse ZSON/JSON data from bytes or string
-/// 
+///
 /// Args:
 ///     data: Input as bytes (zero-copy) or str (will encode to UTF-8)
-/// 
+///
 /// Returns:
 ///     Parsed Python object (dict, list, str, int, float, bool, None)
-/// 
+///
 /// Raises:
 ///     ValueError: Invalid JSON/ZSON syntax
-/// 
+///
 /// Examples:
 ///     >>> import zson
 ///     >>> zson.loads('{"key": "value"}')
@@ -36,10 +36,10 @@ fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject>
         py_str.as_bytes()
     } else {
         return Err(pyo3::exceptions::PyTypeError::new_err(
-            "data must be bytes or str"
+            "data must be bytes or str",
         ));
     };
-    
+
     // Optional schema-mode: schema is a sequence of field names
     // (position is inferred from order). This activates the Nitro-Path in the index parser.
     let schema_vec: Option<Vec<FieldDescriptor>> = match schema {
@@ -56,7 +56,7 @@ fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject>
     };
 
     let mut ctx = ParseContext::new(schema_vec);
-    
+
     // Parse the input
     parser::parse(py, bytes, &mut ctx)
 }
@@ -101,35 +101,39 @@ fn dumps(
     bare_strings: bool,
     implicit_null: bool,
 ) -> PyResult<String> {
-    let opts = serializer::DumpsOptions { zen_grid, unquoted_keys, indent, bare_strings, implicit_null };
+    let opts = serializer::DumpsOptions {
+        zen_grid,
+        unquoted_keys,
+        indent,
+        bare_strings,
+        implicit_null,
+    };
     let obj: PyObject = data.to_object(py);
     serializer::serialize(py, &obj, &opts)
 }
 
 /// ZSON (Zero-overhead Serialized Object Notation) SIMD-accelerated parser for Python
-/// 
+///
 /// This module provides high-performance parsing of ZSON/JSON data using
 /// Rust with AVX2/AVX-512 SIMD intrinsics.
 #[pymodule]
 fn zson_core(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
-    
+
     // On x86_64, require at least AVX2.  On other architectures (aarch64, etc.)
     // check_cpu_features() always returns true — NEON / scalar are always available.
     if !simd::check_cpu_features() {
         return Err(pyo3::exceptions::PyRuntimeError::new_err(
-            "CPU does not support AVX2 (requires Intel Haswell 2013+ or AMD Excavator 2015+)"
+            "CPU does not support AVX2 (requires Intel Haswell 2013+ or AMD Excavator 2015+)",
         ));
     }
-    
+
     // Add SIMD implementation info
     m.add("__simd__", simd::get_simd_implementation())?;
-    
+
     // Add loads() and dumps() functions
     m.add_function(wrap_pyfunction!(loads, m)?)?;
     m.add_function(wrap_pyfunction!(dumps, m)?)?;
-    
+
     Ok(())
 }
-
-

@@ -33,19 +33,23 @@ unsafe fn scan_neon_unsafe(input: &[u8]) -> StructuralIndex {
         let chunk = vld1q_u8(input.as_ptr().add(pos));
 
         // Compare against all 8 structural characters.
-        let eq_open_brace    = vceqq_u8(chunk, vdupq_n_u8(b'{'));
-        let eq_close_brace   = vceqq_u8(chunk, vdupq_n_u8(b'}'));
-        let eq_open_bracket  = vceqq_u8(chunk, vdupq_n_u8(b'['));
+        let eq_open_brace = vceqq_u8(chunk, vdupq_n_u8(b'{'));
+        let eq_close_brace = vceqq_u8(chunk, vdupq_n_u8(b'}'));
+        let eq_open_bracket = vceqq_u8(chunk, vdupq_n_u8(b'['));
         let eq_close_bracket = vceqq_u8(chunk, vdupq_n_u8(b']'));
-        let eq_colon         = vceqq_u8(chunk, vdupq_n_u8(b':'));
-        let eq_semicolon     = vceqq_u8(chunk, vdupq_n_u8(b';'));
-        let eq_comma         = vceqq_u8(chunk, vdupq_n_u8(b','));
-        let eq_quote         = vceqq_u8(chunk, vdupq_n_u8(b'"'));
+        let eq_colon = vceqq_u8(chunk, vdupq_n_u8(b':'));
+        let eq_semicolon = vceqq_u8(chunk, vdupq_n_u8(b';'));
+        let eq_comma = vceqq_u8(chunk, vdupq_n_u8(b','));
+        let eq_quote = vceqq_u8(chunk, vdupq_n_u8(b'"'));
 
-        let any_a = vorrq_u8(vorrq_u8(eq_open_brace, eq_close_brace),
-                             vorrq_u8(eq_open_bracket, eq_close_bracket));
-        let any_b = vorrq_u8(vorrq_u8(eq_colon, eq_semicolon),
-                             vorrq_u8(eq_comma, eq_quote));
+        let any_a = vorrq_u8(
+            vorrq_u8(eq_open_brace, eq_close_brace),
+            vorrq_u8(eq_open_bracket, eq_close_bracket),
+        );
+        let any_b = vorrq_u8(
+            vorrq_u8(eq_colon, eq_semicolon),
+            vorrq_u8(eq_comma, eq_quote),
+        );
         let any_structural = vorrq_u8(any_a, any_b);
 
         // Fast skip when no structural chars exist in the chunk.

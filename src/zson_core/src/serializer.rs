@@ -12,8 +12,8 @@
 //   • Pre-allocated Vec<u8> output buffer — single allocation per call
 //   • SIMD escape scan (AVX2) — scan 32 bytes/cycle for chars needing escaping
 
-use pyo3::prelude::*;
 use pyo3::ffi;
+use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList, PyTuple};
 
 #[cfg(target_arch = "x86_64")]
@@ -112,7 +112,9 @@ unsafe fn write_str(ptr: *mut ffi::PyObject, buf: &mut Vec<u8>) -> PyResult<()> 
     if data.is_null() {
         // Clear error and fall back to safer path
         ffi::PyErr_Clear();
-        return Err(pyo3::exceptions::PyValueError::new_err("Failed to encode string as UTF-8"));
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "Failed to encode string as UTF-8",
+        ));
     }
     let bytes = std::slice::from_raw_parts(data as *const u8, len as usize);
     buf.push(b'"');
@@ -199,13 +201,13 @@ fn write_escaped_str_scalar(s: &[u8], buf: &mut Vec<u8>) {
     while i < s.len() {
         let b = s[i];
         let escape: &[u8] = match b {
-            b'"'  => b"\\\"",
+            b'"' => b"\\\"",
             b'\\' => b"\\\\",
             b'\n' => b"\\n",
             b'\r' => b"\\r",
             b'\t' => b"\\t",
-            0x08  => b"\\b",
-            0x0C  => b"\\f",
+            0x08 => b"\\b",
+            0x0C => b"\\f",
             0x00..=0x1F => {
                 buf.extend_from_slice(&s[start..i]);
                 write_unicode_escape(b, buf);
@@ -271,7 +273,9 @@ unsafe fn write_float(ptr: *mut ffi::PyObject, buf: &mut Vec<u8>) -> PyResult<()
     let v = ffi::PyFloat_AsDouble(ptr);
     if v == -1.0 && !ffi::PyErr_Occurred().is_null() {
         ffi::PyErr_Clear();
-        return Err(pyo3::exceptions::PyValueError::new_err("Failed to read float value"));
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "Failed to read float value",
+        ));
     }
     if v.is_nan() {
         buf.extend_from_slice(b"NaN");
@@ -291,7 +295,9 @@ unsafe fn write_bytes(ptr: *mut ffi::PyObject, buf: &mut Vec<u8>) -> PyResult<()
     let data = ffi::PyBytes_AsString(ptr) as *const u8;
     let len = ffi::PyBytes_Size(ptr) as usize;
     if data.is_null() {
-        return Err(pyo3::exceptions::PyValueError::new_err("Failed to read bytes value"));
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "Failed to read bytes value",
+        ));
     }
     let bytes = std::slice::from_raw_parts(data, len);
     buf.push(b'"');
@@ -662,7 +668,14 @@ fn write_zen_grid<'py>(
         for row_i in 0..n_rows {
             buf.push(b'\n');
             write_indent(buf, (depth + 1) * indent_width);
-            write_zen_grid_row(py, list.get_item(row_i)?.downcast()?, &py_keys, buf, opts, depth)?;
+            write_zen_grid_row(
+                py,
+                list.get_item(row_i)?.downcast()?,
+                &py_keys,
+                buf,
+                opts,
+                depth,
+            )?;
         }
         buf.push(b'\n');
         write_indent(buf, depth * indent_width);
@@ -678,7 +691,14 @@ fn write_zen_grid<'py>(
         }
         for row_i in 0..n_rows {
             buf.extend_from_slice(b"; ");
-            write_zen_grid_row(py, list.get_item(row_i)?.downcast()?, &py_keys, buf, opts, depth)?;
+            write_zen_grid_row(
+                py,
+                list.get_item(row_i)?.downcast()?,
+                &py_keys,
+                buf,
+                opts,
+                depth,
+            )?;
         }
         buf.extend_from_slice(b" ]");
     }
@@ -700,9 +720,7 @@ fn write_zen_grid_row<'py>(
         if i > 0 {
             buf.extend_from_slice(b", ");
         }
-        let val_ptr = unsafe {
-            ffi::PyDict_GetItemWithError(row.as_ptr(), key.as_ptr())
-        };
+        let val_ptr = unsafe { ffi::PyDict_GetItemWithError(row.as_ptr(), key.as_ptr()) };
         if val_ptr.is_null() {
             if unsafe { ffi::PyErr_Occurred().is_null() } {
                 // Key not found → emit empty cell (implicit null) or "null"
@@ -724,7 +742,8 @@ fn write_zen_grid_row<'py>(
                 let mut str_len: ffi::Py_ssize_t = 0;
                 let data = unsafe { ffi::PyUnicode_AsUTF8AndSize(val_ptr, &mut str_len) };
                 if !data.is_null() {
-                    let bytes = unsafe { std::slice::from_raw_parts(data as *const u8, str_len as usize) };
+                    let bytes =
+                        unsafe { std::slice::from_raw_parts(data as *const u8, str_len as usize) };
                     if is_valid_identifier(bytes) {
                         buf.extend_from_slice(bytes);
                         continue;

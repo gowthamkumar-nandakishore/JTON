@@ -5,7 +5,7 @@
 use std::arch::x86_64::*;
 
 /// Skip whitespace and comments using SIMD (32-byte batches)
-/// 
+///
 /// This function uses AVX2 to skip whitespace characters much faster than
 /// byte-by-byte iteration. It handles:
 /// - Space, tab, newline, carriage return
@@ -15,50 +15,50 @@ use std::arch::x86_64::*;
 #[target_feature(enable = "avx2")]
 pub unsafe fn skip_whitespace_simd(input: &[u8], pos: &mut usize) {
     let len = input.len();
-    
+
     // Hoist comparison vectors outside the loop — computed once, reused every 32 bytes
-    let v_space   = _mm256_set1_epi8(b' ' as i8);
-    let v_tab     = _mm256_set1_epi8(b'\t' as i8);
+    let v_space = _mm256_set1_epi8(b' ' as i8);
+    let v_tab = _mm256_set1_epi8(b'\t' as i8);
     let v_newline = _mm256_set1_epi8(b'\n' as i8);
-    let v_cr      = _mm256_set1_epi8(b'\r' as i8);
+    let v_cr = _mm256_set1_epi8(b'\r' as i8);
 
     // Process 32-byte chunks with AVX2
     while *pos + 32 <= len {
         // Load 32 bytes
         let chunk = _mm256_loadu_si256(input.as_ptr().add(*pos) as *const __m256i);
-        
+
         // Compare against each whitespace character
-        let is_space   = _mm256_cmpeq_epi8(chunk, v_space);
-        let is_tab     = _mm256_cmpeq_epi8(chunk, v_tab);
+        let is_space = _mm256_cmpeq_epi8(chunk, v_space);
+        let is_tab = _mm256_cmpeq_epi8(chunk, v_tab);
         let is_newline = _mm256_cmpeq_epi8(chunk, v_newline);
-        let is_cr      = _mm256_cmpeq_epi8(chunk, v_cr);
-        
+        let is_cr = _mm256_cmpeq_epi8(chunk, v_cr);
+
         // Combine all whitespace matches
         let is_ws = _mm256_or_si256(
             _mm256_or_si256(is_space, is_tab),
-            _mm256_or_si256(is_newline, is_cr)
+            _mm256_or_si256(is_newline, is_cr),
         );
-        
+
         // Extract bitmask
         let mask = _mm256_movemask_epi8(is_ws) as u32;
-        
+
         // If all bytes are whitespace, skip entire chunk
         if mask == 0xFFFFFFFF {
             *pos += 32;
             continue;
         }
-        
+
         // If no whitespace, we're done with SIMD
         if mask == 0 {
             break;
         }
-        
+
         // Mixed whitespace - count leading whitespace bytes
         let trailing_ws = (!mask).trailing_zeros() as usize;
         *pos += trailing_ws;
         break;
     }
-    
+
     // Handle remaining bytes with scalar loop
     skip_whitespace_scalar(input, pos);
 }
@@ -85,7 +85,9 @@ pub fn skip_whitespace_scalar(input: &[u8], pos: &mut usize) {
                             }
                             if c == b'\r' {
                                 *pos += 1;
-                                if *pos < input.len() && unsafe { *input.get_unchecked(*pos) } == b'\n' {
+                                if *pos < input.len()
+                                    && unsafe { *input.get_unchecked(*pos) } == b'\n'
+                                {
                                     *pos += 1;
                                 }
                                 break;
@@ -129,7 +131,7 @@ pub fn skip_whitespace(input: &[u8], pos: &mut usize) {
             skip_whitespace_scalar(input, pos)
         }
     }
-    
+
     #[cfg(not(target_arch = "x86_64"))]
     {
         skip_whitespace_scalar(input, pos)

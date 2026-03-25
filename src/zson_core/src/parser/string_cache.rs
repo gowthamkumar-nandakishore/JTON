@@ -2,8 +2,8 @@
 // Caches PyUnicode objects for frequently used JSON keys
 // Reduces memory allocations by ~20-30% on typical JSON workloads
 
-use std::collections::{HashMap, VecDeque};
 use pyo3::ffi;
+use std::collections::{HashMap, VecDeque};
 
 const MAX_CACHE_ENTRIES: usize = 2048; // orjson uses 2048
 const MAX_KEY_LENGTH: usize = 64; // orjson caches keys up to 64 bytes
@@ -139,7 +139,9 @@ pub fn clear_cache() {
     STRING_CACHE.with(|cell| {
         let cache = unsafe { &mut *cell.get() };
         for cached in cache.cache.values() {
-            unsafe { ffi::Py_DECREF(cached.ptr); }
+            unsafe {
+                ffi::Py_DECREF(cached.ptr);
+            }
         }
         cache.cache.clear();
         cache.insertion_order.clear();
@@ -169,4 +171,3 @@ mod tests {
         }
     }
 }
-

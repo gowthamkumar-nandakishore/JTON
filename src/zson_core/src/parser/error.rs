@@ -1,7 +1,7 @@
 // Error types for parser
 
-use pyo3::prelude::*;
 use pyo3::exceptions::PyValueError;
+use pyo3::prelude::*;
 
 /// Parse error with approximate position tracking
 #[derive(Debug)]
@@ -13,13 +13,13 @@ pub struct ParseError {
 
 impl ParseError {
     pub fn new(position: usize, message: String) -> Self {
-        Self { 
-            position, 
+        Self {
+            position,
             message,
             context: None,
         }
     }
-    
+
     /// Create error with context extraction
     pub fn with_context(position: usize, message: String, input: &[u8]) -> Self {
         let context = extract_context(input, position);
@@ -29,7 +29,7 @@ impl ParseError {
             context: Some(context),
         }
     }
-    
+
     pub fn unexpected_eof(pos: usize) -> Self {
         Self {
             position: pos,
@@ -37,7 +37,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn unexpected_token(pos: usize, ch: char) -> Self {
         Self {
             position: pos,
@@ -45,7 +45,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn invalid_char(pos: usize, ch: char) -> Self {
         Self {
             position: pos,
@@ -53,7 +53,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn expected_char(pos: usize, expected: char) -> Self {
         Self {
             position: pos,
@@ -61,7 +61,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn expected_token(pos: usize, expected: char) -> Self {
         Self {
             position: pos,
@@ -69,7 +69,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn invalid_utf8(pos: usize) -> Self {
         Self {
             position: pos,
@@ -77,7 +77,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn invalid_number(pos: usize, num_str: &str) -> Self {
         Self {
             position: pos,
@@ -85,7 +85,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn invalid_literal(pos: usize) -> Self {
         Self {
             position: pos,
@@ -93,7 +93,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn unsupported_feature(pos: usize, feature: &str) -> Self {
         Self {
             position: pos,
@@ -101,7 +101,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn unsupported(feature: &str) -> Self {
         Self {
             position: 0,
@@ -109,7 +109,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn invalid_escape(pos: usize, ch: char) -> Self {
         Self {
             position: pos,
@@ -117,7 +117,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn invalid_unicode(pos: usize) -> Self {
         Self {
             position: pos,
@@ -125,7 +125,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn unescaped_control(pos: usize) -> Self {
         Self {
             position: pos,
@@ -133,7 +133,7 @@ impl ParseError {
             context: None,
         }
     }
-    
+
     pub fn invalid_control_char(pos: usize) -> Self {
         Self {
             position: pos,
@@ -168,18 +168,18 @@ impl std::error::Error for ParseError {}
 /// Extract context around an error position (40 chars with caret marker)
 fn extract_context(input: &[u8], position: usize) -> String {
     const CONTEXT_SIZE: usize = 40;
-    
+
     // Calculate excerpt range
     let start = position.saturating_sub(CONTEXT_SIZE / 2);
     let end = (position + CONTEXT_SIZE / 2).min(input.len());
-    
+
     // Extract excerpt
     let excerpt = &input[start..end];
     let excerpt_str = String::from_utf8_lossy(excerpt);
-    
+
     // Calculate caret position in excerpt
     let caret_pos = position.saturating_sub(start);
-    
+
     // Build context string with line numbers and caret
     let mut context = String::new();
     context.push_str(&format!("  at position {}\n", position));
@@ -189,6 +189,6 @@ fn extract_context(input: &[u8], position: usize) -> String {
     context.push_str("  | ");
     context.push_str(&" ".repeat(caret_pos));
     context.push_str("^");
-    
+
     context
 }
