@@ -16,10 +16,10 @@
 
 ## Test Status
 
-The 28 tests in tests/ validate MYSON format (Python parser).  
-Cython parser (myson_core.pyx) tested via myson.loads() API.
+The 28 tests in tests/ validate ZSON format (Python parser).  
+Cython parser (zson_core.pyx) tested via zson.loads() API.
 
-Quick verification: python -c "import myson; print(myson.loads('[1,2,3]'))"
+Quick verification: python -c "import zson; print(zson.loads('[1,2,3]'))"
 Result: [1, 2, 3] ✓
 
 ## Performance Baseline

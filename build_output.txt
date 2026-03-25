@@ -1,0 +1,20 @@
+warning: zson_core@0.1.0: Building ZSON for x86_64 - AVX2 support will be checked at runtime
+   Compiling pyo3-ffi v0.20.3
+   Compiling pyo3-macros v0.20.3
+error: failed to run custom build command for `pyo3-ffi v0.20.3`
+
+Caused by:
+  process didn't exit successfully: `C:\Projects\MYSON\MYSON\target\debug\build\pyo3-ffi-c18a7486fc7fd815\build-script-build` (exit code: 1)
+  --- stdout
+  cargo:rerun-if-env-changed=PYO3_CROSS
+  cargo:rerun-if-env-changed=PYO3_CROSS_LIB_DIR
+  cargo:rerun-if-env-changed=PYO3_CROSS_PYTHON_VERSION
+  cargo:rerun-if-env-changed=PYO3_CROSS_PYTHON_IMPLEMENTATION
+  cargo:rerun-if-env-changed=PYO3_PRINT_CONFIG
+  cargo:rerun-if-env-changed=PYO3_USE_ABI3_FORWARD_COMPATIBILITY
+
+  --- stderr
+  error: the configured Python interpreter version (3.13) is newer than PyO3's maximum supported version (3.12)
+  = help: please check if an updated version of PyO3 is available. Current version: 0.20.3
+  = help: set PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 to suppress this check and build anyway using the stable ABI
+warning: build failed, waiting for other jobs to finish...

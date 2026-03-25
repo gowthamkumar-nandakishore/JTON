@@ -1,0 +1,543 @@
+// JSON parser implementation
+// Recursive descent parser using structural index from SIMD scanner
+
+use pyo3::prelude::*;
+use pyo3::types::{PyDict, PyList};
+use crate::types::{ParseContext, StructuralIndex};
+use super::error::ParseError;
+
+/// Parse a JSON value (object, array, string, number, bool, null)
+#[inline(always)]
+pub fn parse_value(
+    py: Python,
+    input: &[u8],
+    pos: &mut usize,
+    ctx: &mut ParseContext,
+) -> PyResult<PyObject> {
+    // Skip leading whitespace - manually inlined for performance
+    while *pos < input.len() {
+        let ch = unsafe { *input.get_unchecked(*pos) };
+        match ch {
+            b' ' | b'\n' | b'\r' | b'\t' => *pos += 1,
+            b'/' if *pos + 1 < input.len() => {
+                let next = unsafe { *input.get_unchecked(*pos + 1) };
+                match next {
+                    b'/' => {
+                        *pos += 2;
+                        while *pos < input.len() && unsafe { *input.get_unchecked(*pos) } != b'\n' {
+                            *pos += 1;
+                        }
+                        if *pos < input.len() {
+                            *pos += 1;
+                        }
+                    }
+                    b'*' => {
+                        *pos += 2;
+                        while *pos + 1 < input.len() {
+                            if unsafe { *input.get_unchecked(*pos) } == b'*' 
+                                && unsafe { *input.get_unchecked(*pos + 1) } == b'/' {
+                                *pos += 2;
+                                break;
+                            }
+                            *pos += 1;
+                        }
+                    }
+                    _ => break,
+                }
+            }
+            _ => break,
+        }
+    }
+    
+    if *pos >= input.len() {
+        return Err(ParseError::unexpected_eof(*pos).into());
+    }
+    
+    let ch = unsafe { *input.get_unchecked(*pos) };
+    match ch {
+        b'{' => parse_object(py, input, pos, ctx),
+        b'[' => {
+            // Check if it's a Zen Grid table [: or regular array
+            if *pos + 1 < input.len() && unsafe { *input.get_unchecked(*pos + 1) } == b':' {
+                // TODO: Delegate to Zen Grid parser (Phase 4)
+                Err(ParseError::unsupported("Zen Grid tables not yet implemented").into())
+            } else {
+                parse_array(py, input, pos, ctx)
+            }
+        }
+        b'"' => parse_string(py, input, pos),
+        b't' | b'f' | b'n' => parse_bool_null(py, input, pos),
+        b'I' | b'N' => parse_special_number(py, input, pos), // Infinity, NaN
+        b'-' | b'0'..=b'9' => parse_number(py, input, pos),
+        ch => Err(ParseError::unexpected_token(*pos, ch as char).into()),
+    }
+}
+
+/// Parse JSON object { "key": value, ... }
+pub fn parse_object(
+    py: Python,
+    input: &[u8],
+    pos: &mut usize,
+    ctx: &mut ParseContext,
+) -> PyResult<PyObject> {
+    if input[*pos] != b'{' {
+        return Err(ParseError::expected_token(*pos, '{').into());
+    }
+    *pos += 1;
+    
+    let dict = PyDict::new(py);
+    
+    skip_whitespace(input, pos);
+    
+    // Check for empty object
+    if *pos < input.len() && input[*pos] == b'}' {
+        *pos += 1;
+        return Ok(dict.into());
+    }
+    
+    // Parse key-value pairs
+    loop {
+        skip_whitespace(input, pos);
+        
+        // Parse key (quoted string or unquoted identifier)
+        let key = if *pos < input.len() && input[*pos] == b'"' {
+            // Quoted key
+            parse_string(py, input, pos)?
+        } else if *pos < input.len() && (input[*pos].is_ascii_alphabetic() || input[*pos] == b'_') {
+            // Unquoted key (T043-T045)
+            let key_start = *pos;
+            while *pos < input.len() && (input[*pos].is_ascii_alphanumeric() || input[*pos] == b'_') {
+                *pos += 1;
+            }
+            let key_str = std::str::from_utf8(&input[key_start..*pos])
+                .map_err(|_| ParseError::invalid_utf8(key_start))?;
+            pyo3::types::PyString::new(py, key_str).into()
+        } else {
+            return Err(ParseError::expected_token(*pos, '"').into());
+        };
+        
+        skip_whitespace(input, pos);
+        
+        // Expect colon
+        if *pos >= input.len() || input[*pos] != b':' {
+            return Err(ParseError::expected_token(*pos, ':').into());
+        }
+        *pos += 1;
+        
+        skip_whitespace(input, pos);
+        
+        // Parse value
+        let value = parse_value(py, input, pos, ctx)?;
+        
+        // Add to dict
+        dict.set_item(key, value)?;
+        
+        skip_whitespace(input, pos);
+        
+        // Check for comma or closing brace
+        if *pos >= input.len() {
+            return Err(ParseError::unexpected_eof().into());
+        }
+        
+        match input[*pos] {
+            b',' => {
+                *pos += 1;
+                // Continue to next pair
+            }
+            b'}' => {
+                *pos += 1;
+                return Ok(dict.into());
+            }
+            ch => return Err(ParseError::unexpected_token(*pos, ch as char).into()),
+        }
+    }
+}
+
+/// Parse JSON array [ value, value, ... ]
+pub fn parse_array(
+    py: Python,
+    input: &[u8],
+    pos: &mut usize,
+    ctx: &mut ParseContext,
+) -> PyResult<PyObject> {
+    if input[*pos] != b'[' {
+        return Err(ParseError::expected_token(*pos, '[').into());
+    }
+    *pos += 1;
+    
+    skip_whitespace(input, pos);
+    
+    // Check for empty array
+    if *pos < input.len() && input[*pos] == b']' {
+        *pos += 1;
+        return Ok(PyList::empty(py).into());
+    }
+    
+    // Use a Vec to collect values first, then convert to PyList in one batch
+    // This is significantly faster than repeated PyList.append() calls
+    let mut values = Vec::new();
+    
+    // Parse array elements
+    loop {
+        skip_whitespace(input, pos);
+        
+        // Parse value
+        let value = parse_value(py, input, pos, ctx)?;
+        values.push(value);
+        
+        skip_whitespace(input, pos);
+        
+        // Check for comma or closing bracket
+        if *pos >= input.len() {
+            return Err(ParseError::unexpected_eof().into());
+        }
+        
+        match input[*pos] {
+            b',' => {
+                *pos += 1;
+                // Continue to next element
+            }
+            b']' => {
+                *pos += 1;
+                // Convert Vec to PyList in one batch
+                return Ok(PyList::new(py, &values).into());
+            }
+            ch => return Err(ParseError::unexpected_token(*pos, ch as char).into()),
+        }
+    }
+}
+
+/// Parse JSON string with zero-copy optimization
+#[inline(always)]
+pub fn parse_string(py: Python, input: &[u8], pos: &mut usize) -> PyResult<PyObject> {
+    if unsafe { *input.get_unchecked(*pos) } != b'"' {
+        return Err(ParseError::expected_token(*pos, '"').into());
+    }
+    *pos += 1;
+    
+    let start = *pos;
+    let mut has_escapes = false;
+    
+    // Fast path: scan for closing quote and check for escapes
+    let len = input.len();
+    while *pos < len {
+        let ch = unsafe { *input.get_unchecked(*pos) };
+        match ch {
+            b'"' => {
+                // Found closing quote
+                let string_bytes = &input[start..*pos];
+                *pos += 1; // Skip closing quote
+                
+                if !has_escapes {
+                    // Zero-copy path: no escapes, use input slice directly
+                    let s = std::str::from_utf8(string_bytes)
+                        .map_err(|_| ParseError::invalid_utf8(start))?;
+                    return Ok(pyo3::types::PyString::new(py, s).into());
+                } else {
+                    // Need to allocate and process escapes
+                    let s = std::str::from_utf8(string_bytes)
+                        .map_err(|_| ParseError::invalid_utf8(start))?;
+                    let unescaped = unescape_string(s, start)?;
+                    return Ok(pyo3::types::PyString::new(py, &unescaped).into());
+                }
+            }
+            b'\\' => {
+                has_escapes = true;
+                *pos += 1;
+                if *pos >= len {
+                    return Err(ParseError::unexpected_eof().into());
+                }
+                // Validate escape sequence
+                let esc = unsafe { *input.get_unchecked(*pos) };
+                match esc {
+                    b'"' | b'\\' | b'/' | b'b' | b'f' | b'n' | b'r' | b't' => {
+                        *pos += 1;
+                    }
+                    b'u' => {
+                        // Unicode escape \uXXXX
+                        *pos += 1;
+                        if *pos + 4 > len {
+                            return Err(ParseError::invalid_escape(start).into());
+                        }
+                        // Verify 4 hex digits
+                        for i in 0..4 {
+                            if !unsafe { input.get_unchecked(*pos + i) }.is_ascii_hexdigit() {
+                                return Err(ParseError::invalid_escape(*pos + i).into());
+                            }
+                        }
+                        *pos += 4;
+                    }
+                    _ => return Err(ParseError::invalid_escape(*pos - 1).into()),
+                }
+            }
+            b if b < 0x20 => {
+                // Control characters must be escaped
+                return Err(ParseError::invalid_control_char(*pos).into());
+            }
+            _ => {
+                *pos += 1;
+            }
+        }
+    }
+    
+    Err(ParseError::unexpected_eof().into())
+}
+
+/// Unescape a JSON string (handles \n, \t, \r, \b, \f, \\, \", \/, \uXXXX)
+fn unescape_string(s: &str, start_pos: usize) -> Result<String, ParseError> {
+    let mut result = String::with_capacity(s.len());
+    let mut chars = s.chars();
+    
+    while let Some(ch) = chars.next() {
+        if ch == '\\' {
+            match chars.next() {
+                Some('"') => result.push('"'),
+                Some('\\') => result.push('\\'),
+                Some('/') => result.push('/'),
+                Some('b') => result.push('\u{0008}'),
+                Some('f') => result.push('\u{000C}'),
+                Some('n') => result.push('\n'),
+                Some('r') => result.push('\r'),
+                Some('t') => result.push('\t'),
+                Some('u') => {
+                    // Parse \uXXXX
+                    let hex: String = chars.by_ref().take(4).collect();
+                    if hex.len() != 4 {
+                        return Err(ParseError::invalid_escape(start_pos));
+                    }
+                    let code_point = u32::from_str_radix(&hex, 16)
+                        .map_err(|_| ParseError::invalid_escape(start_pos))?;
+                    let unicode_char = char::from_u32(code_point)
+                        .ok_or_else(|| ParseError::invalid_escape(start_pos))?;
+                    result.push(unicode_char);
+                }
+                _ => return Err(ParseError::invalid_escape(start_pos)),
+            }
+        } else {
+            result.push(ch);
+        }
+    }
+    
+    Ok(result)
+}
+
+/// Parse JSON number (int or float)
+#[inline(always)]
+pub fn parse_number(py: Python, input: &[u8], pos: &mut usize) -> PyResult<PyObject> {
+    let start = *pos;
+    let len = input.len();
+    
+    // Skip negative sign
+    let is_negative = unsafe { *input.get_unchecked(*pos) } == b'-';
+    if is_negative {
+        *pos += 1;
+        
+        // Check for -Infinity
+        if *pos < len && unsafe { *input.get_unchecked(*pos) } == b'I' {
+            return parse_special_number(py, input, pos);
+        }
+    }
+    
+    // Fast path for simple integers (common case)
+    let mut value: i64 = 0;
+    let mut digit_count = 0;
+    
+    while *pos < len {
+        let ch = unsafe { *input.get_unchecked(*pos) };
+        if ch.is_ascii_digit() {
+            digit_count += 1;
+            value = value * 10 + (ch - b'0') as i64;
+            *pos += 1;
+        } else {
+            break;
+        }
+    }
+    
+    // Check for decimal point or exponent (needs float parsing)
+    if *pos < len {
+        let ch = unsafe { *input.get_unchecked(*pos) };
+        if ch == b'.' || ch == b'e' || ch == b'E' {
+            // Fall back to string parsing for floats
+            *pos = start; // Reset position
+            return parse_number_slow(py, input, pos);
+        }
+    }
+    
+    // Fast integer path
+    if is_negative {
+        value = -value;
+    }
+    Ok(value.into_py(py))
+}
+
+/// Slow path for float parsing
+#[inline(never)]
+fn parse_number_slow(py: Python, input: &[u8], pos: &mut usize) -> PyResult<PyObject> {
+    let start = *pos;
+    let len = input.len();
+    
+    // Skip negative sign
+    if *pos < len && unsafe { *input.get_unchecked(*pos) } == b'-' {
+        *pos += 1;
+    }
+    
+    // Parse digits
+    while *pos < len && unsafe { *input.get_unchecked(*pos) }.is_ascii_digit() {
+        *pos += 1;
+    }
+    
+    // Check for decimal point
+    let mut is_float = *pos < len && unsafe { *input.get_unchecked(*pos) } == b'.';
+    if is_float {
+        *pos += 1;
+        while *pos < len && unsafe { *input.get_unchecked(*pos) }.is_ascii_digit() {
+            *pos += 1;
+        }
+    }
+    
+    // Check for exponent (makes it a float)
+    if *pos < len {
+        let ch = unsafe { *input.get_unchecked(*pos) };
+        if ch == b'e' || ch == b'E' {
+            is_float = true;
+            *pos += 1;
+            if *pos < len {
+                let ch = unsafe { *input.get_unchecked(*pos) };
+                if ch == b'+' || ch == b'-' {
+                    *pos += 1;
+                }
+            }
+            while *pos < len && unsafe { *input.get_unchecked(*pos) }.is_ascii_digit() {
+                *pos += 1;
+            }
+        }
+    }
+    
+    let num_str = std::str::from_utf8(&input[start..*pos])
+        .map_err(|_| ParseError::invalid_number(start))?;
+    
+    // Parse as float or int based on presence of decimal or exponent
+    if is_float {
+        let f: f64 = num_str.parse()
+            .map_err(|_| ParseError::invalid_number(start))?;
+        Ok(f.into_py(py))
+    } else {
+        let i: i64 = num_str.parse()
+            .map_err(|_| ParseError::invalid_number(start))?;
+        Ok(i.into_py(py))
+    }
+}
+
+/// Parse special numbers: Infinity, -Infinity, NaN (Python/JavaScript extensions)
+pub fn parse_special_number(py: Python, input: &[u8], pos: &mut usize) -> PyResult<PyObject> {
+    let start = *pos;
+    
+    // Check for negative
+    let is_negative = if *pos > 0 && input[*pos - 1] == b'-' {
+        true
+    } else {
+        false
+    };
+    
+    // Check for Infinity
+    if input.len() - *pos >= 8 && &input[*pos..*pos + 8] == b"Infinity" {
+        *pos += 8;
+        let value = if is_negative { f64::NEG_INFINITY } else { f64::INFINITY };
+        Ok(value.into_py(py))
+    }
+    // Check for NaN
+    else if input.len() - *pos >= 3 && &input[*pos..*pos + 3] == b"NaN" {
+        *pos += 3;
+        Ok(f64::NAN.into_py(py))
+    } else {
+        Err(ParseError::invalid_literal(start).into())
+    }
+}
+
+/// Parse bool or null
+#[inline(always)]
+pub fn parse_bool_null(py: Python, input: &[u8], pos: &mut usize) -> PyResult<PyObject> {
+    let start = *pos;
+    let len = input.len();
+    
+    let ch = unsafe { *input.get_unchecked(*pos) };
+    match ch {
+        b't' => {
+            if len - *pos >= 4 
+                && unsafe { *input.get_unchecked(*pos + 1) } == b'r'
+                && unsafe { *input.get_unchecked(*pos + 2) } == b'u'
+                && unsafe { *input.get_unchecked(*pos + 3) } == b'e' {
+                *pos += 4;
+                Ok(true.into_py(py))
+            } else {
+                Err(ParseError::invalid_literal(start).into())
+            }
+        }
+        b'f' => {
+            if len - *pos >= 5
+                && unsafe { *input.get_unchecked(*pos + 1) } == b'a'
+                && unsafe { *input.get_unchecked(*pos + 2) } == b'l'
+                && unsafe { *input.get_unchecked(*pos + 3) } == b's'
+                && unsafe { *input.get_unchecked(*pos + 4) } == b'e' {
+                *pos += 5;
+                Ok(false.into_py(py))
+            } else {
+                Err(ParseError::invalid_literal(start).into())
+            }
+        }
+        b'n' => {
+            if len - *pos >= 4
+                && unsafe { *input.get_unchecked(*pos + 1) } == b'u'
+                && unsafe { *input.get_unchecked(*pos + 2) } == b'l'
+                && unsafe { *input.get_unchecked(*pos + 3) } == b'l' {
+                *pos += 4;
+                Ok(py.None())
+            } else {
+                Err(ParseError::invalid_literal(start).into())
+            }
+        }
+        _ => Err(ParseError::invalid_literal(start).into()),
+    }
+}
+
+/// Skip whitespace and comments
+fn skip_whitespace(input: &[u8], pos: &mut usize) {
+    while *pos < input.len() {
+        match input[*pos] {
+            // Whitespace characters
+            b' ' | b'\n' | b'\r' | b'\t' => *pos += 1,
+            
+            // Comments
+            b'/' if *pos + 1 < input.len() => {
+                match input[*pos + 1] {
+                    // Single-line comment //
+                    b'/' => {
+                        *pos += 2;
+                        // Skip until newline or EOF
+                        while *pos < input.len() && input[*pos] != b'\n' {
+                            *pos += 1;
+                        }
+                        if *pos < input.len() {
+                            *pos += 1; // Skip the newline
+                        }
+                    }
+                    // Block comment /* */
+                    b'*' => {
+                        *pos += 2;
+                        // Skip until */ or EOF
+                        while *pos + 1 < input.len() {
+                            if input[*pos] == b'*' && input[*pos + 1] == b'/' {
+                                *pos += 2;
+                                break;
+                            }
+                            *pos += 1;
+                        }
+                    }
+                    _ => break, // Not a comment, just a slash
+                }
+            }
+            
+            _ => break,
+        }
+    }
+}

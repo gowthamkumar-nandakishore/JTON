@@ -1,6 +1,6 @@
-# MYSON Comprehensive Benchmark Results
+# ZSON Comprehensive Benchmark Results
 
-Benchmarks comparing MYSON across **token efficiency** and **parsing speed**.
+Benchmarks comparing ZSON across **token efficiency** and **parsing speed**.
 
 ---
 
@@ -8,28 +8,28 @@ Benchmarks comparing MYSON across **token efficiency** and **parsing speed**.
 
 Token counts measured using tiktoken `o200k_base` encoding (GPT-4o/GPT-5 tokenizer).
 
-Comparing: **JSON Pretty** vs **JSON Compact** vs **MYSON Zen Grid**
+Comparing: **JSON Pretty** vs **JSON Compact** vs **ZSON Zen Grid**
 
 ```
 👥 Uniform employee records  ┊  Tabular: 100%
    │
-   MYSON Zen Grid     ██████████░░░░░░░░░░    68,121 tokens
+   ZSON Zen Grid     ██████████░░░░░░░░░░    68,121 tokens
    ├─ vs JSON pretty  (−48.4%)                132,109 tokens
    └─ vs JSON compact (−19.0%)                 84,105 tokens
 
 📈 Time-series analytics data  ┊  Tabular: 100%
    │
-   MYSON Zen Grid     █████████░░░░░░░░░░░    10,935 tokens
+   ZSON Zen Grid     █████████░░░░░░░░░░░    10,935 tokens
    ├─ vs JSON pretty  (−50.8%)                 22,240 tokens
    └─ vs JSON compact (−23.0%)                 14,206 tokens
 
 ──────────────────────────────────── Total ────────────────────────────────────
-   MYSON Zen Grid     ██████████░░░░░░░░░░    79,056 tokens
+   ZSON Zen Grid     ██████████░░░░░░░░░░    79,056 tokens
    ├─ vs JSON pretty  (−48.8%)               154,349 tokens
    └─ vs JSON compact (−19.6%)                98,311 tokens
 ```
 
-**Summary**: MYSON Zen Grid provides **48.8% token reduction** vs JSON pretty and **19.6% reduction** vs JSON compact.
+**Summary**: ZSON Zen Grid provides **48.8% token reduction** vs JSON pretty and **19.6% reduction** vs JSON compact.
 
 ---
 
@@ -37,7 +37,7 @@ Comparing: **JSON Pretty** vs **JSON Compact** vs **MYSON Zen Grid**
 
 Deserialization latency per file (median of 10 iterations):
 
-| File | Size (KB) | stdlib (μs) | orjson (μs) | MYSON (μs) | vs stdlib | vs orjson | Winner |
+| File | Size (KB) | stdlib (μs) | orjson (μs) | ZSON (μs) | vs stdlib | vs orjson | Winner |
 |------|-----------|-------------|-------------|------------|-----------|-----------|--------|
 | canada.json          |    2198.3 |      26,553 |       7,865 |     18,409 |    1.44x |    0.43x | 🥇 orjson |
 | citm_catalog.json    |    1686.7 |       5,887 |       2,581 |      4,110 |    1.43x |    0.63x | 🥇 orjson |
@@ -49,9 +49,9 @@ Deserialization latency per file (median of 10 iterations):
 **Average Performance**:
 - stdlib json: **186.4 MB/s**
 - orjson: **501.5 MB/s** (baseline)
-- MYSON: **227.3 MB/s**
-- MYSON vs stdlib: **1.15x**
-- MYSON vs orjson: **0.52x** (slower)
+- ZSON: **227.3 MB/s**
+- ZSON vs stdlib: **1.15x**
+- ZSON vs orjson: **0.52x** (slower)
 
 ---
 
@@ -60,12 +60,12 @@ Deserialization latency per file (median of 10 iterations):
 Efficiency score = (Parsing Speed) × (1 + Token Reduction %)
 
 ```
-MYSON Efficiency Score: 271.78
+ZSON Efficiency Score: 271.78
   = 227.3 MB/s × (1 + 19.6% token reduction vs JSON compact)
   = 227.3 MB/s × 1.20
 ```
 
-> ✅ **Using Real MYSON Zen Grid Format**: Token savings are measured from actual MYSON serialization!
+> ✅ **Using Real ZSON Zen Grid Format**: Token savings are measured from actual ZSON serialization!
 
 ---
 
@@ -75,11 +75,11 @@ MYSON Efficiency Score: 271.78
 
 ```
 1. orjson:       501.5 MB/s  (baseline - industry standard)
-2. MYSON:        227.3 MB/s  (0.52x vs orjson, 1.15x vs stdlib)
+2. ZSON:        227.3 MB/s  (0.52x vs orjson, 1.15x vs stdlib)
 3. stdlib json:  186.4 MB/s
 ```
 
-**Gap to close**: MYSON needs **2.2x speedup** to match orjson.
+**Gap to close**: ZSON needs **2.2x speedup** to match orjson.
 
 ### Token Efficiency (Actual)
 
@@ -87,7 +87,7 @@ MYSON Efficiency Score: 271.78
 Format          Token Count    Reduction vs JSON pretty    vs JSON compact
 JSON pretty       154,349        baseline                 --
 JSON compact       98,311         48.8%                baseline
-MYSON Zen Grid     79,056         48.8%                19.6%
+ZSON Zen Grid     79,056         48.8%                19.6%
 ```
 
 ---
@@ -95,7 +95,7 @@ MYSON Zen Grid     79,056         48.8%                19.6%
 ## Next Steps
 
 1. **Phase 2 Optimization**: Implement fast number parsing, SIMD, string interning
-2. **MYSON Zen Grid**: Design and implement token-efficient serialization format
+2. **ZSON Zen Grid**: Design and implement token-efficient serialization format
 3. **Comprehensive Testing**: Expand test suite with more edge cases
 4. **Benchmark Suite**: Add more datasets, formatters, and metrics
 
@@ -105,7 +105,7 @@ MYSON Zen Grid     79,056         48.8%                19.6%
 
 ### Token Counting
 - Tokenizer: tiktoken `o200k_base` (GPT-4o/GPT-5)
-- Formats: JSON pretty vs JSON compact vs MYSON Zen Grid
+- Formats: JSON pretty vs JSON compact vs ZSON Zen Grid
 - Datasets: Synthetic data matching toon-format patterns
 
 ### Parsing Speed
