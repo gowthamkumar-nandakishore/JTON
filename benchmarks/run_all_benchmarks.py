@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-🎯 MYSON MASTER BENCHMARK SUITE
+🎯 ZSON MASTER BENCHMARK SUITE
 
 ONE SCRIPT TO RUN EVERYTHING:
-✅ Token Efficiency (8 formats: JSON, YAML, XML, TOON, TRON, MYSON, orjson, JSON-compact)
+✅ Token Efficiency (8 formats: JSON, YAML, XML, TOON, TRON, ZSON, orjson, JSON-compact)
 ✅ Parsing Speed (encoding/decoding throughput)
 ✅ Detailed Cost Analysis (API pricing, structure breakdown)
 
@@ -104,7 +104,7 @@ def run_token_efficiency():
     ]
     
     # Formats
-    formats = ["json", "json-compact", "orjson", "yaml", "xml", "toon", "tron", "myson"]
+    formats = ["json", "json-compact", "orjson", "yaml", "xml", "toon", "tron", "ZSON"]
     
     # Results
     all_results = {}
@@ -144,7 +144,7 @@ def run_token_efficiency():
         # Quick results
         best_fmt = min(results.keys(), key=lambda f: results[f]["tokens"] if results[f]["tokens"] > 0 else float('inf'))
         best_tokens = results[best_fmt]["tokens"]
-        myson_tokens = results["myson"]["tokens"]
+        ZSON_tokens = results["ZSON"]["tokens"]
         
         print(f"✓ Best: {best_fmt.upper()} ({best_tokens:,} tokens)")
     
@@ -154,25 +154,25 @@ def run_token_efficiency():
     print_subheader("Generating Report")
     
     report = [
-        "# 🏆 MYSON Holy Grail Benchmark Results\n\n",
+        "# 🏆 ZSON Holy Grail Benchmark Results\n\n",
         f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  \n",
         "**Tokenizer**: tiktoken o200k_base (GPT-4o/GPT-5)  \n",
-        "**Formats**: JSON, JSON-compact, orjson, YAML, XML, TOON, TRON, MYSON\n\n",
+        "**Formats**: JSON, JSON-compact, orjson, YAML, XML, TOON, TRON, ZSON\n\n",
         "---\n\n## 🏅 Overall Rankings\n\n",
     ]
     
     # Sort by total tokens
     sorted_fmts = sorted(formats, key=lambda f: totals[f])
     
-    report.append("| Rank | Format | Total Tokens | vs MYSON | vs JSON |\n")
+    report.append("| Rank | Format | Total Tokens | vs ZSON | vs JSON |\n")
     report.append("|------|--------|--------------|----------|----------|\n")
     
-    myson_total = totals["myson"]
+    ZSON_total = totals["ZSON"]
     json_total = totals["json"]
     
     for rank, fmt in enumerate(sorted_fmts, 1):
         t = totals[fmt]
-        vs_myson = ((t - myson_total) / myson_total * 100) if myson_total > 0 else 0
+        vs_ZSON = ((t - ZSON_total) / ZSON_total * 100) if ZSON_total > 0 else 0
         vs_json = ((t - json_total) / json_total * 100) if json_total > 0 else 0
         
         emoji = "🥇" if rank == 1 else "🥈" if rank == 2 else "🥉" if rank == 3 else ""
@@ -180,7 +180,7 @@ def run_token_efficiency():
         
         report.append(
             f"| {emoji} {rank} | **{name}** | {t:,} | "
-            f"{vs_myson:+.1f}% | {vs_json:+.1f}% |\n"
+            f"{vs_ZSON:+.1f}% | {vs_json:+.1f}% |\n"
         )
     
     # By structure
@@ -190,28 +190,28 @@ def run_token_efficiency():
     report.append("### 100% Tabular (Employees, Analytics, GitHub)\n\n")
     sorted_flat = sorted(formats, key=lambda f: flat_totals[f] if flat_totals[f] > 0 else float('inf'))
     
-    report.append("| Format | Tokens | vs MYSON |\n")
+    report.append("| Format | Tokens | vs ZSON |\n")
     report.append("|--------|--------|----------|\n")
     
-    myson_flat = flat_totals["myson"]
+    ZSON_flat = flat_totals["ZSON"]
     for fmt in sorted_flat[:5]:
         if flat_totals[fmt] > 0:
             t = flat_totals[fmt]
-            diff = ((t - myson_flat) / myson_flat * 100) if myson_flat > 0 else 0
+            diff = ((t - ZSON_flat) / ZSON_flat * 100) if ZSON_flat > 0 else 0
             report.append(f"| {FORMATTER_DISPLAY_NAMES.get(fmt, fmt)} | {t:,} | {diff:+.1f}% |\n")
     
     # Mixed
     report.append("\n### Mixed Structure (Orders, Events)\n\n")
     sorted_mixed = sorted(formats, key=lambda f: mixed_totals[f] if mixed_totals[f] > 0 else float('inf'))
     
-    report.append("| Format | Tokens | vs MYSON |\n")
+    report.append("| Format | Tokens | vs ZSON |\n")
     report.append("|--------|--------|----------|\n")
     
-    myson_mixed = mixed_totals["myson"]
+    ZSON_mixed = mixed_totals["ZSON"]
     for fmt in sorted_mixed[:5]:
         if mixed_totals[fmt] > 0:
             t = mixed_totals[fmt]
-            diff = ((t - myson_mixed) / myson_mixed * 100) if myson_mixed > 0 else 0
+            diff = ((t - ZSON_mixed) / ZSON_mixed * 100) if ZSON_mixed > 0 else 0
             report.append(f"| {FORMATTER_DISPLAY_NAMES.get(fmt, fmt)} | {t:,} | {diff:+.1f}% |\n")
     
     # Individual datasets
@@ -254,8 +254,8 @@ def run_token_efficiency():
         emoji = "🥇" if rank == 1 else "🥈" if rank == 2 else "🥉"
         name = FORMATTER_DISPLAY_NAMES.get(fmt, fmt)
         t = totals[fmt]
-        diff = ((t - myson_total) / myson_total * 100) if myson_total > 0 else 0
-        print(f"{emoji} {name}: {t:,} ({diff:+.1f}% vs MYSON)")
+        diff = ((t - ZSON_total) / ZSON_total * 100) if ZSON_total > 0 else 0
+        print(f"{emoji} {name}: {t:,} ({diff:+.1f}% vs ZSON)")
     
     print()
     return all_results
@@ -341,11 +341,11 @@ def run_cost_analysis():
         "JSON-compact": 180725,
         "TRON": 122097,
         "TOON": 146113,
-        "MYSON": 180725,  # Currently = JSON-compact
+        "ZSON": 180725,  # Currently = JSON-compact
     }
     
     report = [
-        "# 💰 MYSON Cost Analysis\n\n",
+        "# 💰 ZSON Cost Analysis\n\n",
         f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n",
         "**Scenario**: 1 million API calls/year  \n",
         "**Average payload**: Based on 6-dataset benchmark\n\n",
@@ -385,14 +385,14 @@ def run_cost_analysis():
 def main():
     """Master benchmark orchestrator"""
     parser = argparse.ArgumentParser(
-        description="MYSON Master Benchmark Suite - ONE script for ALL benchmarks"
+        description="ZSON Master Benchmark Suite - ONE script for ALL benchmarks"
     )
     parser.add_argument("--quick", action="store_true", help="Token efficiency only")
     parser.add_argument("--tokens", action="store_true", help="Token efficiency only")
     parser.add_argument("--speed", action="store_true", help="Speed only")
     args = parser.parse_args()
     
-    print_header("🎯 MYSON MASTER BENCHMARK SUITE", "=")
+    print_header("🎯 ZSON MASTER BENCHMARK SUITE", "=")
     print("ONE SCRIPT TO RULE THEM ALL\n")
     
     if args.speed:

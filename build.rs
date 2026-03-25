@@ -7,10 +7,10 @@ fn main() {
     // Warn if compiling for non-x86_64 targets
     let target_arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap();
     if target_arch != "x86_64" {
-        panic!("MYSON requires x86_64 architecture with AVX2 support (2013+ CPUs)");
+        panic!("ZSON requires x86_64 architecture with AVX2 support (2013+ CPUs)");
     }
     
     // Note: Runtime feature detection is done in lib.rs
     // This is just a build-time sanity check
-    println!("cargo:warning=Building MYSON for x86_64 - AVX2 support will be checked at runtime");
+    println!("cargo:warning=Building ZSON for x86_64 - AVX2 support will be checked at runtime");
 }

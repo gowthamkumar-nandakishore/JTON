@@ -1,18 +1,19 @@
 [package]
-name = "myson_core"
+name = "zson_core"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.70"
 
 [lib]
-name = "myson_core"
+name = "zson_core"
 crate-type = ["cdylib"]
-path = "src/myson_core/src/lib.rs"
+path = "src/zson_core/src/lib.rs"
 
 [dependencies]
 pyo3 = { version = "0.20" }
-lazy_static = "1.4"
 lexical-core = "0.8"
+itoa = "1.0"
+ryu = "1.0"
 
 [features]
 default = ["extension-module"]

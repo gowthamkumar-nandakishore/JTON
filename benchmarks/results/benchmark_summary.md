@@ -1,9 +1,9 @@
-# MYSON Benchmark Results
+# ZSON Benchmark Results
 
 **Generated:** 2025-12-25 11:48:30  
 **Tokenizer:** tiktoken `o200k_base` (GPT-4o/GPT-5)
 
-This report provides comprehensive benchmarking results for MYSON (Minimalist YSON)
+This report provides comprehensive benchmarking results for ZSON (Minimalist YSON)
 compared to other serialization formats.
 
 ---
@@ -24,10 +24,10 @@ represent the same data in different formats. Fewer tokens = lower LLM API costs
 # Token Efficiency Results
 
 **Tokenizer:** tiktoken `o200k_base` (GPT-4o/GPT-5)  
-**Date:** /home/gowthamkumar/Projects/MYSON
+**Date:** /home/gowthamkumar/Projects/ZSON
 
 Token counts measured across different serialization formats.
-MYSON serves as the baseline for comparisons.
+ZSON serves as the baseline for comparisons.
 
 #### Mixed-Structure Track
 
@@ -36,7 +36,7 @@ Datasets combining tabular and nested structures.
 ```
 🛒 E-commerce orders with nested structures  ┊  Tabular: 60%
    │
-   MYSON               ██████████░░░░░░░░░░     46,381 tokens
+   ZSON               ██████████░░░░░░░░░░     46,381 tokens
    ├─ vs JSON          (−39.7% )    76,898 tokens
    ├─ vs JSON compact  (−0.0%  )    46,381 tokens
    ├─ vs YAML          (−18.9% )    57,175 tokens
@@ -45,7 +45,7 @@ Datasets combining tabular and nested structures.
 
 🧾 Semi-uniform event logs  ┊  Tabular: 40%
    │
-   MYSON               ███████████░░░░░░░░░     10,745 tokens
+   ZSON               ███████████░░░░░░░░░     10,745 tokens
    ├─ vs JSON          (−31.4% )    15,669 tokens
    ├─ vs JSON compact  (−0.0%  )    10,745 tokens
    ├─ vs YAML          (−13.5% )    12,422 tokens
@@ -54,7 +54,7 @@ Datasets combining tabular and nested structures.
 
 🧩 Deeply nested configuration  ┊  Tabular: 0%
    │
-   MYSON               █████████░░░░░░░░░░░        223 tokens
+   ZSON               █████████░░░░░░░░░░░        223 tokens
    ├─ vs JSON          (−41.5% )       381 tokens
    ├─ vs JSON compact  (−0.0%  )       223 tokens
    ├─ vs YAML          (−20.4% )       280 tokens
@@ -62,7 +62,7 @@ Datasets combining tabular and nested structures.
    └─ vs TOON          (−33.4% )       335 tokens
 
 ────────────────────────────────── Total ──────────────────────────────────
-   MYSON               ██████████░░░░░░░░░░     57,349 tokens
+   ZSON               ██████████░░░░░░░░░░     57,349 tokens
    ├─ vs JSON          (−38.3% )    92,948 tokens
    ├─ vs JSON compact  (−0.0%  )    57,349 tokens
    ├─ vs YAML          (−17.9% )    69,877 tokens
@@ -77,7 +77,7 @@ Datasets with flat tabular structures where CSV is applicable.
 ```
 👥 Uniform employee records  ┊  Tabular: 100%
    │
-   MYSON               ██████████░░░░░░░░░░     97,407 tokens
+   ZSON               ██████████░░░░░░░░░░     97,407 tokens
    ├─ vs JSON          (−35.6% )   151,211 tokens
    ├─ vs JSON compact  (−0.0%  )    97,407 tokens
    ├─ vs YAML          (−18.4% )   119,404 tokens
@@ -86,7 +86,7 @@ Datasets with flat tabular structures where CSV is applicable.
 
 📈 Time-series analytics data  ┊  Tabular: 100%
    │
-   MYSON               ██████████░░░░░░░░░░     14,240 tokens
+   ZSON               ██████████░░░░░░░░░░     14,240 tokens
    ├─ vs JSON          (−36.1% )    22,274 tokens
    ├─ vs JSON compact  (−0.0%  )    14,240 tokens
    ├─ vs YAML          (−18.7% )    17,522 tokens
@@ -95,7 +95,7 @@ Datasets with flat tabular structures where CSV is applicable.
 
 ⭐ Top 100 GitHub repositories  ┊  Tabular: 100%
    │
-   MYSON               ████████████░░░░░░░░     11,729 tokens
+   ZSON               ████████████░░░░░░░░     11,729 tokens
    ├─ vs JSON          (−26.2% )    15,899 tokens
    ├─ vs JSON compact  (−0.0%  )    11,729 tokens
    ├─ vs YAML          (−12.0% )    13,326 tokens
@@ -103,7 +103,7 @@ Datasets with flat tabular structures where CSV is applicable.
    └─ vs TOON          (+26.7% )     9,256 tokens
 
 ────────────────────────────────── Total ──────────────────────────────────
-   MYSON               ███████████░░░░░░░░░    123,376 tokens
+   ZSON               ███████████░░░░░░░░░    123,376 tokens
    ├─ vs JSON          (−34.9% )   189,384 tokens
    ├─ vs JSON compact  (−0.0%  )   123,376 tokens
    ├─ vs YAML          (−17.9% )   150,252 tokens
@@ -121,7 +121,7 @@ Datasets with flat tabular structures where CSV is applicable.
 ## Parsing Speed
 
 Parsing speed benchmarks measure deserialization performance across different
-datasets and compare MYSON to stdlib json and orjson.
+datasets and compare ZSON to stdlib json and orjson.
 
 _Run `python benchmarks/benchmark_final.py` for parsing speed results_
 
@@ -132,7 +132,7 @@ _Run `python benchmarks/benchmark_final.py` for parsing speed results_
 ### Key Findings
 
 **Token Efficiency:**
-- MYSON aims to provide competitive token efficiency through Zen Grid format
+- ZSON aims to provide competitive token efficiency through Zen Grid format
 - Comparison baseline: JSON, YAML, XML, TOON formats
 - Best use case: Tabular and semi-structured data
 
@@ -145,11 +145,11 @@ _Run `python benchmarks/benchmark_final.py` for parsing speed results_
 
 | Use Case | Recommended Format | Notes |
 |----------|-------------------|-------|
-| Highly tabular data (100%) | CSV or MYSON Zen Grid | Most compact representation |
-| Mixed structure (tabular + nested) | MYSON Zen Grid | Balances compactness and flexibility |
+| Highly tabular data (100%) | CSV or ZSON Zen Grid | Most compact representation |
+| Mixed structure (tabular + nested) | ZSON Zen Grid | Balances compactness and flexibility |
 | Deeply nested structures | JSON compact | Standard tooling, widely supported |
 | Human readability | JSON or YAML | Pretty-printed, well-known formats |
-| Token efficiency priority | MYSON Zen Grid | Designed for LLM context optimization |
+| Token efficiency priority | ZSON Zen Grid | Designed for LLM context optimization |
 
 ---
 
@@ -178,7 +178,7 @@ Six curated datasets covering different structural patterns:
 - **YAML** - Human-readable, indentation-based
 - **XML** - Verbose, tag-based format
 - **TOON** - Token-Oriented Object Notation (community format)
-- **MYSON** - Minimalist YSON with Zen Grid (this project)
+- **ZSON** - Minimalist YSON with Zen Grid (this project)
 - **CSV** - For 100% tabular data only
 
 ---

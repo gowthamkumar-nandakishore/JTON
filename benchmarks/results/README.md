@@ -1,4 +1,4 @@
-# MYSON Benchmarks - Complete Index
+# ZSON Benchmarks - Complete Index
 
 ## 📚 Documentation
 
@@ -20,7 +20,7 @@
 
 #### Supporting Modules
 - **[datasets.py](../datasets.py)** - Dataset generators (employees, analytics, orders, etc.)
-- **[formatters.py](../formatters.py)** - Format converters (JSON, YAML, XML, TOON, MYSON)
+- **[formatters.py](../formatters.py)** - Format converters (JSON, YAML, XML, TOON, ZSON)
 
 #### Utilities
 - **[verify_organization.py](../verify_organization.py)** - Verify benchmark organization
@@ -33,7 +33,7 @@
 
 **Overall** (180,725 tokens across 6 datasets):
 1. **TOON**: 146,113 tokens (best)
-2. **MYSON**: 180,725 tokens (baseline - currently JSON-compact)
+2. **ZSON**: 180,725 tokens (baseline - currently JSON-compact)
 3. **YAML**: 220,129 tokens
 4. **JSON**: 282,332 tokens
 5. **XML**: 332,171 tokens
@@ -42,18 +42,18 @@
 
 Using GPT-4o pricing:
 - **TOON**: $0.34 saved per request
-- **MYSON**: $0.25 saved per request  
+- **ZSON**: $0.25 saved per request  
 - **YAML**: $0.16 saved per request
 
-**Annual Savings** (1M API calls): $254,000 (MYSON vs JSON)
+**Annual Savings** (1M API calls): $254,000 (ZSON vs JSON)
 
 ### Performance by Structure
 
-| Structure | Best Format | MYSON Position |
+| Structure | Best Format | ZSON Position |
 |-----------|-------------|----------------|
 | 100% Tabular | TOON (91,642) | 2nd (123,376) |
 | Mixed (40-60%) | TOON (54,136) | 2nd (57,126) |
-| Deeply Nested | **MYSON (223)** | **1st** ⭐ |
+| Deeply Nested | **ZSON (223)** | **1st** ⭐ |
 
 ---
 
@@ -106,11 +106,11 @@ python benchmarks/verify_organization.py
 ## 🔬 Formats Compared
 
 - **JSON** - 2-space indented (human-readable baseline)
-- **JSON-compact** - Minified (current MYSON implementation)
+- **JSON-compact** - Minified (current ZSON implementation)
 - **YAML** - Indentation-based format
 - **XML** - Tag-based markup
 - **TOON** - Token-Oriented Object Notation (community format)
-- **MYSON** - Minimalist YSON (this project)
+- **ZSON** - Minimalist YSON (this project)
 - **CSV** - For 100% tabular data only
 
 ---
@@ -119,7 +119,7 @@ python benchmarks/verify_organization.py
 
 ### Phase 1: Benchmarking ✅ COMPLETE
 - [x] Comprehensive dataset generation
-- [x] Multi-format comparison (JSON, YAML, XML, TOON, MYSON)
+- [x] Multi-format comparison (JSON, YAML, XML, TOON, ZSON)
 - [x] Token efficiency analysis using GPT tokenizer
 - [x] Cost savings calculations
 - [x] Detailed reports and visualization
@@ -161,14 +161,14 @@ python benchmarks/verify_organization.py
 
 - [toon-format/toon](https://github.com/toon-format/toon) - Token-oriented format inspiration
 - [OpenAI tiktoken](https://github.com/openai/tiktoken) - Tokenizer library
-- [MYSON Specs](../../specs/001-short-name-myson/) - Format specification
+- [ZSON Specs](../../specs/001-short-name-ZSON/) - Format specification
 
 ---
 
 ## 📝 Notes
 
 ### Current Limitations
-- MYSON currently uses JSON-compact format
+- ZSON currently uses JSON-compact format
 - Zen Grid serialization not yet implemented
 - Parsing speed benchmarks require test data files
 
@@ -182,7 +182,7 @@ Once Zen Grid is implemented:
 
 **Last Updated**: December 25, 2025  
 **Benchmark Suite Version**: 1.0.0  
-**MYSON Version**: 0.1.0
+**ZSON Version**: 0.1.0
 
 ---
 
@@ -191,7 +191,7 @@ Once Zen Grid is implemented:
 ```bash
 # Clone and setup
 git clone <repo>
-cd MYSON
+cd ZSON
 pip install -r requirements.txt
 
 # Run all benchmarks

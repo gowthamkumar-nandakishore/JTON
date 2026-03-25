@@ -1,4 +1,4 @@
-# 🎮 TRON Playground Analysis & MYSON Roadmap
+# 🎮 TRON Playground Analysis & ZSON Roadmap
 
 **Source**: https://tron-format.github.io/#/playground
 
@@ -169,7 +169,7 @@ Icons: lucide-react
 
 ---
 
-## 🚀 MYSON Playground Roadmap
+## 🚀 ZSON Playground Roadmap
 
 ### Phase 1: Parity with TRON (2-3 days)
 
@@ -188,7 +188,7 @@ Icons: lucide-react
   - XML
   - TOON
   - TRON
-  - MYSON
+  - ZSON
   
 - [ ] **Token Visualization**
   - GPT-4o/GPT-5 tokenization (o200k_base)
@@ -220,7 +220,7 @@ Use our existing datasets:
 
 ### Phase 2: Enhanced Features (Beyond TRON)
 
-#### Unique MYSON Playground Features
+#### Unique ZSON Playground Features
 - [ ] **Performance Metrics**
   - Encoding/decoding speed comparison
   - Memory usage stats
@@ -232,7 +232,7 @@ Use our existing datasets:
   - Input/output token breakdown
   
 - [ ] **Live Zen Grid Visualization**
-  - Show how MYSON detects tabular structures
+  - Show how ZSON detects tabular structures
   - Highlight grid boundaries
   - Display compression strategy
   
@@ -372,15 +372,15 @@ Use our existing datasets:
 
 ## 💡 Competitive Advantages
 
-### MYSON Playground vs TRON Playground
+### ZSON Playground vs TRON Playground
 
-| Feature | TRON | MYSON (Planned) | Advantage |
+| Feature | TRON | ZSON (Planned) | Advantage |
 |---------|------|-----------------|-----------|
 | Formats | 5 | 8 | ✅ +60% more formats |
 | Datasets | 5 | 6 | ✅ Better coverage |
 | Performance Metrics | ❌ | ✅ | ✅ Speed & memory |
 | Cost Calculator | ❌ | ✅ | ✅ ROI analysis |
-| Zen Grid Visualization | ❌ | ✅ | ✅ Unique to MYSON |
+| Zen Grid Visualization | ❌ | ✅ | ✅ Unique to ZSON |
 | Structure Analyzer | ❌ | ✅ | ✅ AI-powered insights |
 | Code Generation | ❌ | ✅ | ✅ Developer productivity |
 | Multi-Tokenizer | ❌ | ✅ | ✅ GPT, Claude, Llama |
@@ -469,7 +469,7 @@ Use our benchmarks:
 
 ## 🎉 Expected Outcome
 
-**By Week 3**: MYSON will have the **most comprehensive format comparison playground** ever built, featuring:
+**By Week 3**: ZSON will have the **most comprehensive format comparison playground** ever built, featuring:
 
 - **8 formats** (vs TRON's 5)
 - **6 diverse datasets** (0-100% tabular)
@@ -480,9 +480,9 @@ Use our benchmarks:
 - **Multi-tokenizer support** (GPT, Claude, Llama)
 - **Export capabilities** (PNG, PDF, reports)
 
-**This will establish MYSON as the gold standard for data serialization benchmarking!** 🏆
+**This will establish ZSON as the gold standard for data serialization benchmarking!** 🏆
 
 ---
 
 *Generated: December 25, 2025*  
-*Based on: TRON playground analysis + MYSON holy grail benchmarks*
+*Based on: TRON playground analysis + ZSON holy grail benchmarks*

@@ -2,7 +2,7 @@
 
 Mirrors <https://github.com/ibireme/yyjson/tree/master/test/data/num>. These
 fixtures are shared with yyjson and nativejson-benchmark and are now used to
-stress MYSON's numeric parser.
+stress ZSON's numeric parser.
 
 ## File name conventions
 

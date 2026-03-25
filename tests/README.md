@@ -1,4 +1,4 @@
-# 🧪 MYSON Test Suite
+# 🧪 ZSON Test Suite
 
 **ONE SCRIPT TO RUN ALL TESTS**
 
@@ -57,7 +57,7 @@ tests/
 - ✅ Arrays: empty, nested, mixed types
 - ✅ Objects: empty, nested, unicode keys
 - ✅ Edge cases: special numbers (Infinity, NaN), escapes
-- ✅ Roundtrip: `json.dumps(myson.loads(x)) == x`
+- ✅ Roundtrip: `json.dumps(zson.loads(x)) == x`
 
 ### Reference Vector Tests (644 files)
 
@@ -128,7 +128,7 @@ We already have a clean structure:
 Edit `test_json_compatibility.py`:
 ```python
 def test_my_new_feature(self):
-    assert myson.loads('{"new": "feature"}') == {"new": "feature"}
+    assert zson.loads('{"new": "feature"}') == {"new": "feature"}
 ```
 
 ### Add Reference Vectors

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-TRON Format Support for MYSON Benchmarks
+TRON Format Support for ZSON Benchmarks
 
 TRON (Token Reduced Object Notation) is a class-based format that extends JSON.
 It reduces token count by defining schemas (classes) and using positional arguments.
@@ -206,7 +206,7 @@ def decode_tron(tron_str: str) -> Any:
     )
 
 
-# === Integration with MYSON Benchmarks ===
+# === Integration with ZSON Benchmarks ===
 
 def format_tron_compact(data: Any) -> str:
     """Format as TRON (compact/compressed)"""

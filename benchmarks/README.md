@@ -1,4 +1,4 @@
-# 🎯 MYSON Benchmarking Suite - SIMPLIFIED!
+# 🎯 ZSON Benchmarking Suite - SIMPLIFIED!
 
 **ONE SCRIPT TO RULE THEM ALL**
 
@@ -42,7 +42,7 @@ benchmarks/results/
 
 ## 🏆 Latest Results
 
-**Winner**: **TRON** (122,097 tokens, 32.4% better than MYSON)
+**Winner**: **TRON** (122,097 tokens, 32.4% better than ZSON)
 
 See `results/QUICK_REFERENCE.md` for full breakdown.
 
@@ -51,7 +51,7 @@ See `results/QUICK_REFERENCE.md` for full breakdown.
 ## 📋 What Gets Benchmarked
 
 ### 8 Formats
-JSON, JSON-compact, orjson, YAML, XML, TOON, **TRON**, MYSON
+JSON, JSON-compact, orjson, YAML, XML, TOON, **TRON**, ZSON
 
 ### 6 Datasets
 👥 Employees | 📈 Analytics | ⭐ GitHub | 🛒 Orders | 🧾 Events | 🧩 Config

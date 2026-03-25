@@ -293,7 +293,7 @@ def get_dataset(name: str) -> Dict[str, Any]:
 if __name__ == "__main__":
     import json
     
-    print("📊 MYSON Benchmark Datasets\n")
+    print("📊 ZSON Benchmark Datasets\n")
     print("Available datasets:")
     for name, info in DATASETS.items():
         print(f"  {info['icon']} {name:12s} - {info['description']}")

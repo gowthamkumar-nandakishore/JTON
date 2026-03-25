@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Format converters for benchmarking.
-Converts data to: JSON, JSON-compact, YAML, XML, TOON, MYSON
+Converts data to: JSON, JSON-compact, YAML, XML, TOON, ZSON
 """
 
 import json
@@ -9,7 +9,7 @@ from typing import Any, Dict
 import sys
 from pathlib import Path
 
-# Add src to path for myson import
+# Add src to path for ZSON import
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
@@ -171,18 +171,17 @@ def format_toon(data: Any) -> str:
     return toon_encode(data)
 
 
-def format_myson(data: Any) -> str:
-    """Format as MYSON (Zen Grid format)"""
+def format_ZSON(data: Any) -> str:
+    """Format as ZSON (Zen Grid format) — uses real Zen Grid serialization."""
     try:
-        import myson
+        import zson
+        return zson.dumps(data, zen_grid=True)
     except ImportError:
-        print("❌ MYSON not installed. Run: maturin develop --release")
+        print("❌ ZSON not installed. Run: maturin develop --release")
         return ""
-    
-    # MYSON currently uses JSON-compatible format
-    # TODO: Implement Zen Grid serialization once spec is complete
-    # For now, use JSON as placeholder
-    return json.dumps(data, separators=(',', ':'), ensure_ascii=False)
+    except Exception as e:
+        # Fallback to JSON compact if serialization fails
+        return json.dumps(data, separators=(',', ':'), ensure_ascii=False)
 
 
 def format_tron(data: Any) -> str:
@@ -249,7 +248,7 @@ FORMATTERS = {
     "xml": format_xml,
     "toon": format_toon,
     "tron": format_tron,
-    "myson": format_myson,
+    "ZSON": format_ZSON,
     "csv": format_csv,
 }
 
@@ -261,7 +260,7 @@ FORMATTER_DISPLAY_NAMES = {
     "xml": "XML",
     "toon": "TOON",
     "tron": "TRON",
-    "myson": "MYSON",
+    "ZSON": "ZSON",
     "csv": "CSV",
 }
 

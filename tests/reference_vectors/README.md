@@ -1,4 +1,4 @@
-# MYSON Reference Vectors
+# ZSON Reference Vectors
 
 This directory vendors the JSON and numeric compatibility suites from
 [yyjson](https://github.com/ibireme/yyjson/tree/master/test/data). The files are
