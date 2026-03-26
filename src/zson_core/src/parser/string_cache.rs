@@ -86,7 +86,7 @@ impl StringCache {
             // the common case of short ASCII keys like "id", "name", "email".
             if bytes.iter().all(|&b| b < 0x80) {
                 let obj = ffi::PyUnicode_DecodeASCII(
-                    bytes.as_ptr() as *const i8,
+                    bytes.as_ptr() as *const std::os::raw::c_char,
                     bytes.len() as isize,
                     std::ptr::null(),
                 );
@@ -96,7 +96,7 @@ impl StringCache {
                 ffi::PyErr_Clear();
             }
             ffi::PyUnicode_DecodeUTF8(
-                bytes.as_ptr() as *const i8,
+                bytes.as_ptr() as *const std::os::raw::c_char,
                 bytes.len() as isize,
                 std::ptr::null(),
             )

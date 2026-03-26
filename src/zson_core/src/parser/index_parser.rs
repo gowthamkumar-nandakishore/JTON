@@ -910,13 +910,13 @@ impl<'a> FastIndexParser<'a> {
             let py_str = unsafe {
                 if slice.iter().all(|&b| b < 0x80) {
                     ffi::PyUnicode_DecodeASCII(
-                        slice.as_ptr() as *const i8,
+                        slice.as_ptr() as *const std::os::raw::c_char,
                         slice.len() as isize,
                         std::ptr::null(),
                     )
                 } else {
                     ffi::PyUnicode_DecodeUTF8(
-                        slice.as_ptr() as *const i8,
+                        slice.as_ptr() as *const std::os::raw::c_char,
                         slice.len() as isize,
                         std::ptr::null(),
                     )
@@ -951,7 +951,7 @@ impl<'a> FastIndexParser<'a> {
         Ok(unsafe {
             let s = out.as_str();
             let py_obj = ffi::PyUnicode_DecodeUTF8(
-                s.as_ptr() as *const i8,
+                s.as_ptr() as *const std::os::raw::c_char,
                 s.len() as isize,
                 std::ptr::null(),
             );
@@ -1251,13 +1251,13 @@ impl<'a> FastIndexParser<'a> {
             let py_str = unsafe {
                 if all_ascii {
                     ffi::PyUnicode_DecodeASCII(
-                        slice.as_ptr() as *const i8,
+                        slice.as_ptr() as *const std::os::raw::c_char,
                         slice.len() as isize,
                         std::ptr::null(),
                     )
                 } else {
                     ffi::PyUnicode_DecodeUTF8(
-                        slice.as_ptr() as *const i8,
+                        slice.as_ptr() as *const std::os::raw::c_char,
                         slice.len() as isize,
                         std::ptr::null(),
                     )
@@ -1293,7 +1293,7 @@ impl<'a> FastIndexParser<'a> {
                     return Ok(unsafe {
                         let s = result.as_str();
                         let py_obj = ffi::PyUnicode_DecodeUTF8(
-                            s.as_ptr() as *const i8,
+                            s.as_ptr() as *const std::os::raw::c_char,
                             s.len() as isize,
                             std::ptr::null(),
                         );
