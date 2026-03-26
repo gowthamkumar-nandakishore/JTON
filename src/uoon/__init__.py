@@ -1,10 +1,10 @@
 """
-LEXATRON (Zero-overhead Serialized Object Notation) — high-performance JSON superset
+UOON (Zero-overhead Serialized Object Notation) — high-performance JSON superset
 with SIMD-accelerated parsing and Zen Grid token-efficient serialization.
 
 Key functions:
-  loads(data)              — parse LEXATRON/JSON → Python object
-  dumps(data, **opts)      — serialize Python object → LEXATRON/JSON string
+  loads(data)              — parse UOON/JSON → Python object
+  dumps(data, **opts)      — serialize Python object → UOON/JSON string
 
 Zen Grid format automatically converts homogeneous arrays of dicts to a
 compact table syntax that reduces LLM token counts by 40-65%:
@@ -23,7 +23,7 @@ dumps() options:
   indent=None           — Pretty-print with N spaces per indent level
 """
 
-from .lexatron_core import __version__, __simd__, loads, dumps
+from .uoon_core import __version__, __simd__, loads, dumps
 
 # Convenient aliases
 encode = dumps   # familiar for users coming from orjson / msgspec

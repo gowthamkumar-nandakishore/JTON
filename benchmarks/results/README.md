@@ -1,4 +1,4 @@
-# LEXATRON Benchmarks - Complete Index
+# UOON Benchmarks - Complete Index
 
 ## 📚 Documentation
 
@@ -20,7 +20,7 @@
 
 #### Supporting Modules
 - **[datasets.py](../datasets.py)** - Dataset generators (employees, analytics, orders, etc.)
-- **[formatters.py](../formatters.py)** - Format converters (JSON, YAML, XML, TOON, LEXATRON)
+- **[formatters.py](../formatters.py)** - Format converters (JSON, YAML, XML, TOON, UOON)
 
 #### Utilities
 - **[verify_organization.py](../verify_organization.py)** - Verify benchmark organization
@@ -33,7 +33,7 @@
 
 **Overall** (180,725 tokens across 6 datasets):
 1. **TOON**: 146,113 tokens (best)
-2. **LEXATRON**: 180,725 tokens (baseline - currently JSON-compact)
+2. **UOON**: 180,725 tokens (baseline - currently JSON-compact)
 3. **YAML**: 220,129 tokens
 4. **JSON**: 282,332 tokens
 5. **XML**: 332,171 tokens
@@ -42,18 +42,18 @@
 
 Using GPT-4o pricing:
 - **TOON**: $0.34 saved per request
-- **LEXATRON**: $0.25 saved per request  
+- **UOON**: $0.25 saved per request  
 - **YAML**: $0.16 saved per request
 
-**Annual Savings** (1M API calls): $254,000 (LEXATRON vs JSON)
+**Annual Savings** (1M API calls): $254,000 (UOON vs JSON)
 
 ### Performance by Structure
 
-| Structure | Best Format | LEXATRON Position |
+| Structure | Best Format | UOON Position |
 |-----------|-------------|----------------|
 | 100% Tabular | TOON (91,642) | 2nd (123,376) |
 | Mixed (40-60%) | TOON (54,136) | 2nd (57,126) |
-| Deeply Nested | **LEXATRON (223)** | **1st** ⭐ |
+| Deeply Nested | **UOON (223)** | **1st** ⭐ |
 
 ---
 
@@ -106,11 +106,11 @@ python benchmarks/verify_organization.py
 ## 🔬 Formats Compared
 
 - **JSON** - 2-space indented (human-readable baseline)
-- **JSON-compact** - Minified (current LEXATRON implementation)
+- **JSON-compact** - Minified (current UOON implementation)
 - **YAML** - Indentation-based format
 - **XML** - Tag-based markup
 - **TOON** - Token-Oriented Object Notation (community format)
-- **LEXATRON** - Minimalist YSON (this project)
+- **UOON** - Minimalist YSON (this project)
 - **CSV** - For 100% tabular data only
 
 ---
@@ -119,7 +119,7 @@ python benchmarks/verify_organization.py
 
 ### Phase 1: Benchmarking ✅ COMPLETE
 - [x] Comprehensive dataset generation
-- [x] Multi-format comparison (JSON, YAML, XML, TOON, LEXATRON)
+- [x] Multi-format comparison (JSON, YAML, XML, TOON, UOON)
 - [x] Token efficiency analysis using GPT tokenizer
 - [x] Cost savings calculations
 - [x] Detailed reports and visualization
@@ -161,14 +161,14 @@ python benchmarks/verify_organization.py
 
 - [toon-format/toon](https://github.com/toon-format/toon) - Token-oriented format inspiration
 - [OpenAI tiktoken](https://github.com/openai/tiktoken) - Tokenizer library
-- [LEXATRON Specs](../../specs/001-short-name-LEXATRON/) - Format specification
+- [UOON Specs](../../specs/001-short-name-UOON/) - Format specification
 
 ---
 
 ## 📝 Notes
 
 ### Current Limitations
-- LEXATRON currently uses JSON-compact format
+- UOON currently uses JSON-compact format
 - Zen Grid serialization not yet implemented
 - Parsing speed benchmarks require test data files
 
@@ -182,7 +182,7 @@ Once Zen Grid is implemented:
 
 **Last Updated**: December 25, 2025  
 **Benchmark Suite Version**: 1.0.0  
-**LEXATRON Version**: 0.1.0
+**UOON Version**: 0.1.0
 
 ---
 
@@ -191,7 +191,7 @@ Once Zen Grid is implemented:
 ```bash
 # Clone and setup
 git clone <repo>
-cd LEXATRON
+cd UOON
 pip install -r requirements.txt
 
 # Run all benchmarks

@@ -49,24 +49,24 @@ print("STEP 3: Running manual dumps() smoke test")
 print("=" * 80)
 
 script = '''
-import lexatron, json
+import uoon, json
 
 # Test 1: basic JSON output
-r = lexatron.dumps({"name": "Alice", "age": 30})
+r = uoon.dumps({"name": "Alice", "age": 30})
 print("Test 1:", r)
 assert json.loads(r) == {"name": "Alice", "age": 30}
 
 # Test 2: zen grid table
 data = [{"id": 1, "name": "Alice", "score": 95}, {"id": 2, "name": "Bob", "score": 87}]
-r = lexatron.dumps(data, zen_grid=True)
+r = uoon.dumps(data, zen_grid=True)
 print("Test 2 (zen grid):", r)
-rt = lexatron.loads(r)
+rt = uoon.loads(r)
 assert rt == data, f"Round-trip failed: {rt} != {data}"
 print("Round-trip: OK")
 
 # Test 3: token savings
 data_large = [{"employee_id": i, "first_name": f"Name{i}", "dept": "Eng"} for i in range(100)]
-zen = lexatron.dumps(data_large, zen_grid=True)
+zen = uoon.dumps(data_large, zen_grid=True)
 compact = json.dumps(data_large, separators=(",",":"))
 print(f"Test 3: zen={len(zen)} chars, json={len(compact)} chars, savings={100*(len(compact)-len(zen))/len(compact):.1f}%")
 '''

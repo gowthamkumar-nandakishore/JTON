@@ -1,13 +1,13 @@
 [package]
-name = "lexatron_core"
+name = "uoon_core"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.89"
 
 [lib]
-name = "lexatron_core"
+name = "uoon_core"
 crate-type = ["cdylib"]
-path = "src/lexatron_core/src/lib.rs"
+path = "src/uoon_core/src/lib.rs"
 
 [dependencies]
 pyo3 = { version = "0.20" }

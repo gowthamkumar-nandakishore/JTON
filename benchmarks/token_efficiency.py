@@ -9,7 +9,7 @@ Compares token counts across formats:
 - YAML
 - XML
 - TOON
-- LEXATRON (Zen Grid)
+- UOON (Zen Grid)
 
 Uses tiktoken with o200k_base encoding (GPT-4o/GPT-5 tokenizer).
 """
@@ -46,9 +46,9 @@ except ImportError:
 # === Configuration ===
 
 # Formats to benchmark (in display order)
-FORMATS = ["json", "json-compact", "orjson", "yaml", "xml", "toon", "tron", "LEXATRON"]
+FORMATS = ["json", "json-compact", "orjson", "yaml", "xml", "toon", "tron", "UOON"]
 
-# Format order for comparisons (against LEXATRON as baseline)
+# Format order for comparisons (against UOON as baseline)
 COMPARISON_ORDER = ["json", "json-compact", "orjson", "yaml", "xml", "toon", "tron"]
 
 # Bar chart settings
@@ -63,7 +63,7 @@ class FormatMetrics:
     """Metrics for a single format"""
     name: str
     tokens: int
-    savings: int  # Negative = LEXATRON uses fewer tokens
+    savings: int  # Negative = UOON uses fewer tokens
     savings_percent: float
 
 
@@ -96,14 +96,14 @@ def benchmark_dataset(dataset_name: str) -> BenchmarkResult:
     
     # Calculate tokens for each format
     format_metrics = []
-    LEXATRON_tokens = None
+    UOON_tokens = None
     
     for format_name in FORMATS:
         formatted = format_data(data, format_name)
         tokens = count_tokens(formatted)
         
-        if format_name == "LEXATRON":
-            LEXATRON_tokens = tokens
+        if format_name == "UOON":
+            UOON_tokens = tokens
         
         format_metrics.append({
             "name": format_name,
@@ -111,10 +111,10 @@ def benchmark_dataset(dataset_name: str) -> BenchmarkResult:
             "formatted": formatted,
         })
     
-    # Calculate savings relative to LEXATRON
+    # Calculate savings relative to UOON
     results = []
     for metrics in format_metrics:
-        savings = metrics["tokens"] - LEXATRON_tokens
+        savings = metrics["tokens"] - UOON_tokens
         savings_percent = (savings / metrics["tokens"] * 100) if metrics["tokens"] > 0 else 0
         
         results.append(FormatMetrics(
@@ -165,10 +165,10 @@ def create_bar_chart(tokens: int, max_tokens: int, width: int = BAR_WIDTH) -> st
 
 
 def format_comparison_line(format_metrics: FormatMetrics, is_last: bool = False) -> str:
-    """Format a comparison line showing savings vs LEXATRON"""
+    """Format a comparison line showing savings vs UOON"""
     label = FORMATTER_DISPLAY_NAMES.get(format_metrics.name, format_metrics.name.upper())
     
-    # Sign for savings (negative means LEXATRON saves tokens)
+    # Sign for savings (negative means UOON saves tokens)
     sign = "−" if format_metrics.savings_percent >= 0 else "+"
     percent = abs(format_metrics.savings_percent)
     signed_percent = f"{sign}{percent:.1f}%"
@@ -188,14 +188,14 @@ def format_dataset_result(result: BenchmarkResult) -> str:
     lines.append(header)
     lines.append("   │")
     
-    # Get LEXATRON and other format metrics
-    LEXATRON = next(f for f in result.formats if f.name == "LEXATRON")
+    # Get UOON and other format metrics
+    UOON = next(f for f in result.formats if f.name == "UOON")
     others = [f for f in result.formats if f.name in COMPARISON_ORDER]
     
     # Find max tokens for bar chart
     max_tokens = max(f.tokens for f in result.formats)
     
-    # LEXATRON baseline (first format might be CSV if available)
+    # UOON baseline (first format might be CSV if available)
     csv_format = next((f for f in result.formats if f.name == "csv" and f.tokens > 0), None)
     
     if csv_format and result.tabular_percent == 100:
@@ -204,18 +204,18 @@ def format_dataset_result(result: BenchmarkResult) -> str:
         csv_str = f"{csv_format.tokens:,}".rjust(TOKEN_PADDING)
         lines.append(f"   CSV                 {bar}    {csv_str} tokens")
         
-        # Show LEXATRON with comparison to CSV
-        bar = create_bar_chart(LEXATRON.tokens, max_tokens)
-        LEXATRON_str = f"{LEXATRON.tokens:,}".rjust(TOKEN_PADDING)
-        csv_diff = LEXATRON.tokens - csv_format.tokens
+        # Show UOON with comparison to CSV
+        bar = create_bar_chart(UOON.tokens, max_tokens)
+        UOON_str = f"{UOON.tokens:,}".rjust(TOKEN_PADDING)
+        csv_diff = UOON.tokens - csv_format.tokens
         csv_diff_pct = (csv_diff / csv_format.tokens * 100) if csv_format.tokens > 0 else 0
         sign = "+" if csv_diff >= 0 else "−"
-        lines.append(f"   LEXATRON               {bar}    {LEXATRON_str} tokens   ({sign}{abs(csv_diff_pct):.1f}% vs CSV)")
+        lines.append(f"   UOON               {bar}    {UOON_str} tokens   ({sign}{abs(csv_diff_pct):.1f}% vs CSV)")
     else:
-        # Show LEXATRON as baseline
-        bar = create_bar_chart(LEXATRON.tokens, max_tokens)
-        LEXATRON_str = f"{LEXATRON.tokens:,}".rjust(TOKEN_PADDING)
-        lines.append(f"   LEXATRON               {bar}    {LEXATRON_str} tokens")
+        # Show UOON as baseline
+        bar = create_bar_chart(UOON.tokens, max_tokens)
+        UOON_str = f"{UOON.tokens:,}".rjust(TOKEN_PADDING)
+        lines.append(f"   UOON               {bar}    {UOON_str} tokens")
     
     # Show comparisons to other formats
     for i, fmt in enumerate(others):
@@ -245,7 +245,7 @@ def format_track_totals(totals: Dict[str, int], track_name: str) -> str:
     lines = []
     lines.append(f"{'─' * 34} Total {'─' * 34}")
     
-    LEXATRON_total = totals["LEXATRON"]
+    UOON_total = totals["UOON"]
     max_tokens = max(totals.values())
     
     # Check if CSV is applicable
@@ -257,23 +257,23 @@ def format_track_totals(totals: Dict[str, int], track_name: str) -> str:
         csv_str = f"{csv_total:,}".rjust(TOKEN_PADDING)
         lines.append(f"   CSV                 {bar}    {csv_str} tokens")
         
-        # Show LEXATRON with CSV comparison
-        bar = create_bar_chart(LEXATRON_total, max_tokens)
-        LEXATRON_str = f"{LEXATRON_total:,}".rjust(TOKEN_PADDING)
-        csv_diff = LEXATRON_total - csv_total
+        # Show UOON with CSV comparison
+        bar = create_bar_chart(UOON_total, max_tokens)
+        UOON_str = f"{UOON_total:,}".rjust(TOKEN_PADDING)
+        csv_diff = UOON_total - csv_total
         csv_diff_pct = (csv_diff / csv_total * 100) if csv_total > 0 else 0
         sign = "+" if csv_diff >= 0 else "−"
-        lines.append(f"   LEXATRON               {bar}    {LEXATRON_str} tokens   ({sign}{abs(csv_diff_pct):.1f}% vs CSV)")
+        lines.append(f"   UOON               {bar}    {UOON_str} tokens   ({sign}{abs(csv_diff_pct):.1f}% vs CSV)")
     else:
-        # Show LEXATRON baseline
-        bar = create_bar_chart(LEXATRON_total, max_tokens)
-        LEXATRON_str = f"{LEXATRON_total:,}".rjust(TOKEN_PADDING)
-        lines.append(f"   LEXATRON               {bar}    {LEXATRON_str} tokens")
+        # Show UOON baseline
+        bar = create_bar_chart(UOON_total, max_tokens)
+        UOON_str = f"{UOON_total:,}".rjust(TOKEN_PADDING)
+        lines.append(f"   UOON               {bar}    {UOON_str} tokens")
     
     # Show comparisons
     for i, format_name in enumerate(COMPARISON_ORDER):
         tokens = totals[format_name]
-        savings = tokens - LEXATRON_total
+        savings = tokens - UOON_total
         savings_pct = (savings / tokens * 100) if tokens > 0 else 0
         
         label = FORMATTER_DISPLAY_NAMES[format_name]
@@ -343,7 +343,7 @@ def save_results(results: List[BenchmarkResult], output_path: Path):
 **Date:** {Path(__file__).parent.parent}
 
 Token counts measured across different serialization formats.
-LEXATRON serves as the baseline for comparisons.
+UOON serves as the baseline for comparisons.
 
 {report}
 

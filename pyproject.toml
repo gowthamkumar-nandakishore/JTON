@@ -3,7 +3,7 @@ requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "lexatron"
+name = "uoon"
 version = "0.1.0"
 requires-python = ">=3.10"
 classifiers = [
@@ -13,8 +13,8 @@ classifiers = [
 
 [tool.maturin]
 python-source = "src"
-module-name = "lexatron.lexatron_core"
-include = ["src/lexatron/py.typed", "src/lexatron/__init__.pyi"]
+module-name = "uoon.uoon_core"
+include = ["src/uoon/py.typed", "src/uoon/__init__.pyi"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

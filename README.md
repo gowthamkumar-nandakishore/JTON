@@ -1,6 +1,6 @@
-# LEXATRON
+# UOON
 
-**LEXATRON (Zero-overhead Serialized Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python.
+**UOON (Zero-overhead Serialized Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python.
 
 [![Tests](https://img.shields.io/badge/tests-622%20passing-brightgreen)](./tests/)
 [![Performance](https://img.shields.io/badge/loads-193%20MB%2Fs-green)](#performance)
@@ -11,11 +11,11 @@
 
 ## Overview
 
-LEXATRON is a JSON superset designed for LLM applications and high-throughput data processing:
+UOON is a JSON superset designed for LLM applications and high-throughput data processing:
 
 - **Token Efficiency**: Zen Grid tables reduce token count by **11–33%** on tabular data vs JSON compact, and up to **50%** on pure tabular datasets — helping you stay within LLM context limits
 - **SIMD Acceleration**: AVX2 (32-byte) and AVX-512 (64-byte) structural scanning
-- **Python-compatible**: Drop-in replacement for `json.loads()` / `json.dumps()` — all valid JSON is valid LEXATRON
+- **Python-compatible**: Drop-in replacement for `json.loads()` / `json.dumps()` — all valid JSON is valid UOON
 - **Serialization**: `dumps()` with Zen Grid table output, Pydantic v1/v2 and dataclass support
 - **JSON Extensions**: Unquoted keys, `//` and `/* */` comments, `Infinity`/`NaN` special numbers
 - **Strict correctness**: Rejects invalid JSON numbers (`-01`, `1.`, `0.e1`) that many parsers accept silently
@@ -28,11 +28,11 @@ LEXATRON is a JSON superset designed for LLM applications and high-throughput da
 
 ```bash
 # From PyPI (once published)
-pip install lexatron
+pip install uoon
 
 # From source (requires Rust 1.70+ — https://rustup.rs/)
-git clone https://github.com/gowthamkumar-nandakishore/LEXATRON.git
-cd LEXATRON
+git clone https://github.com/gowthamkumar-nandakishore/UOON.git
+cd UOON
 pip install maturin
 maturin develop --release
 ```
@@ -40,16 +40,16 @@ maturin develop --release
 ### Basic Usage
 
 ```python
-import lexatron
+import uoon
 
 # Standard JSON parsing
-data = lexatron.loads('{"name": "Alice", "age": 30}')
+data = uoon.loads('{"name": "Alice", "age": 30}')
 
-# LEXATRON extensions — unquoted keys
-data = lexatron.loads('{name: "Alice", age: 30}')
+# UOON extensions — unquoted keys
+data = uoon.loads('{name: "Alice", age: 30}')
 
 # Comments for configuration files
-config = lexatron.loads('''
+config = uoon.loads('''
 {
     host: "localhost",   // server address
     port: 8080,         /* default port */
@@ -58,22 +58,22 @@ config = lexatron.loads('''
 ''')
 
 # Special numbers (Python compatibility)
-data = lexatron.loads('{x: Infinity, y: -Infinity, z: NaN}')
+data = uoon.loads('{x: Infinity, y: -Infinity, z: NaN}')
 
 # Serialize to compact JSON
-lexatron.dumps({"name": "Alice", "age": 30})
+uoon.dumps({"name": "Alice", "age": 30})
 # → '{"name":"Alice","age":30}'
 
 # encode/decode aliases (familiar for orjson/msgspec users)
-lexatron.encode(data)   # same as dumps()
-lexatron.decode(text)   # same as loads()
+uoon.encode(data)   # same as dumps()
+uoon.decode(text)   # same as loads()
 ```
 
 ---
 
 ## Zen Grid: Token-Efficient Table Format
 
-When you pass a list of dicts to `dumps()`, LEXATRON automatically converts it to Zen Grid table format — reducing LLM tokens by 11–50% on tabular data.
+When you pass a list of dicts to `dumps()`, UOON automatically converts it to Zen Grid table format — reducing LLM tokens by 11–50% on tabular data.
 
 ### Syntax
 
@@ -84,7 +84,7 @@ When you pass a list of dicts to `dumps()`, LEXATRON automatically converts it t
 ### Example
 
 ```python
-import lexatron
+import uoon
 
 users = [
     {"id": 1, "name": "Alice", "score": 95},
@@ -95,30 +95,30 @@ users = [
 # Standard JSON compact (116 chars, ~42 tokens):
 # [{"id":1,"name":"Alice","score":95},{"id":2,"name":"Bob","score":87},{"id":3,"name":"Carol","score":92}]
 
-# LEXATRON Zen Grid (55 chars, ~28 tokens — 33% fewer tokens):
-print(lexatron.dumps(users))
+# UOON Zen Grid (55 chars, ~28 tokens — 33% fewer tokens):
+print(uoon.dumps(users))
 # → '[: id, name, score; 1, "Alice", 95; 2, "Bob", 87; 3, "Carol", 92 ]'
 
 # Disable Zen Grid for standard JSON output
-print(lexatron.dumps(users, zen_grid=False))
+print(uoon.dumps(users, zen_grid=False))
 # → '[{"id":1,"name":"Alice","score":95},...]'
 
-# Unquoted keys (LEXATRON style)
-print(lexatron.dumps({"host": "localhost", "port": 8080}, unquoted_keys=True))
+# Unquoted keys (UOON style)
+print(uoon.dumps({"host": "localhost", "port": 8080}, unquoted_keys=True))
 # → '{host:"localhost",port:8080}'
 
 # Indented output
-print(lexatron.dumps(users, indent=2))
+print(uoon.dumps(users, indent=2))
 ```
 
 ### Round-trip correctness
 
-Zen Grid is valid LEXATRON — `lexatron.loads()` parses it back to the original data:
+Zen Grid is valid UOON — `uoon.loads()` parses it back to the original data:
 
 ```python
 original = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
-encoded = lexatron.dumps(original)                # → '[: id, name; 1, "Alice"; 2, "Bob" ]'
-decoded = lexatron.loads(encoded)                 # → [{"id": 1, "name": "Alice"}, ...]
+encoded = uoon.dumps(original)                # → '[: id, name; 1, "Alice"; 2, "Bob" ]'
+decoded = uoon.loads(encoded)                 # → [{"id": 1, "name": "Alice"}, ...]
 assert decoded == original                    # ✅ perfect round-trip
 ```
 
@@ -129,7 +129,7 @@ assert decoded == original                    # ✅ perfect round-trip
 ```python
 from pydantic import BaseModel
 from dataclasses import dataclass
-import lexatron
+import uoon
 
 # Pydantic v2 (model_dump)
 class User(BaseModel):
@@ -140,7 +140,7 @@ class User(BaseModel):
 users = [User(id=1, name="Alice", email="a@example.com"),
          User(id=2, name="Bob",   email="b@example.com")]
 
-print(lexatron.dumps(users))
+print(uoon.dumps(users))
 # → '[: id, name, email; 1, "Alice", "a@example.com"; 2, "Bob", "b@example.com" ]'
 
 # Python dataclasses
@@ -149,7 +149,7 @@ class Point:
     x: float
     y: float
 
-print(lexatron.dumps(Point(x=1.5, y=2.5)))
+print(uoon.dumps(Point(x=1.5, y=2.5)))
 # → '{"x":1.5,"y":2.5}'
 ```
 
@@ -157,40 +157,40 @@ print(lexatron.dumps(Point(x=1.5, y=2.5)))
 
 ## API Reference
 
-### `lexatron.loads(data, schema=None)`
+### `uoon.loads(data, schema=None)`
 
-Parse LEXATRON or JSON data into Python objects.
+Parse UOON or JSON data into Python objects.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `data` | `str \| bytes` | required | LEXATRON/JSON text to parse |
+| `data` | `str \| bytes` | required | UOON/JSON text to parse |
 | `schema` | `list[FieldDescriptor] \| None` | `None` | Optional schema for guided parsing |
 
 Returns: `Any` — parsed Python object (dict, list, str, int, float, bool, None)
 
 ```python
-lexatron.loads('{"a": 1}')          # → {"a": 1}
-lexatron.loads(b'{"a": 1}')         # bytes input OK
-lexatron.loads('{a: 1}')            # unquoted keys OK
-lexatron.loads('// comment\n{a:1}') # comments OK
+uoon.loads('{"a": 1}')          # → {"a": 1}
+uoon.loads(b'{"a": 1}')         # bytes input OK
+uoon.loads('{a: 1}')            # unquoted keys OK
+uoon.loads('// comment\n{a:1}') # comments OK
 ```
 
-### `lexatron.dumps(data, *, zen_grid=True, unquoted_keys=False, indent=None)`
+### `uoon.dumps(data, *, zen_grid=True, unquoted_keys=False, indent=None)`
 
-Serialize Python objects to LEXATRON/JSON string.
+Serialize Python objects to UOON/JSON string.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `data` | `Any` | required | Python object to serialize |
 | `zen_grid` | `bool` | `True` | Auto-convert lists of dicts to Zen Grid table format |
-| `unquoted_keys` | `bool` | `False` | Write dict keys without quotes (LEXATRON style) |
+| `unquoted_keys` | `bool` | `False` | Write dict keys without quotes (UOON style) |
 | `indent` | `int \| None` | `None` | Enable pretty-printing with given indent width |
 
 Returns: `str` — serialized text
 
 **Supported types**: `dict`, `list`, `tuple`, `str`, `int`, `float`, `bool`, `None`, Pydantic `BaseModel` (v1+v2), `@dataclass`
 
-### `lexatron.encode` / `lexatron.decode`
+### `uoon.encode` / `uoon.decode`
 
 Aliases for `dumps` / `loads` — familiar for users of `orjson` or `msgspec`.
 
@@ -203,18 +203,18 @@ Aliases for `dumps` / `loads` — familiar for users of `orjson` or `msgspec`.
 | Library | `loads` | `dumps` | Notes |
 |---------|---------|---------|-------|
 | [stdlib `json`](https://docs.python.org/3/library/json.html) | 40–60 MB/s | 83–100 MB/s | Pure Python |
-| **LEXATRON** | **117–193 MB/s** | **238–309 MB/s** | Rust/SIMD, JSON mode |
-| **LEXATRON Zen Grid** | — | **397–616 MB/s** | Rust, table output |
+| **UOON** | **117–193 MB/s** | **238–309 MB/s** | Rust/SIMD, JSON mode |
+| **UOON Zen Grid** | — | **397–616 MB/s** | Rust, table output |
 | [orjson](https://github.com/ijl/orjson) | 500–730 MB/s | 400–586 MB/s | Rust, JSON only |
 
-- LEXATRON `loads` is **3–5× faster** than stdlib
-- LEXATRON `dumps` (JSON mode) is **3–4× faster** than stdlib
-- LEXATRON Zen Grid `dumps` reaches **600+ MB/s** on string-heavy tabular data
-- LEXATRON adds Zen Grid token reduction that orjson cannot provide
+- UOON `loads` is **3–5× faster** than stdlib
+- UOON `dumps` (JSON mode) is **3–4× faster** than stdlib
+- UOON Zen Grid `dumps` reaches **600+ MB/s** on string-heavy tabular data
+- UOON adds Zen Grid token reduction that orjson cannot provide
 
 ### SIMD Acceleration
 
-LEXATRON uses a two-pass SIMD parsing strategy modeled after [simdjson](https://github.com/simdjson/simdjson):
+UOON uses a two-pass SIMD parsing strategy modeled after [simdjson](https://github.com/simdjson/simdjson):
 
 1. **Structural scan** (AVX2/AVX-512): Build index of `{}[],:;"` positions in a single pass
 2. **Index-jumping parse**: Navigate the pre-built index without byte-by-byte scanning
@@ -233,20 +233,20 @@ LEXATRON uses a two-pass SIMD parsing strategy modeled after [simdjson](https://
 
 ## Token Efficiency
 
-### LEXATRON vs Competing Formats
+### UOON vs Competing Formats
 
 | Format | Token Savings vs JSON compact | Approach | JSON-Compatible |
 |--------|-------------------------------|----------|-----------------|
-| **LEXATRON Zen Grid** | **11–33% (mixed), up to 50% (pure tabular)** | Table syntax | ✅ Yes (LEXATRON superset) |
+| **UOON Zen Grid** | **11–33% (mixed), up to 50% (pure tabular)** | Table syntax | ✅ Yes (UOON superset) |
 | [TRON](https://github.com/tron-format/tron) | ~32% | Class-based aliases | ❌ No (new syntax) |
 | [TOON](https://github.com/nickcoutsos/toon) | ~19% | Table-oriented | ❌ No (new syntax) |
 | JSON pretty | −197% (more tokens!) | Whitespace | ✅ Yes |
 
-LEXATRON's key advantage: Zen Grid is still valid LEXATRON/JSON syntax, meaning any JSON parser can handle it, while TRON/TOON require custom parsers.
+UOON's key advantage: Zen Grid is still valid UOON/JSON syntax, meaning any JSON parser can handle it, while TRON/TOON require custom parsers.
 
 ### Real-world LLM Token Savings
 
-| Scenario | JSON compact tokens | LEXATRON Zen Grid tokens | Savings |
+| Scenario | JSON compact tokens | UOON Zen Grid tokens | Savings |
 |----------|---------------------|----------------------|---------|
 | 50 API users (5 cols) | 1,302 | 1,011 | **22%** |
 | 100 log entries (10 cols) | 5,803 | 4,822 | **17%** |
@@ -289,7 +289,7 @@ Measured using [tiktoken](https://github.com/openai/tiktoken) `o200k_base` encod
 ### LLM Prompt Optimization
 
 ```python
-import lexatron
+import uoon
 
 # Large tabular dataset to send to an LLM
 employees = [
@@ -301,8 +301,8 @@ employees = [
 # Standard JSON: every key repeated per row → high token cost
 json_str = json.dumps(employees)   # "id", "name", "dept" repeated 1000× each
 
-# LEXATRON Zen Grid: headers written once
-lexatron_str = lexatron.dumps(employees)
+# UOON Zen Grid: headers written once
+uoon_str = uoon.dumps(employees)
 # → '[: id, name, dept, salary, years; 1, "Alice", "Engineering", 95000, 3; ... ]'
 
 # Up to 50% fewer tokens for large tabular datasets
@@ -311,7 +311,7 @@ lexatron_str = lexatron.dumps(employees)
 ### Configuration Files
 
 ```python
-config = lexatron.loads('''
+config = uoon.loads('''
 {
     // Server settings
     host: "0.0.0.0",
@@ -333,11 +333,11 @@ config = lexatron.loads('''
 ### API Response Processing
 
 ```python
-# LEXATRON parses both standard JSON and LEXATRON extensions
-response = lexatron.loads('{"status": "ok", "users": [{id: 1, name: "Alice"}]}')
+# UOON parses both standard JSON and UOON extensions
+response = uoon.loads('{"status": "ok", "users": [{id: 1, name: "Alice"}]}')
 
 # Serialize back with token savings
-payload = lexatron.dumps(response)
+payload = uoon.dumps(response)
 ```
 
 ---
@@ -373,24 +373,24 @@ pytest tests/test_reference_vectors.py -v
 
 ## Benchmark References
 
-LEXATRON performance benchmarks use the same standardized test vectors as the wider JSON ecosystem.
+UOON performance benchmarks use the same standardized test vectors as the wider JSON ecosystem.
 
 ### Compliance Testing
 
-- **[JSONTestSuite](https://github.com/nst/JSONTestSuite)** (Nicolas Seriot) — 400+ JSON conformance tests for parsers; used by orjson, simdjson, and LEXATRON
+- **[JSONTestSuite](https://github.com/nst/JSONTestSuite)** (Nicolas Seriot) — 400+ JSON conformance tests for parsers; used by orjson, simdjson, and UOON
 - **[RFC 8259](https://tools.ietf.org/html/rfc8259)** — The IETF JSON specification (December 2017)
 - **[JSON_checker](http://www.json.org/JSON_checker/)** — Classic pass/fail fixtures (fail01–fail33)
 
 ### Performance Benchmark Files
 
-The canonical benchmark corpus from **[nativejson-benchmark](https://github.com/miloyip/nativejson-benchmark)** (Milo Yip), used by orjson, simdjson, yyjson, and LEXATRON:
+The canonical benchmark corpus from **[nativejson-benchmark](https://github.com/miloyip/nativejson-benchmark)** (Milo Yip), used by orjson, simdjson, yyjson, and UOON:
 
 | File | Size | Dataset | Characteristics |
 |------|------|---------|-----------------|
 | `canada.json` | 2.15 MB | GeoJSON coordinates | Number-heavy (float arrays) |
 | `twitter.json` | 0.60 MB | Twitter API timeline | Unicode strings, nested objects |
 | `citm_catalog.json` | 1.65 MB | Cinema IT Management catalog | Mixed content, real-world API |
-| `large.json` | 7.88 MB | Custom: 100K rows tabular | LEXATRON primary benchmark |
+| `large.json` | 7.88 MB | Custom: 100K rows tabular | UOON primary benchmark |
 
 ### Competing Libraries Referenced
 
@@ -401,14 +401,14 @@ The canonical benchmark corpus from **[nativejson-benchmark](https://github.com/
 | [orjson](https://github.com/ijl/orjson) | [![GitHub](https://img.shields.io/badge/GitHub-orjson-black)](https://github.com/ijl/orjson) | 586 MB/s dumps | Rust-based; JSON only |
 | [ujson](https://github.com/ultrajson/ultrajson) | [![GitHub](https://img.shields.io/badge/GitHub-ujson-black)](https://github.com/ultrajson/ultrajson) | ~300 MB/s | C-based |
 | [pysimdjson](https://github.com/TkTech/pysimdjson) | [![GitHub](https://img.shields.io/badge/GitHub-pysimdjson-black)](https://github.com/TkTech/pysimdjson) | 1–2 GB/s parse | Python bindings for simdjson |
-| [simdjson](https://github.com/simdjson/simdjson) | [![GitHub](https://img.shields.io/badge/GitHub-simdjson-black)](https://github.com/simdjson/simdjson) | 2–3 GB/s | C++; architecture inspiration for LEXATRON |
+| [simdjson](https://github.com/simdjson/simdjson) | [![GitHub](https://img.shields.io/badge/GitHub-simdjson-black)](https://github.com/simdjson/simdjson) | 2–3 GB/s | C++; architecture inspiration for UOON |
 | [yapic.json](https://github.com/nfomon/yapic.json) | [![GitHub](https://img.shields.io/badge/GitHub-yapic.json-black)](https://github.com/nfomon/yapic.json) | ~2–3× stdlib | Python/C extension |
 
 #### Token Efficiency Formats
 
 | Format | GitHub | Token Savings | Approach | JSON-Compatible |
 |--------|--------|---------------|----------|-----------------|
-| **LEXATRON Zen Grid** | This repo | **11–50%** | Column headers once | ✅ Yes |
+| **UOON Zen Grid** | This repo | **11–50%** | Column headers once | ✅ Yes |
 | [TRON](https://github.com/tron-format/tron) | [![GitHub](https://img.shields.io/badge/GitHub-TRON-black)](https://github.com/tron-format/tron) | ~32% | Class-based aliases | ❌ No |
 | [TOON](https://github.com/nickcoutsos/toon) | [![GitHub](https://img.shields.io/badge/GitHub-TOON-black)](https://github.com/nickcoutsos/toon) | ~19% | Table-oriented | ❌ No |
 
@@ -435,11 +435,11 @@ maturin develop --release
 
 ```
 src/
-├── lexatron/                        # Python package
+├── uoon/                        # Python package
 │   ├── __init__.py              # Public API: loads, dumps, encode, decode
 │   ├── __init__.pyi             # Type stubs (mypy/pyright)
 │   └── py.typed                 # PEP 561 marker
-└── lexatron_core/                   # Rust implementation
+└── uoon_core/                   # Rust implementation
     └── src/
         ├── lib.rs               # PyO3 module + Python function wrappers
         ├── serializer.rs        # dumps() — Zen Grid + JSON + Pydantic
@@ -457,7 +457,7 @@ benchmarks/
 ├── large.json                   # 7.88 MB primary benchmark
 ├── super_long.json              # 294 MB stress test
 ├── formatters.py                # Format registry for benchmark runners
-└── token_efficiency.py          # Token comparison: LEXATRON vs JSON vs TRON/TOON
+└── token_efficiency.py          # Token comparison: UOON vs JSON vs TRON/TOON
 ```
 
 ---
@@ -478,7 +478,7 @@ benchmarks/
 - **Depth guard**: `MAX_NESTING_DEPTH = 100` — prevents stack overflow from deeply nested input
 - **Arity tolerance**: Extra table columns are silently dropped; missing columns are filled with `null`
 - **Memory safety**: All unsafe Rust code is in clearly marked blocks using PyO3 FFI patterns
-- **No allocation on GIL drop**: LEXATRON never releases the GIL mid-parse, avoiding data races
+- **No allocation on GIL drop**: UOON never releases the GIL mid-parse, avoiding data races
 
 ---
 
@@ -499,7 +499,7 @@ The release workflow uses **PyPI Trusted Publishing (OIDC)** — no API token ne
 1. Go to [pypi.org/manage/account/publishing](https://pypi.org/manage/account/publishing/)
 2. Add a new publisher:
    - **Owner**: your GitHub username
-   - **Repository**: `LEXATRON`
+   - **Repository**: `UOON`
    - **Workflow**: `release.yml`
    - **Environment**: `pypi`
 3. Push a version tag to trigger the release:

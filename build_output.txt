@@ -1,4 +1,4 @@
-warning: lexatron_core@0.1.0: Building LEXATRON for x86_64 - AVX2 support will be checked at runtime
+warning: uoon_core@0.1.0: Building UOON for x86_64 - AVX2 support will be checked at runtime
    Compiling pyo3-ffi v0.20.3
    Compiling pyo3-macros v0.20.3
 error: failed to run custom build command for `pyo3-ffi v0.20.3`

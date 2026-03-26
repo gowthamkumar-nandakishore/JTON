@@ -8,7 +8,7 @@ mod types;
 
 use types::{FieldDescriptor, FieldType, ParseContext};
 
-/// Parse LEXATRON/JSON data from bytes or string
+/// Parse UOON/JSON data from bytes or string
 ///
 /// Args:
 ///     data: Input as bytes (zero-copy) or str (will encode to UTF-8)
@@ -17,13 +17,13 @@ use types::{FieldDescriptor, FieldType, ParseContext};
 ///     Parsed Python object (dict, list, str, int, float, bool, None)
 ///
 /// Raises:
-///     ValueError: Invalid JSON/LEXATRON syntax
+///     ValueError: Invalid JSON/UOON syntax
 ///
 /// Examples:
-///     >>> import lexatron
-///     >>> lexatron.loads('{"key": "value"}')
+///     >>> import uoon
+///     >>> uoon.loads('{"key": "value"}')
 ///     {'key': 'value'}
-///     >>> lexatron.loads(b'[1, 2, 3]')
+///     >>> uoon.loads(b'[1, 2, 3]')
 ///     [1, 2, 3]
 #[pyfunction(signature = (data, schema=None))]
 fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject> {
@@ -61,7 +61,7 @@ fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject>
     parser::parse(py, bytes, &mut ctx)
 }
 
-/// Serialize a Python object to a LEXATRON or JSON string.
+/// Serialize a Python object to a UOON or JSON string.
 ///
 /// Args:
 ///     data: Python object to serialize (dict, list, str, int, float, bool, None,
@@ -79,17 +79,17 @@ fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject>
 ///                    of explicit `null` (saves 1 token per null/missing cell).
 ///
 /// Returns:
-///     str — the serialized LEXATRON/JSON string
+///     str — the serialized UOON/JSON string
 ///
 /// Examples:
-///     >>> import lexatron
-///     >>> lexatron.dumps({"name": "Alice", "age": 30})
+///     >>> import uoon
+///     >>> uoon.dumps({"name": "Alice", "age": 30})
 ///     '{"name":"Alice","age":30}'
 ///
-///     >>> lexatron.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}])
+///     >>> uoon.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}])
 ///     '[: id, x; 1, 10; 2, 20 ]'
 ///
-///     >>> lexatron.dumps([{"name":"Alice","dept":"Eng"},{"name":"Bob","dept":"Mkt"}], bare_strings=True)
+///     >>> uoon.dumps([{"name":"Alice","dept":"Eng"},{"name":"Bob","dept":"Mkt"}], bare_strings=True)
 ///     '[: name, dept; Alice, Eng; Bob, Mkt ]'
 #[pyfunction(signature = (data, *, zen_grid=true, unquoted_keys=false, indent=None, bare_strings=false, implicit_null=false))]
 fn dumps(
@@ -112,12 +112,12 @@ fn dumps(
     serializer::serialize(py, &obj, &opts)
 }
 
-/// LEXATRON (Zero-overhead Serialized Object Notation) SIMD-accelerated parser for Python
+/// UOON (Zero-overhead Serialized Object Notation) SIMD-accelerated parser for Python
 ///
-/// This module provides high-performance parsing of LEXATRON/JSON data using
+/// This module provides high-performance parsing of UOON/JSON data using
 /// Rust with AVX2/AVX-512 SIMD intrinsics.
 #[pymodule]
-fn lexatron_core(_py: Python, m: &PyModule) -> PyResult<()> {
+fn uoon_core(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
 
     // On x86_64, require at least AVX2.  On other architectures (aarch64, etc.)
