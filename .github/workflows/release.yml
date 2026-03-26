@@ -106,11 +106,6 @@ jobs:
     # Run as long as sdist succeeded — wheel failures are non-blocking due to continue-on-error
     if: always() && needs.build-sdist.result == 'success'
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/zson
-    permissions:
-      id-token: write   # for OIDC trusted publishing (no API token needed)
     steps:
       - name: Download all wheels + sdist
         uses: actions/download-artifact@v4
@@ -120,8 +115,14 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        # Uses OIDC trusted publishing — no PYPI_API_TOKEN secret needed.
-        # Configure at: https://pypi.org/manage/account/publishing/
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+        # How to set this up (one-time):
+        # 1. Register at https://pypi.org if needed
+        # 2. Create the project OR go to: https://pypi.org/manage/account/
+        # 3. Account Settings → API tokens → Add API token (scope: entire account or project)
+        # 4. In this repo: Settings → Secrets and variables → Actions → New repository secret
+        #    Name: PYPI_API_TOKEN   Value: pypi-XXXXXXXXXX...
 
   # ── Create GitHub Release ────────────────────────────────────────────────────
   github-release:
