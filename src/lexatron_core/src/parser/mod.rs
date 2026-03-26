@@ -1,4 +1,4 @@
-// Core parser module for ZSON/JSON
+// Core parser module for LEXATRON/JSON
 
 pub mod error;
 pub mod fast_number;
@@ -8,7 +8,7 @@ pub mod string_cache;
 use crate::types::ParseContext;
 use pyo3::prelude::*;
 
-/// Parse ZSON/JSON data into Python objects
+/// Parse LEXATRON/JSON data into Python objects
 ///
 /// This is the main entry point for parsing. It will:
 /// 1. Run SIMD structural character scanner

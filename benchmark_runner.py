@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""ZSON Benchmark Runner"""
+"""LEXATRON Benchmark Runner"""
 
 import os
 import sys
@@ -10,15 +10,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 BENCH_DIR = PROJECT_ROOT / "benchmarks"
 
 print("=" * 60)
-print("1. Python and zson version check")
+print("1. Python and lexatron version check")
 print("=" * 60)
 
 try:
-    import zson
+    import lexatron
     print(f"Python version: {sys.version}")
-    print(f"zson version: {zson.__version__}")
+    print(f"lexatron version: {lexatron.__version__}")
 except ImportError as e:
-    print(f"Error importing zson: {e}")
+    print(f"Error importing lexatron: {e}")
     sys.exit(1)
 
 print("\n" + "=" * 60)
@@ -31,12 +31,12 @@ try:
     
     # Warmup
     for _ in range(2):
-        zson.loads(data)
+        lexatron.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(3):
-        zson.loads(data)
+        lexatron.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 3 / elapsed / 1e6
@@ -55,12 +55,12 @@ try:
     
     # Warmup
     for _ in range(5):
-        zson.loads(data)
+        lexatron.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(50):
-        zson.loads(data)
+        lexatron.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 50 / elapsed / 1e6
@@ -70,16 +70,16 @@ except Exception as e:
     print(f"Error: {e}")
 
 print("\n" + "=" * 60)
-print("4. Check zson functions (dumps support)")
+print("4. Check lexatron functions (dumps support)")
 print("=" * 60)
 
 try:
-    import zson
-    print("Available zson attributes:")
-    zson_attrs = [attr for attr in dir(zson) if not attr.startswith('_')]
-    print(zson_attrs)
-    print(f"\nHas 'dumps' function: {hasattr(zson, 'dumps')}")
-    print(f"Has 'loads' function: {hasattr(zson, 'loads')}")
+    import lexatron
+    print("Available lexatron attributes:")
+    lexatron_attrs = [attr for attr in dir(lexatron) if not attr.startswith('_')]
+    print(lexatron_attrs)
+    print(f"\nHas 'dumps' function: {hasattr(lexatron, 'dumps')}")
+    print(f"Has 'loads' function: {hasattr(lexatron, 'loads')}")
 except Exception as e:
     print(f"Error: {e}")
 
@@ -105,15 +105,15 @@ print("=" * 60)
 
 
 print("=" * 60)
-print("1. Python and zson version check")
+print("1. Python and lexatron version check")
 print("=" * 60)
 
 try:
-    import zson
+    import lexatron
     print(f"Python version: {sys.version}")
-    print(f"zson version: {zson.__version__}")
+    print(f"lexatron version: {lexatron.__version__}")
 except ImportError as e:
-    print(f"Error importing zson: {e}")
+    print(f"Error importing lexatron: {e}")
     sys.exit(1)
 
 print("\n" + "=" * 60)
@@ -126,12 +126,12 @@ try:
     
     # Warmup
     for _ in range(2):
-        zson.loads(data)
+        lexatron.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(3):
-        zson.loads(data)
+        lexatron.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 3 / elapsed / 1e6
@@ -150,12 +150,12 @@ try:
     
     # Warmup
     for _ in range(5):
-        zson.loads(data)
+        lexatron.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(50):
-        zson.loads(data)
+        lexatron.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 50 / elapsed / 1e6
@@ -165,16 +165,16 @@ except Exception as e:
     print(f"Error: {e}")
 
 print("\n" + "=" * 60)
-print("4. Check zson functions (dumps support)")
+print("4. Check lexatron functions (dumps support)")
 print("=" * 60)
 
 try:
-    import zson
-    print("Available zson attributes:")
-    zson_attrs = [attr for attr in dir(zson) if not attr.startswith('_')]
-    print(zson_attrs)
-    print(f"\nHas 'dumps' function: {hasattr(zson, 'dumps')}")
-    print(f"Has 'loads' function: {hasattr(zson, 'loads')}")
+    import lexatron
+    print("Available lexatron attributes:")
+    lexatron_attrs = [attr for attr in dir(lexatron) if not attr.startswith('_')]
+    print(lexatron_attrs)
+    print(f"\nHas 'dumps' function: {hasattr(lexatron, 'dumps')}")
+    print(f"Has 'loads' function: {hasattr(lexatron, 'loads')}")
 except Exception as e:
     print(f"Error: {e}")
 

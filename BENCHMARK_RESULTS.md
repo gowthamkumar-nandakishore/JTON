@@ -1,4 +1,4 @@
-# ZSON Benchmark Results
+# LEXATRON Benchmark Results
 
 **Date**: March 25, 2026  
 **Version**: 0.1.0 — Sprint 1 + Sprint 2 + Sprint 3 optimizations applied  
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-| Metric | ZSON | stdlib json | orjson |
+| Metric | LEXATRON | stdlib json | orjson |
 |--------|------|-------------|--------|
 | **loads (str-heavy, 5K rows)** | **143 MB/s** | ~50 MB/s | ~730 MB/s |
 | **loads (str-heavy, 1K rows)** | **134 MB/s** | ~50 MB/s | ~730 MB/s |
@@ -20,9 +20,9 @@
 | **Token savings (Zen Grid+, 100 rows)** | **49.8%** | baseline | baseline |
 
 Key findings:
-- ✅ `zson.loads()` is **3–4× faster** than stdlib `json.loads`
-- ✅ `zson.dumps()` (JSON mode) is **3–4× faster** than stdlib
-- ✅ `zson.dumps(zen_grid=True)` reaches **490+ MB/s** and saves **44%+ tokens**
+- ✅ `lexatron.loads()` is **3–4× faster** than stdlib `json.loads`
+- ✅ `lexatron.dumps()` (JSON mode) is **3–4× faster** than stdlib
+- ✅ `lexatron.dumps(zen_grid=True)` reaches **490+ MB/s** and saves **44%+ tokens**
 - ✅ `bare_strings=True, implicit_null=True` pushes token savings to **50%+**
 - ✅ All 622 tests pass, 0 failures
 
@@ -67,7 +67,7 @@ Two new `dumps()` options for maximum LLM token efficiency:
 
 ### Benchmarks (synthetic datasets)
 
-| Dataset | ZSON loads | stdlib | vs stdlib | vs orjson |
+| Dataset | LEXATRON loads | stdlib | vs stdlib | vs orjson |
 |---------|-----------|--------|-----------|-----------|
 | string-heavy (1K rows, 5 cols) | **134 MB/s** | ~50 MB/s | **2.7×** | ~0.18× |
 | string-heavy (5K rows, 5 cols) | **143 MB/s** | ~50 MB/s | **2.9×** | ~0.20× |
@@ -78,14 +78,14 @@ Two new `dumps()` options for maximum LLM token efficiency:
 | Parser | Speed | Notes |
 |--------|-------|-------|
 | stdlib json | 40–60 MB/s | Pure Python/C |
-| **ZSON** | **128–143 MB/s** | Rust/SIMD, this codebase |
+| **LEXATRON** | **128–143 MB/s** | Rust/SIMD, this codebase |
 | [ujson](https://github.com/ultrajson/ultrajson) | ~200–300 MB/s | C extension |
 | [orjson](https://github.com/ijl/orjson) | ~500–730 MB/s | Rust, SIMD-optimized |
 | [pysimdjson](https://github.com/TkTech/pysimdjson) | ~400–600 MB/s | Rust + simdjson C++ |
 | [simdjson](https://github.com/simdjson/simdjson) (C++ direct) | ~2,500 MB/s | No Python overhead |
 | [yyjson](https://github.com/ibireme/yyjson) (C direct) | ~1,800 MB/s | Arena allocator |
 
-> **Key optimizations in ZSON loads (all sprints combined):**
+> **Key optimizations in LEXATRON loads (all sprints combined):**
 > - VPSHUFB nibble classifier: 2 shuffles replace 8 cmpeq ops per 32-byte chunk
 > - `StructuralIndex::with_input_capacity()` — pre-allocates Vecs, avoids reallocation
 > - Thread-local `UnsafeCell<StringCache>` with `VecDeque` FIFO — O(1) eviction, zero mutex
@@ -99,13 +99,13 @@ Two new `dumps()` options for maximum LLM token efficiency:
 
 ### Benchmarks (synthetic datasets)
 
-| Dataset | ZSON JSON | ZSON Zen Grid | stdlib | orjson |
+| Dataset | LEXATRON JSON | LEXATRON Zen Grid | stdlib | orjson |
 |---------|-----------|---------------|--------|--------|
 | string-heavy (1K rows) | **309 MB/s** | **616 MB/s** | ~83 MB/s | ~586 MB/s |
 | number-heavy (5K rows) | **243 MB/s** | **479 MB/s** | ~83 MB/s | ~586 MB/s |
 | mixed (2K rows) | **239 MB/s** | **397 MB/s** | ~83 MB/s | ~586 MB/s |
 
-> **Key optimizations in ZSON dumps:**
+> **Key optimizations in LEXATRON dumps:**
 > - AVX2 SIMD escape scan (`write_escaped_str_avx2`): scans 32 bytes/cycle, bulk-copies clean spans
 > - `PyUnicode_AsUTF8AndSize` FFI in `write_key` — bypasses PyO3 string extraction overhead
 > - `itoa` — fastest integer serialization
@@ -122,11 +122,11 @@ Two new `dumps()` options for maximum LLM token efficiency:
 |--------|-----------|--------|-----------------|
 | JSON pretty | 16,277,782 | 6,898,002 | +97% (worse) |
 | JSON compact | 6,377,781 | 3,498,002 | baseline |
-| **ZSON Zen Grid** | **4,377,801** | **3,098,008** | **−11.4% tokens** |
+| **LEXATRON Zen Grid** | **4,377,801** | **3,098,008** | **−11.4% tokens** |
 
 ### On pure tabular data (real-world LLM scenarios)
 
-| Scenario | JSON compact tokens | ZSON Zen Grid tokens | Savings |
+| Scenario | JSON compact tokens | LEXATRON Zen Grid tokens | Savings |
 |----------|---------------------|----------------------|---------|
 | 50 API users (5 cols) | 1,302 | 1,011 | **22.4%** |
 | 100 log entries (10 cols) | 5,803 | 4,822 | **16.9%** |
@@ -139,14 +139,14 @@ Two new `dumps()` options for maximum LLM token efficiency:
 | Format | Tokens (mixed dataset) | vs JSON compact | JSON-compatible |
 |--------|------------------------|-----------------|-----------------|
 | JSON compact | 181,094 (baseline) | — | ✅ Yes |
-| **ZSON Zen Grid** | **~160,000** | **~11–26%** | ✅ Yes (ZSON superset) |
+| **LEXATRON Zen Grid** | **~160,000** | **~11–26%** | ✅ Yes (LEXATRON superset) |
 | [TOON](https://github.com/nickcoutsos/toon) | 146,113 | −19.2% | ❌ No |
 | [TRON](https://github.com/tron-format/tron) | 122,097 | −32.4% | ❌ No |
 
 **Notes:**
 - TRON uses class-based aliases (schema must be known in advance); highest compression but requires custom parser
 - TOON uses table-oriented syntax; similar to Zen Grid but not JSON-compatible
-- ZSON Zen Grid is valid ZSON/JSON — any JSON parser handles it, with no schema required
+- LEXATRON Zen Grid is valid LEXATRON/JSON — any JSON parser handles it, with no schema required
 
 ---
 
@@ -162,7 +162,7 @@ Two new `dumps()` options for maximum LLM token efficiency:
 [{"id":1,"name":"Alice","score":95},{"id":2,"name":"Bob","score":87}]
 ```
 
-### ZSON Zen Grid (54 chars, ~19 tokens — **32% fewer tokens**)
+### LEXATRON Zen Grid (54 chars, ~19 tokens — **32% fewer tokens**)
 ```
 [: id, name, score; 1, "Alice", 95; 2, "Bob", 87 ]
 ```
@@ -219,7 +219,7 @@ OS: Windows x64
 |---------|--------|------|----------|-------|
 | [orjson](https://github.com/ijl/orjson) | [GitHub](https://github.com/ijl/orjson) | [PyPI](https://pypi.org/project/orjson/) | Rust | Industry standard; 5–50× stdlib |
 | [ujson](https://github.com/ultrajson/ultrajson) | [GitHub](https://github.com/ultrajson/ultrajson) | [PyPI](https://pypi.org/project/ujson/) | C | Ultra-fast; less maintained |
-| [simdjson](https://github.com/simdjson/simdjson) | [GitHub](https://github.com/simdjson/simdjson) | — | C++ | Architecture inspiration for ZSON |
+| [simdjson](https://github.com/simdjson/simdjson) | [GitHub](https://github.com/simdjson/simdjson) | — | C++ | Architecture inspiration for LEXATRON |
 | [pysimdjson](https://github.com/TkTech/pysimdjson) | [GitHub](https://github.com/TkTech/pysimdjson) | [PyPI](https://pypi.org/project/pysimdjson/) | Rust/C++ | Python bindings for simdjson |
 | [yapic.json](https://github.com/nfomon/yapic.json) | [GitHub](https://github.com/nfomon/yapic.json) | [PyPI](https://pypi.org/project/yapic.json/) | C/Python | 2–3× stdlib |
 | [TRON](https://github.com/tron-format/tron) | [GitHub](https://github.com/tron-format/tron) | [npm](https://www.npmjs.com/package/@tron-format/tron) | JS/TS | 32% token savings; not JSON-compatible |
@@ -229,7 +229,7 @@ OS: Windows x64
 
 ## Executive Summary
 
-| Metric | ZSON | stdlib json | orjson |
+| Metric | LEXATRON | stdlib json | orjson |
 |--------|------|-------------|--------|
 | **loads** | **65 MB/s** | 40 MB/s | 87 MB/s |
 | **dumps (JSON mode)** | **133 MB/s** | 83 MB/s | 586 MB/s |
@@ -237,9 +237,9 @@ OS: Windows x64
 | **Token savings (tabular)** | **11–26%** | baseline | baseline |
 
 Key findings:
-- ✅ `zson.loads()` is **1.6× faster** than stdlib `json.loads`
-- ✅ `zson.dumps()` (JSON mode) is **1.6× faster** than stdlib `json.dumps`
-- ✅ `zson.dumps(zen_grid=True)` is **1.3× faster** than stdlib with 11–31% fewer tokens
+- ✅ `lexatron.loads()` is **1.6× faster** than stdlib `json.loads`
+- ✅ `lexatron.dumps()` (JSON mode) is **1.6× faster** than stdlib `json.dumps`
+- ✅ `lexatron.dumps(zen_grid=True)` is **1.3× faster** than stdlib with 11–31% fewer tokens
 - ✅ All 622 tests pass, 0 failures
 
 ---
@@ -250,7 +250,7 @@ Key findings:
 |--------|-------|-----------|-----------|
 | stdlib json | 40 MB/s | 1.00× | 0.46× |
 | **orjson** | **87 MB/s** | **2.2×** | **1.00×** |
-| **ZSON** | **65 MB/s** | **1.6×** | 0.75× |
+| **LEXATRON** | **65 MB/s** | **1.6×** | 0.75× |
 
 > Optimizations applied: StructuralIndex pre-allocation (avoids Vec reallocation
 > during SIMD scan), thread-local string cache (eliminates mutex overhead on key

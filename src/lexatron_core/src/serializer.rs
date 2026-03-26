@@ -1,9 +1,9 @@
-// ZSON Serializer — high-performance JSON/ZSON dumps()
+// LEXATRON Serializer — high-performance JSON/LEXATRON dumps()
 //
 // Three output modes:
 //   1. JSON compact   (zen_grid=false, unquoted_keys=false)
-//   2. ZSON compact   (zen_grid=false, unquoted_keys=true)
-//   3. ZSON Zen Grid  (zen_grid=true) — homogeneous arrays of dicts → table syntax
+//   2. LEXATRON compact   (zen_grid=false, unquoted_keys=true)
+//   3. LEXATRON Zen Grid  (zen_grid=true) — homogeneous arrays of dicts → table syntax
 //
 // Speed strategy:
 //   • itoa  — fastest integer → string (no heap alloc for small numbers)
@@ -37,7 +37,7 @@ pub struct DumpsOptions {
 
 // ── Main entry point ──────────────────────────────────────────────────────────
 
-/// Serialize a Python object to a ZSON/JSON string.
+/// Serialize a Python object to a LEXATRON/JSON string.
 pub fn serialize(py: Python, obj: &PyObject, opts: &DumpsOptions) -> PyResult<String> {
     let mut buf = Vec::with_capacity(4096);
     write_value(py, obj.as_ref(py), &mut buf, opts, 0)?;
@@ -383,7 +383,7 @@ fn write_dict_indented<'py>(
     Ok(())
 }
 
-/// Write a dict key — either quoted JSON string or unquoted ZSON identifier.
+/// Write a dict key — either quoted JSON string or unquoted LEXATRON identifier.
 #[inline]
 fn write_key<'py>(
     _py: Python<'py>,
@@ -416,7 +416,7 @@ fn write_key<'py>(
     write_key(_py, s.as_ref(), buf, opts)
 }
 
-/// Returns true if `bytes` is a valid unquoted ZSON identifier.
+/// Returns true if `bytes` is a valid unquoted LEXATRON identifier.
 /// Rules: starts with [a-zA-Z_$], followed by [a-zA-Z0-9_$-]
 #[inline]
 fn is_valid_identifier(bytes: &[u8]) -> bool {

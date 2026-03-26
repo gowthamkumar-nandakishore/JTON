@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Format converters for benchmarking.
-Converts data to: JSON, JSON-compact, YAML, XML, TOON, ZSON
+Converts data to: JSON, JSON-compact, YAML, XML, TOON, LEXATRON
 """
 
 import json
@@ -9,7 +9,7 @@ from typing import Any, Dict
 import sys
 from pathlib import Path
 
-# Add src to path for ZSON import
+# Add src to path for LEXATRON import
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
@@ -171,13 +171,13 @@ def format_toon(data: Any) -> str:
     return toon_encode(data)
 
 
-def format_ZSON(data: Any) -> str:
-    """Format as ZSON (Zen Grid format) — uses real Zen Grid serialization."""
+def format_LEXATRON(data: Any) -> str:
+    """Format as LEXATRON (Zen Grid format) — uses real Zen Grid serialization."""
     try:
-        import zson
-        return zson.dumps(data, zen_grid=True)
+        import lexatron
+        return lexatron.dumps(data, zen_grid=True)
     except ImportError:
-        print("❌ ZSON not installed. Run: maturin develop --release")
+        print("❌ LEXATRON not installed. Run: maturin develop --release")
         return ""
     except Exception as e:
         # Fallback to JSON compact if serialization fails
@@ -248,7 +248,7 @@ FORMATTERS = {
     "xml": format_xml,
     "toon": format_toon,
     "tron": format_tron,
-    "ZSON": format_ZSON,
+    "LEXATRON": format_LEXATRON,
     "csv": format_csv,
 }
 
@@ -260,7 +260,7 @@ FORMATTER_DISPLAY_NAMES = {
     "xml": "XML",
     "toon": "TOON",
     "tron": "TRON",
-    "ZSON": "ZSON",
+    "LEXATRON": "LEXATRON",
     "csv": "CSV",
 }
 

@@ -1,10 +1,10 @@
 """
-ZSON (Zero-overhead Serialized Object Notation) — high-performance JSON superset
+LEXATRON (Zero-overhead Serialized Object Notation) — high-performance JSON superset
 with SIMD-accelerated parsing and Zen Grid token-efficient serialization.
 
 Key functions:
-  loads(data)              — parse ZSON/JSON → Python object
-  dumps(data, **opts)      — serialize Python object → ZSON/JSON string
+  loads(data)              — parse LEXATRON/JSON → Python object
+  dumps(data, **opts)      — serialize Python object → LEXATRON/JSON string
 
 Zen Grid format automatically converts homogeneous arrays of dicts to a
 compact table syntax that reduces LLM token counts by 40-65%:
@@ -23,7 +23,7 @@ dumps() options:
   indent=None           — Pretty-print with N spaces per indent level
 """
 
-from .zson_core import __version__, __simd__, loads, dumps
+from .lexatron_core import __version__, __simd__, loads, dumps
 
 # Convenient aliases
 encode = dumps   # familiar for users coming from orjson / msgspec

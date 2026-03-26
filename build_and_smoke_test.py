@@ -36,18 +36,18 @@ if result.returncode == 0:
     print("=" * 80)
     
     try:
-        import zson
+        import lexatron
         
         print("Test 1: Simple dict")
-        result = zson.dumps({'name': 'Alice', 'age': 30})
+        result = lexatron.dumps({'name': 'Alice', 'age': 30})
         print(result)
         
         print("\nTest 2: List of dicts with zen_grid=True (default)")
-        result = zson.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}])
+        result = lexatron.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}])
         print(result)
         
         print("\nTest 3: List of dicts with zen_grid=False")
-        result = zson.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}], zen_grid=False)
+        result = lexatron.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}], zen_grid=False)
         print(result)
         
         print("\nAll tests passed!")

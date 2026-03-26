@@ -2,7 +2,7 @@
 
 The files in this directory are vendored from
 <https://github.com/ibireme/yyjson/tree/master/test/data/json> and keep the
-same upstream content but with ZSON-specific folder names:
+same upstream content but with LEXATRON-specific folder names:
 
 - `parsing/` ← `test_parsing`
 - `transform/` ← `test_transform`

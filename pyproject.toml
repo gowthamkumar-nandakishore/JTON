@@ -3,7 +3,7 @@ requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "zson"
+name = "lexatron"
 version = "0.1.0"
 requires-python = ">=3.10"
 classifiers = [
@@ -13,8 +13,8 @@ classifiers = [
 
 [tool.maturin]
 python-source = "src"
-module-name = "zson.zson_core"
-include = ["src/zson/py.typed", "src/zson/__init__.pyi"]
+module-name = "lexatron.lexatron_core"
+include = ["src/lexatron/py.typed", "src/lexatron/__init__.pyi"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

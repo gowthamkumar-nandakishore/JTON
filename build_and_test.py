@@ -33,10 +33,10 @@ print("RUNNING SMOKE TEST")
 print("=" * 80)
 smoke_result = subprocess.run(
     ['python', '-c', '''
-import zson
-print(zson.dumps({"name": "Alice", "age": 30}))
-print(zson.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}]))
-print(zson.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}], zen_grid=False))
+import lexatron
+print(lexatron.dumps({"name": "Alice", "age": 30}))
+print(lexatron.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}]))
+print(lexatron.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}], zen_grid=False))
 '''],
     cwd=str(PROJECT_ROOT),
     capture_output=True, text=True

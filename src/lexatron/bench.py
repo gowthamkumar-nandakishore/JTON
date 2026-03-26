@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-python -m zson.bench <file.json>
+python -m lexatron.bench <file.json>
 
-Quick benchmark comparing ZSON vs stdlib json vs orjson for:
+Quick benchmark comparing LEXATRON vs stdlib json vs orjson for:
   - Parse speed (MB/s)
   - Serialize speed (MB/s)
   - Token count (requires tiktoken)
   - Character count
 
 Usage:
-    python -m zson.bench benchmarks/twitter.json
-    python -m zson.bench benchmarks/canada.json
-    python -m zson.bench my_data.json
+    python -m lexatron.bench benchmarks/twitter.json
+    python -m lexatron.bench benchmarks/canada.json
+    python -m lexatron.bench my_data.json
 """
 
 import sys
@@ -22,10 +22,10 @@ from pathlib import Path
 
 # Add src to path for development installs
 _src = Path(__file__).parent.parent.parent
-if (_src / "zson").exists():
+if (_src / "lexatron").exists():
     sys.path.insert(0, str(_src))
 
-import zson
+import lexatron
 
 
 def bench_parse(parser, data_bytes: bytes, iters: int) -> float:
@@ -77,7 +77,7 @@ def run(path: str):
     data_bytes = file_path.read_bytes()
     data_mb = len(data_bytes) / 1e6
     print(f"\n{'═' * 65}")
-    print(f" ZSON Benchmark: {file_path.name}  ({data_mb:.2f} MB)")
+    print(f" LEXATRON Benchmark: {file_path.name}  ({data_mb:.2f} MB)")
     print(f"{'═' * 65}\n")
 
     # Determine iteration count based on file size
@@ -110,17 +110,17 @@ def run(path: str):
     except ImportError:
         results["orjson"] = 0.0
 
-    # zson
+    # lexatron
     try:
-        results["zson"] = bench_parse(zson.loads, data_bytes, iters)
+        results["lexatron"] = bench_parse(lexatron.loads, data_bytes, iters)
     except Exception as e:
-        results["zson"] = 0.0
-        print(f"  ZSON: ERROR {e}")
+        results["lexatron"] = 0.0
+        print(f"  LEXATRON: ERROR {e}")
 
     max_speed = max(results.values()) or 1
     for name, speed in results.items():
         if speed == 0:
-            print(f"  {'ZSON' if name=='zson' else name.ljust(9)}: N/A")
+            print(f"  {'LEXATRON' if name=='lexatron' else name.ljust(9)}: N/A")
             continue
         bar = format_bar(speed, max_speed)
         ratio = f"({speed/results.get('orjson', speed)*100:.0f}% of orjson)" if results.get("orjson") else ""
@@ -148,14 +148,14 @@ def run(path: str):
         pass
 
     try:
-        ser_results["zson(zen)"] = bench_serialize(
-            lambda o: zson.dumps(o, zen_grid=True), obj, iters
+        ser_results["lexatron(zen)"] = bench_serialize(
+            lambda o: lexatron.dumps(o, zen_grid=True), obj, iters
         )
-        ser_results["zson(json)"] = bench_serialize(
-            lambda o: zson.dumps(o, zen_grid=False), obj, iters
+        ser_results["lexatron(json)"] = bench_serialize(
+            lambda o: lexatron.dumps(o, zen_grid=False), obj, iters
         )
     except Exception as e:
-        print(f"  ZSON serialize: ERROR {e}")
+        print(f"  LEXATRON serialize: ERROR {e}")
 
     max_ser = max(ser_results.values()) or 1
     for name, speed in ser_results.items():
@@ -171,8 +171,8 @@ def run(path: str):
     formats = {
         "JSON pretty": json.dumps(obj, indent=2),
         "JSON compact": json.dumps(obj, separators=(",", ":")),
-        "ZSON (zen)": zson.dumps(obj, zen_grid=True),
-        "ZSON (keys)": zson.dumps(obj, unquoted_keys=True, zen_grid=True),
+        "LEXATRON (zen)": lexatron.dumps(obj, zen_grid=True),
+        "LEXATRON (keys)": lexatron.dumps(obj, unquoted_keys=True, zen_grid=True),
     }
 
     try:
@@ -207,18 +207,18 @@ def run(path: str):
             )
 
     # ── Summary ────────────────────────────────────────────────────────────────
-    zson_zen_chars = token_results.get("ZSON (zen)", (0, 0))[0]
-    zson_zen_tokens = token_results.get("ZSON (zen)", (0, 0))[1]
-    if zson_zen_chars and json_compact_chars:
-        char_reduction = (1 - zson_zen_chars / json_compact_chars) * 100
+    lexatron_zen_chars = token_results.get("LEXATRON (zen)", (0, 0))[0]
+    lexatron_zen_tokens = token_results.get("LEXATRON (zen)", (0, 0))[1]
+    if lexatron_zen_chars and json_compact_chars:
+        char_reduction = (1 - lexatron_zen_chars / json_compact_chars) * 100
         print(f"\n{'─' * 65}")
         if char_reduction > 0:
-            print(f" ✅ ZSON Zen Grid saves {char_reduction:.1f}% characters vs JSON compact")
+            print(f" ✅ LEXATRON Zen Grid saves {char_reduction:.1f}% characters vs JSON compact")
         else:
-            print(f" ℹ️  Data is not tabular — ZSON Zen Grid is not applicable")
-        if zson_zen_tokens > 0 and json_compact_tokens > 0:
-            tok_reduction = (1 - zson_zen_tokens / json_compact_tokens) * 100
-            print(f" ✅ ZSON Zen Grid saves {tok_reduction:.1f}% LLM tokens vs JSON compact")
+            print(f" ℹ️  Data is not tabular — LEXATRON Zen Grid is not applicable")
+        if lexatron_zen_tokens > 0 and json_compact_tokens > 0:
+            tok_reduction = (1 - lexatron_zen_tokens / json_compact_tokens) * 100
+            print(f" ✅ LEXATRON Zen Grid saves {tok_reduction:.1f}% LLM tokens vs JSON compact")
     print(f"{'═' * 65}\n")
 
 

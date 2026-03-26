@@ -5,7 +5,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 BENCH_DIR = PROJECT_ROOT / "benchmarks"
 
-import zson
+import lexatron
 
 files = [
     ('canada.json', BENCH_DIR / 'canada.json', 3),
@@ -16,10 +16,10 @@ files = [
 for name, path, iters in files:
     try:
         data = path.read_bytes()
-        zson.loads(data)  # warmup
+        lexatron.loads(data)  # warmup
         start = time.perf_counter()
         for _ in range(iters):
-            zson.loads(data)
+            lexatron.loads(data)
         elapsed = time.perf_counter() - start
         mb_s = len(data) * iters / elapsed / 1e6
         print(f"{name}: {mb_s:.1f} MB/s ({len(data)/1e6:.2f} MB)")

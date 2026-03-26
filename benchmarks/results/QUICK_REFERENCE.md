@@ -4,21 +4,21 @@
 
 ## 🏆 THE WINNER: TRON
 
-**Overall Performance**: 122,097 tokens (57.7% better than JSON, 32.4% better than ZSON)
+**Overall Performance**: 122,097 tokens (57.7% better than JSON, 32.4% better than LEXATRON)
 
 ---
 
 ## 📊 8-Format Rankings (All Datasets Combined)
 
 ```
-1. 🥇 TRON           122,097 tokens  [-32.4% vs ZSON]  ⭐ CHAMPION
-2. 🥈 TOON           146,113 tokens  [-19.2% vs ZSON]
-3. 🥉 ZSON          180,725 tokens  [BASELINE]
-   🥉 JSON-compact   180,725 tokens  [SAME AS ZSON]
-   🥉 orjson         180,725 tokens  [SAME AS ZSON]
-4.    YAML           220,129 tokens  [+17.9% vs ZSON]
-5.    JSON           282,332 tokens  [+36.0% vs ZSON]
-6.    XML            332,171 tokens  [+45.6% vs ZSON]
+1. 🥇 TRON           122,097 tokens  [-32.4% vs LEXATRON]  ⭐ CHAMPION
+2. 🥈 TOON           146,113 tokens  [-19.2% vs LEXATRON]
+3. 🥉 LEXATRON          180,725 tokens  [BASELINE]
+   🥉 JSON-compact   180,725 tokens  [SAME AS LEXATRON]
+   🥉 orjson         180,725 tokens  [SAME AS LEXATRON]
+4.    YAML           220,129 tokens  [+17.9% vs LEXATRON]
+5.    JSON           282,332 tokens  [+36.0% vs LEXATRON]
+6.    XML            332,171 tokens  [+45.6% vs LEXATRON]
 ```
 
 ---
@@ -29,7 +29,7 @@
 |--------|-------------|-------------------|
 | **TRON** | **-$0.40** | **-$401,000** 🎯 |
 | TOON | -$0.34 | -$341,000 |
-| ZSON | -$0.25 | -$254,000 |
+| LEXATRON | -$0.25 | -$254,000 |
 | YAML | -$0.16 | -$156,000 |
 
 ---
@@ -39,23 +39,23 @@
 ### 100% Tabular (3 datasets: employees, analytics, github)
 
 ```
-TRON:  82,929 tokens  🏆 BEST     (48.8% better than ZSON)
-TOON:  91,642 tokens             (33.9% better than ZSON)
-ZSON: 123,376 tokens  [baseline]
+TRON:  82,929 tokens  🏆 BEST     (48.8% better than LEXATRON)
+TOON:  91,642 tokens             (33.9% better than LEXATRON)
+LEXATRON: 123,376 tokens  [baseline]
 ```
 
 ### Mixed 40-60% Tabular (2 datasets: orders, events)
 
 ```
-TRON:  39,168 tokens  🏆 BEST     (46.4% better than ZSON)
-TOON:  54,471 tokens             (31.7% better than ZSON)
-ZSON: 57,349 tokens  [baseline]
+TRON:  39,168 tokens  🏆 BEST     (46.4% better than LEXATRON)
+TOON:  54,471 tokens             (31.7% better than LEXATRON)
+LEXATRON: 57,349 tokens  [baseline]
 ```
 
 ### Deeply Nested 0% Tabular (1 dataset: config)
 
 ```
-TRON/ZSON/JSON-compact: 223 tokens  🏆 TIED (all optimal)
+TRON/LEXATRON/JSON-compact: 223 tokens  🏆 TIED (all optimal)
 YAML:                    280 tokens  (+20.4%)
 TOON:                    335 tokens  (+33.4%)
 ```
@@ -70,7 +70,7 @@ TOON:                    335 tokens  (+33.4%)
 | **API responses (tabular)** | TRON 🏆 | Class-based compression wins |
 | **Analytics/metrics** | TRON 🏆 | Perfect for repeated structures |
 | **Mixed nested data** | TRON 🏆 | Still 46% better than baseline |
-| **Deeply nested config** | TRON/ZSON ✅ | All compact formats tied |
+| **Deeply nested config** | TRON/LEXATRON ✅ | All compact formats tied |
 | **Human editing** | YAML | Most readable |
 | **Universal compatibility** | JSON | Supported everywhere |
 | **Fastest parsing** | orjson ⚡ | Rust-based speed |
@@ -80,43 +80,43 @@ TOON:                    335 tokens  (+33.4%)
 ## 🔬 Dataset Breakdown
 
 ### 👥 Employee Records (2,000 employees)
-- TRON: **65,223 tokens** (-33% vs ZSON) 🥇
+- TRON: **65,223 tokens** (-33% vs LEXATRON) 🥇
 - TOON: 71,421 tokens
-- ZSON: 97,407 tokens
+- LEXATRON: 97,407 tokens
 
 ### 📊 Analytics (365 days)
-- TRON: **9,146 tokens** (-36% vs ZSON) 🥇
+- TRON: **9,146 tokens** (-36% vs LEXATRON) 🥇
 - TOON: 10,965 tokens
-- ZSON: 14,240 tokens
+- LEXATRON: 14,240 tokens
 
 ### ⭐ GitHub Repos (100 repos)
-- TRON: **8,560 tokens** (-27% vs ZSON) 🥇
+- TRON: **8,560 tokens** (-27% vs LEXATRON) 🥇
 - TOON: 9,256 tokens
-- ZSON: 11,729 tokens
+- LEXATRON: 11,729 tokens
 
 ### 🛒 E-commerce Orders (500 orders)
-- TRON: **30,913 tokens** (-33% vs ZSON) 🥇
-- ZSON: 46,381 tokens
+- TRON: **30,913 tokens** (-33% vs LEXATRON) 🥇
+- LEXATRON: 46,381 tokens
 - TOON: 47,526 tokens
 
 ### 📝 Event Logs (300 events)
 - **TOON: 6,610 tokens** 🥇 (irregular structure favors TOON!)
 - TRON: 8,032 tokens
-- ZSON: 10,745 tokens
+- LEXATRON: 10,745 tokens
 
 ### 🧩 Config (nested)
-- **TRON/ZSON/JSON-compact: 223 tokens** 🏆 (3-way tie)
+- **TRON/LEXATRON/JSON-compact: 223 tokens** 🏆 (3-way tie)
 - YAML: 280 tokens
 - TOON: 335 tokens
 
 ---
 
-## 🚀 ZSON Roadmap: Catch Up & Surpass TRON
+## 🚀 LEXATRON Roadmap: Catch Up & Surpass TRON
 
 ### Current Gap
 ```
 TRON:  122,097 tokens  ⭐
-ZSON: 180,725 tokens  (32.4% worse)
+LEXATRON: 180,725 tokens  (32.4% worse)
 ```
 
 ### Phase 1: Match TRON (Target: ~122,000 tokens)
@@ -137,7 +137,7 @@ ZSON: 180,725 tokens  (32.4% worse)
 
 ### Benchmarking Suite (`benchmarks/` folder)
 - ✅ 6 datasets (0-100% tabular coverage)
-- ✅ 8 format encoders (JSON, YAML, XML, TOON, TRON, ZSON, orjson, JSON-compact)
+- ✅ 8 format encoders (JSON, YAML, XML, TOON, TRON, LEXATRON, orjson, JSON-compact)
 - ✅ TRON encoder (from scratch, 8,783 bytes)
 - ✅ Token efficiency benchmark
 - ✅ Performance analysis tools
@@ -166,7 +166,7 @@ ZSON: 180,725 tokens  (32.4% worse)
    - $401,000 annual savings with TRON (1M API calls)
    - Critical for high-volume LLM apps
 
-4. **ZSON needs Zen Grid ASAP**
+4. **LEXATRON needs Zen Grid ASAP**
    - 32% improvement needed
    - Opportunity to combine best approaches
 
@@ -175,8 +175,8 @@ ZSON: 180,725 tokens  (32.4% worse)
 ## ✅ Next Steps
 
 ### High Priority
-1. **Implement Zen Grid** for ZSON (match TRON performance)
-2. **Build ZSON Playground** (React + TypeScript web app)
+1. **Implement Zen Grid** for LEXATRON (match TRON performance)
+2. **Build LEXATRON Playground** (React + TypeScript web app)
 3. **Update Documentation** (add Zen Grid spec)
 
 ### Medium Priority
@@ -192,14 +192,14 @@ ZSON: 180,725 tokens  (32.4% worse)
 - ✅ 8-format benchmarking complete
 - ✅ TRON encoder validated (36.4% savings)
 - ✅ Comprehensive documentation
-- ⏳ ZSON matches TRON (pending Zen Grid)
+- ⏳ LEXATRON matches TRON (pending Zen Grid)
 - ⏳ Interactive playground launched
 
 ### Business
 - ✅ $401K/year cost savings demonstrated
 - ✅ Performance gaps identified
 - ✅ Actionable roadmap created
-- ⏳ ZSON becomes #1 format for LLMs
+- ⏳ LEXATRON becomes #1 format for LLMs
 - ⏳ 1,000+ GitHub stars
 
 ---
@@ -218,12 +218,12 @@ ZSON: 180,725 tokens  (32.4% worse)
 **We've created the holy grail benchmarking suite** and proven that:
 
 1. **TRON is the current champion** (57.7% better than JSON)
-2. **ZSON has 32% room for improvement** (via Zen Grid)
+2. **LEXATRON has 32% room for improvement** (via Zen Grid)
 3. **Real savings are massive** ($401K annually for large users)
 
 **Mission accomplished!** ✅
 
-Next: Make ZSON #1! 🚀
+Next: Make LEXATRON #1! 🚀
 
 ---
 

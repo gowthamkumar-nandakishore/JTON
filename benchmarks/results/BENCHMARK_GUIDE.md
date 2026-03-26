@@ -1,8 +1,8 @@
-# ZSON Token Efficiency Benchmark - Complete Guide
+# LEXATRON Token Efficiency Benchmark - Complete Guide
 
 ## Overview
 
-This comprehensive benchmark suite compares ZSON's token efficiency against leading serialization formats: JSON, YAML, XML, and TOON. The analysis uses OpenAI's `o200k_base` tokenizer (GPT-4o/GPT-5) to measure real-world LLM API costs.
+This comprehensive benchmark suite compares LEXATRON's token efficiency against leading serialization formats: JSON, YAML, XML, and TOON. The analysis uses OpenAI's `o200k_base` tokenizer (GPT-4o/GPT-5) to measure real-world LLM API costs.
 
 ## Key Findings
 
@@ -11,7 +11,7 @@ This comprehensive benchmark suite compares ZSON's token efficiency against lead
 **Overall Token Efficiency Ranking:**
 
 1. **TOON**: 146,113 tokens (most efficient)
-2. **JSON-compact / ZSON**: 180,725 tokens 
+2. **JSON-compact / LEXATRON**: 180,725 tokens 
 3. **YAML**: 220,129 tokens
 4. **JSON**: 282,332 tokens
 5. **XML**: 332,171 tokens (least efficient)
@@ -21,38 +21,38 @@ This comprehensive benchmark suite compares ZSON's token efficiency against lead
 Using GPT-4o pricing ($2.50 per 1M input tokens):
 
 - **TOON**: $0.34 saved per request (34% reduction)
-- **ZSON**: $0.25 saved per request (36% reduction vs JSON, on par with JSON-compact)
+- **LEXATRON**: $0.25 saved per request (36% reduction vs JSON, on par with JSON-compact)
 - **YAML**: $0.16 saved per request (22% reduction)
 
 ### 📊 Structure-Based Performance
 
 #### 100% Tabular Data (Flat Structures)
-- **TOON**: 91,642 tokens (-34.6% vs ZSON) ⭐
-- **ZSON**: 123,376 tokens (baseline)
-- **JSON-compact**: 123,376 tokens (same as ZSON)
+- **TOON**: 91,642 tokens (-34.6% vs LEXATRON) ⭐
+- **LEXATRON**: 123,376 tokens (baseline)
+- **JSON-compact**: 123,376 tokens (same as LEXATRON)
 - **YAML**: 150,252 tokens (+17.9%)
 - **JSON**: 189,384 tokens (+34.9%)
 - **XML**: 223,364 tokens (+44.8%)
 
 #### Mixed Structures (40-60% Tabular)
-- **TOON**: 54,136 tokens (-5.5% vs ZSON) ⭐
-- **ZSON**: 57,126 tokens (baseline)
-- **JSON-compact**: 57,126 tokens (same as ZSON)
+- **TOON**: 54,136 tokens (-5.5% vs LEXATRON) ⭐
+- **LEXATRON**: 57,126 tokens (baseline)
+- **JSON-compact**: 57,126 tokens (same as LEXATRON)
 - **YAML**: 69,597 tokens (+17.9%)
 - **JSON**: 92,567 tokens (+38.3%)
 - **XML**: 108,339 tokens (+47.3%)
 
 #### Deeply Nested (0% Tabular)
-- **ZSON**: 223 tokens (baseline) ⭐
-- **JSON-compact**: 223 tokens (same as ZSON)
+- **LEXATRON**: 223 tokens (baseline) ⭐
+- **JSON-compact**: 223 tokens (same as LEXATRON)
 - **YAML**: 280 tokens (+20.4%)
 - **TOON**: 335 tokens (+33.4%)
 - **JSON**: 381 tokens (+41.5%)
 - **XML**: 468 tokens (+52.4%)
 
-## Current Status: Why ZSON = JSON-compact?
+## Current Status: Why LEXATRON = JSON-compact?
 
-⚠️ **Important Note**: ZSON currently uses JSON-compact format internally. The **Zen Grid** serialization format (ZSON's tabular optimization) is **not yet implemented**.
+⚠️ **Important Note**: LEXATRON currently uses JSON-compact format internally. The **Zen Grid** serialization format (LEXATRON's tabular optimization) is **not yet implemented**.
 
 Once Zen Grid is complete, we expect:
 - **20-35% token reduction** vs JSON-compact for 100% tabular data
@@ -68,7 +68,7 @@ Once Zen Grid is complete, we expect:
 
 **Results**:
 - TOON: 71,421 tokens ⭐ (most efficient)
-- ZSON: 97,407 tokens
+- LEXATRON: 97,407 tokens
 - JSON: 151,211 tokens
 
 ### 2. 📈 Time-Series Analytics Data
@@ -78,7 +78,7 @@ Once Zen Grid is complete, we expect:
 
 **Results**:
 - TOON: 10,965 tokens ⭐
-- ZSON: 14,240 tokens
+- LEXATRON: 14,240 tokens
 - JSON: 22,274 tokens
 
 ### 3. ⭐ Top 100 GitHub Repositories
@@ -88,7 +88,7 @@ Once Zen Grid is complete, we expect:
 
 **Results**:
 - TOON: 9,256 tokens ⭐
-- ZSON: 11,729 tokens
+- LEXATRON: 11,729 tokens
 - JSON: 15,899 tokens
 
 ### 4. 🛒 E-commerce Orders
@@ -97,7 +97,7 @@ Once Zen Grid is complete, we expect:
 - **Fields**: orderId, customerId, dates, status, items[], shipping{}, total
 
 **Results**:
-- ZSON: 46,381 tokens ⭐ (most efficient)
+- LEXATRON: 46,381 tokens ⭐ (most efficient)
 - TOON: 47,526 tokens
 - JSON: 76,898 tokens
 
@@ -108,7 +108,7 @@ Once Zen Grid is complete, we expect:
 
 **Results**:
 - TOON: 6,610 tokens ⭐
-- ZSON: 10,745 tokens
+- LEXATRON: 10,745 tokens
 - JSON: 15,669 tokens
 
 ### 6. 🧩 Deeply Nested Configuration
@@ -117,7 +117,7 @@ Once Zen Grid is complete, we expect:
 - **Fields**: Nested application, server, database, cache configs
 
 **Results**:
-- ZSON: 223 tokens ⭐ (most efficient, tied with JSON-compact)
+- LEXATRON: 223 tokens ⭐ (most efficient, tied with JSON-compact)
 - YAML: 280 tokens
 - TOON: 335 tokens
 - JSON: 381 tokens
@@ -149,7 +149,7 @@ Once Zen Grid is complete, we expect:
 - **Cons**: New format, limited tooling, less efficient for deeply nested
 - **Best for**: Highly tabular datasets, LLM context optimization
 
-### ZSON (Minimalist YSON)
+### LEXATRON (Minimalist YSON)
 - **Current**: Uses JSON-compact (on par for nested, needs improvement for tabular)
 - **Planned**: Zen Grid format for 20-35% tabular savings
 - **Pros**: Automatic format selection, JSON compatibility, Rust performance
@@ -161,12 +161,12 @@ Once Zen Grid is complete, we expect:
 
 | Use Case | Recommended Format | Reasoning |
 |----------|-------------------|-----------|
-| 100% tabular data | TOON or ZSON Zen Grid* | Highest compression for tables |
-| Mixed structure | ZSON* | Smart auto-selection |
-| Deeply nested | JSON-compact or ZSON | Already optimal |
+| 100% tabular data | TOON or LEXATRON Zen Grid* | Highest compression for tables |
+| Mixed structure | LEXATRON* | Smart auto-selection |
+| Deeply nested | JSON-compact or LEXATRON | Already optimal |
 | Human editing | YAML or JSON | Readability priority |
 | Legacy/XML systems | XML | Ecosystem requirement |
-| LLM API cost optimization | TOON or ZSON Zen Grid* | Minimize tokens |
+| LLM API cost optimization | TOON or LEXATRON Zen Grid* | Minimize tokens |
 
 *Zen Grid implementation pending
 
@@ -272,10 +272,10 @@ Once Zen Grid is implemented:
 
 - [toon-format/toon](https://github.com/toon-format/toon) - Token-Oriented Object Notation
 - [OpenAI Tokenizer](https://github.com/openai/tiktoken) - tiktoken library
-- [ZSON Specs](../specs/001-short-name-ZSON/) - Format specification
+- [LEXATRON Specs](../specs/001-short-name-LEXATRON/) - Format specification
 
 ---
 
 **Last Updated**: December 25, 2025  
 **Benchmark Version**: 1.0.0  
-**ZSON Version**: 0.1.0 (Zen Grid pending)
+**LEXATRON Version**: 0.1.0 (Zen Grid pending)

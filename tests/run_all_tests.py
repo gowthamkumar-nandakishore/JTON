@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 ZSON MASTER TEST RUNNER
+🧪 LEXATRON MASTER TEST RUNNER
 
 ONE SCRIPT TO RUN ALL TESTS:
 ✅ JSON Compatibility Tests (primitives, arrays, objects, edge cases)
@@ -78,7 +78,7 @@ def run_pytest(args: list[str], description: str) -> bool:
 def main():
     """Master test orchestrator"""
     parser = argparse.ArgumentParser(
-        description="ZSON Master Test Runner - ONE script for ALL tests"
+        description="LEXATRON Master Test Runner - ONE script for ALL tests"
     )
     parser.add_argument("--quick", action="store_true", help="Fast tests only (skip 644 reference vectors)")
     parser.add_argument("--compat", action="store_true", help="JSON compatibility tests only")
@@ -86,7 +86,7 @@ def main():
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     args = parser.parse_args()
     
-    print_header("🧪 ZSON MASTER TEST SUITE", "=")
+    print_header("🧪 LEXATRON MASTER TEST SUITE", "=")
     print("ONE SCRIPT TO TEST THEM ALL\n")
     
     # Count available tests

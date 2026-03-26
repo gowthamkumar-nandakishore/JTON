@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simple test runner for ZSON - executes all test steps"""
+"""Simple test runner for LEXATRON - executes all test steps"""
 
 import subprocess
 import sys
@@ -40,24 +40,24 @@ print("=" * 80)
 
 script = '''
 try:
-    import zson, json
+    import lexatron, json
     
     # Test 1: basic JSON output
-    r = zson.dumps({"name": "Alice", "age": 30})
+    r = lexatron.dumps({"name": "Alice", "age": 30})
     print("Test 1:", r)
     assert json.loads(r) == {"name": "Alice", "age": 30}
     
     # Test 2: zen grid table
     data = [{"id": 1, "name": "Alice", "score": 95}, {"id": 2, "name": "Bob", "score": 87}]
-    r = zson.dumps(data, zen_grid=True)
+    r = lexatron.dumps(data, zen_grid=True)
     print("Test 2 (zen grid):", r)
-    rt = zson.loads(r)
+    rt = lexatron.loads(r)
     assert rt == data, f"Round-trip failed: {rt} != {data}"
     print("Round-trip: OK")
     
     # Test 3: token savings
     data_large = [{"employee_id": i, "first_name": f"Name{i}", "dept": "Eng"} for i in range(100)]
-    zen = zson.dumps(data_large, zen_grid=True)
+    zen = lexatron.dumps(data_large, zen_grid=True)
     compact = json.dumps(data_large, separators=(",",":"))
     print(f"Test 3: zen={len(zen)} chars, json={len(compact)} chars, savings={100*(len(compact)-len(zen))/len(compact):.1f}%")
 except ImportError as e:

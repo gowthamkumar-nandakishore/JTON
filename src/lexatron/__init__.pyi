@@ -1,5 +1,5 @@
 """
-Type stubs for ZSON — Zero-overhead Serialized Object Notation.
+Type stubs for LEXATRON — Zero-overhead Serialized Object Notation.
 """
 
 from typing import Any, Optional, Union
@@ -12,7 +12,7 @@ def loads(
     schema: Optional[list] = None,
 ) -> Any:
     """
-    Parse a ZSON or JSON string/bytes into a Python object.
+    Parse a LEXATRON or JSON string/bytes into a Python object.
 
     Args:
         data:   Input string or bytes.  bytes avoids a UTF-8 copy.
@@ -23,7 +23,7 @@ def loads(
         Parsed Python value: dict, list, str, int, float, bool, or None.
 
     Raises:
-        ValueError:  Invalid ZSON/JSON syntax.
+        ValueError:  Invalid LEXATRON/JSON syntax.
         TypeError:   data is not str or bytes.
     """
     ...
@@ -36,7 +36,7 @@ def dumps(
     indent: Optional[int] = None,
 ) -> str:
     """
-    Serialize a Python object to a ZSON or JSON string.
+    Serialize a Python object to a LEXATRON or JSON string.
 
     Args:
         data:           Any serializable Python object (dict, list, str, int,
@@ -49,20 +49,20 @@ def dumps(
                         None (default) → compact output.
 
     Returns:
-        A str containing the ZSON/JSON representation.
+        A str containing the LEXATRON/JSON representation.
 
     Raises:
         TypeError:  An object is not serializable.
         ValueError: Nesting exceeds 256 levels.
 
     Examples:
-        >>> zson.dumps({"name": "Alice", "score": 95})
+        >>> lexatron.dumps({"name": "Alice", "score": 95})
         '{"name":"Alice","score":95}'
 
-        >>> zson.dumps([{"id":1,"v":10},{"id":2,"v":20}])
+        >>> lexatron.dumps([{"id":1,"v":10},{"id":2,"v":20}])
         '[: id, v; 1, 10; 2, 20 ]'
 
-        >>> zson.dumps({"key": "val"}, unquoted_keys=True)
+        >>> lexatron.dumps({"key": "val"}, unquoted_keys=True)
         '{key:"val"}'
     """
     ...
