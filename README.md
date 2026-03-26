@@ -1,6 +1,6 @@
 # UOON
 
-**UOON (Zero-overhead Serialized Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python.
+**UOON (Ultra-Optimized Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python.
 
 [![Tests](https://img.shields.io/badge/tests-622%20passing-brightgreen)](./tests/)
 [![Performance](https://img.shields.io/badge/loads-193%20MB%2Fs-green)](#performance)
