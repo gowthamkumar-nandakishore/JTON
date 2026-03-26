@@ -65,10 +65,8 @@ jobs:
             --release
             --out dist
             --interpreter python3.10 python3.11 python3.12 python3.13
-          # PYO3 ABI3 forward compat needed for Python 3.13 with pyo3 0.20
-          before-script-linux: |
-            echo "PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1" >> $GITHUB_ENV
         env:
+          # Required for Python 3.13 + pyo3 0.20 — passed into manylinux Docker container
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
       - name: Upload wheels
