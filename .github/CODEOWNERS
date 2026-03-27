@@ -1,0 +1,19 @@
+# UOON Code Owners
+# These owners are automatically requested for review on PRs.
+
+# Default: owner reviews all changes
+* @gowthamkumar-nandakishore
+
+# Rust core
+/src/uoon_core/ @gowthamkumar-nandakishore
+
+# Python bindings
+/src/uoon/ @gowthamkumar-nandakishore
+
+# CI/CD and workflows
+/.github/ @gowthamkumar-nandakishore
+
+# Build configuration
+/Cargo.toml @gowthamkumar-nandakishore
+/pyproject.toml @gowthamkumar-nandakishore
+/build.rs @gowthamkumar-nandakishore
