@@ -316,12 +316,12 @@ Within OpenAI's lineup, GPT-5.x consistently benefits while the older GPT-4o doe
 - **SIMD Scanner** — AVX2 + AVX-512 structural character indexing
 - **Strict Number Parsing** — rejects `-01`, `1.`, `0.e1`, `-.5`, `1+2`
 - **Enhanced Errors** — 40-character context window with `^` markers
+- **Schema-guided Parsing** — optional `schema` parameter for 2–3× speedup on homogeneous data
 - **Type Stubs** — `__init__.pyi` + `py.typed` for IDE/mypy support
 
 ### 🚧 Planned
 
 - **Parallel Parsing** — multi-core processing for very large files
-- **Schema-guided Parsing** — optional schema for 2-3× speedup on homogeneous data
 - **`loads(type=Model)`** — automatic Pydantic model deserialization
 
 ---
