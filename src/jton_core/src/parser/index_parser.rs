@@ -675,6 +675,9 @@ impl<'a> FastIndexParser<'a> {
 
             self.skip_spaces_only();
             if self.pos >= self.input.len() {
+                for k in &headers {
+                    unsafe { ffi::Py_DECREF(*k) };
+                }
                 return Err(ParseError::unexpected_eof(self.pos).into());
             }
             match unsafe { *self.input.get_unchecked(self.pos) } {
@@ -687,7 +690,12 @@ impl<'a> FastIndexParser<'a> {
                     self.consume_semicolon(semi_pos);
                     break;
                 }
-                c => return Err(ParseError::invalid_char(self.pos, c as char).into()),
+                c => {
+                    for k in &headers {
+                        unsafe { ffi::Py_DECREF(*k) };
+                    }
+                    return Err(ParseError::invalid_char(self.pos, c as char).into());
+                }
             }
         }
 

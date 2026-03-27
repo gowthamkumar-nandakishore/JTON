@@ -62,8 +62,8 @@
 
 <header>
   <h1>⚡ JTON Playground</h1>
-  <span class="badge">v0.1</span>
-  <span class="sub">Ultra-Optimized Object Notation — JSON superset with Zen Grid encoding</span>
+  <span class="badge">v1.0</span>
+  <span class="sub">JSON Tabular Object Notation — JSON superset · 20% fewer tokens · 2× faster loads</span>
   <span id="spinner">⏳ encoding…</span>
 </header>
 
@@ -80,16 +80,10 @@
         <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Compact table encoding</small>
 
         <div class="opt-row">
-          <input type="checkbox" id="opt-row-count">
+          <input type="checkbox" id="opt-row-count" checked>
           <label for="opt-row-count">Row count [N:]</label>
         </div>
-        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Prefix header with row count</small>
-
-        <div class="opt-row">
-          <input type="checkbox" id="opt-multiline">
-          <label for="opt-multiline">Multiline (TOON-compat)</label>
-        </div>
-        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Best LLM accuracy</small>
+        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Structural cue for LLMs (default on)</small>
       </div>
     </div>
 
@@ -140,7 +134,7 @@
         <select id="hint-style">
           <option value="zen_grid">Zen Grid</option>
           <option value="zen_grid_rowcount">With row count</option>
-          <option value="multiline">Multiline</option>
+          <option value="multiline">Multiline mode</option>
           <option value="tab">Tab-delimited</option>
         </select>
       </div>
@@ -201,8 +195,9 @@
     <button class="sample-btn" onclick="loadSample('config')">⚙️ Deep config</button>
     <button class="sample-btn" onclick="loadSample('github')">⭐ GitHub repos</button>
   </div>
-  <div style="margin-left:auto">
-    <a href="https://github.com/your-org/JTON" target="_blank" style="color:var(--muted);font-size:.75rem;text-decoration:none">GitHub →</a>
+  <div style="margin-left:auto;display:flex;gap:16px;align-items:center">
+    <span style="color:var(--muted);font-size:.72rem">📊 Benchmarks: <strong style="color:var(--accent2)">2× faster loads</strong> · <strong style="color:var(--accent2)">20% fewer tokens</strong> vs JSON compact · <strong style="color:var(--accent2)">#2 token efficiency</strong> (all JSON-compatible formats)</span>
+    <a href="https://github.com/your-org/jton" target="_blank" style="color:var(--muted);font-size:.75rem;text-decoration:none">GitHub →</a>
   </div>
 </div>
 
@@ -304,7 +299,6 @@ function getOpts() {
   return {
     zen_grid:      document.getElementById('opt-zen').checked,
     row_count:     document.getElementById('opt-row-count').checked,
-    multiline_zen: document.getElementById('opt-multiline').checked,
     bare_strings:  document.getElementById('opt-bare').checked,
     implicit_null: document.getElementById('opt-null').checked,
     unquoted_keys: document.getElementById('opt-keys').checked,
@@ -398,7 +392,7 @@ document.getElementById('input').addEventListener('input', () => {
   encTimer = setTimeout(doEncode, 400);
 });
 
-['opt-zen','opt-row-count','opt-multiline','opt-bare','opt-null','opt-keys'].forEach(id =>
+['opt-zen','opt-row-count','opt-bare','opt-null','opt-keys'].forEach(id =>
   document.getElementById(id).addEventListener('change', doEncode));
 ['opt-delim','opt-indent'].forEach(id =>
   document.getElementById(id).addEventListener('change', doEncode));

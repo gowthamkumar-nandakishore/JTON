@@ -239,7 +239,7 @@ def run_token_efficiency():
     
     # Save
     report_path = RESULTS_DIR / "token_efficiency.md"
-    report_path.write_text("".join(report))
+    report_path.write_text("".join(report), encoding="utf-8")
     
     print(f"✅ Saved: {report_path}\n")
     
@@ -373,7 +373,7 @@ def run_cost_analysis():
     
     # Save
     path = RESULTS_DIR / "cost_analysis.md"
-    path.write_text("".join(report))
+    path.write_text("".join(report), encoding="utf-8")
     
     print(f"✅ Saved: {path}\n")
 
@@ -437,4 +437,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

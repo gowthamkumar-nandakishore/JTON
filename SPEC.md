@@ -269,65 +269,9 @@ JTON uses SIMD acceleration for escape detection:
 
 ---
 
-## 8. Batch API
+## 8. SIMD Requirements
 
-### 8.1 `loads_many(texts)`
-
-Accepts a list of JTON/JSON strings. Returns a list of Python objects in the same order.
-
-Implementation MUST:
-- Release the Python GIL during the parse phase (using `py.allow_threads()`)
-- Use a multi-threaded executor (Rayon) to parse strings in parallel
-- Reacquire the GIL before constructing Python objects
-- Raise `ValueError` identifying the failing string if any parse fails
-
-### 8.2 `dumps_many(data, *, zen_grid=True, row_count=True)`
-
-Accepts a list of Python objects. Returns a list of JTON/JSON strings in the same order.
-
-Implementation SHOULD use thread-local serialization buffers to minimize allocation per call.
-
----
-
-## 9. Direct Model Deserialization
-
-### 9.1 `loads_as(data, model_type, *, strict=False)`
-
-Parses `data` using `loads()` then passes the result to `model_type`:
-
-1. If `model_type` has `model_validate` (Pydantic v2): call `model_type.model_validate(parsed, strict=strict)`
-2. Else if `model_type` has `parse_obj` (Pydantic v1): call `model_type.parse_obj(parsed)`
-3. Else if parsed is a dict: call `model_type(**parsed)`
-4. Else: call `model_type(parsed)`
-
----
-
-## 10. C ABI
-
-JTON exposes a stable C ABI for embedding in non-Python runtimes:
-
-```c
-// Encode: Python dict/list → JTON string
-// flags: JTON_ZEN_GRID (0x01), JTON_ROW_COUNT (0x02)
-char* JTON_encode(const char* json_input, uint32_t flags);
-
-// Decode: JTON string → JSON string
-char* JTON_decode(const char* JTON_input);
-
-// Free a string returned by JTON_encode or JTON_decode
-void JTON_free(char* ptr);
-
-// Return a format hint string for the given style
-char* JTON_format_hint(const char* style);
-```
-
-All returned strings are null-terminated UTF-8. Callers MUST call `JTON_free()` on the returned pointer.
-
----
-
-## 11. SIMD Requirements
-
-### 11.1 Minimum CPU Features
+### 8.1 Minimum CPU Features
 
 | Architecture | Minimum | Notes |
 |---|---|---|
@@ -338,7 +282,7 @@ All returned strings are null-terminated UTF-8. Callers MUST call `JTON_free()` 
 
 If AVX2 is not available on x86_64, the module MUST raise `RuntimeError` at import time.
 
-### 11.2 Runtime Detection
+### 8.2 Runtime Detection
 
 Feature detection uses `std::is_x86_feature_detected!()` at call time. The best available ISA is selected automatically:
 
@@ -348,7 +292,7 @@ AVX-512BW → AVX2 → NEON → Scalar
 
 ---
 
-## 12. Versioning
+## 9. Versioning
 
 This document describes JTON Specification version **1.0**.
 
@@ -357,8 +301,8 @@ Breaking changes (format incompatibilities) increment the major version.
 
 The format version is accessible at runtime:
 ```python
-import JTON
-print(JTON.__version__)  # "1.0.0"
+import jton
+print(jton.__version__)  # "1.0.0"
 ```
 
 ---

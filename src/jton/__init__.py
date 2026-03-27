@@ -9,13 +9,9 @@ Key functions:
   token_count(data)        — compare token costs across all formats
 
 Zen Grid format automatically converts homogeneous arrays of dicts to a
-compact table syntax that reduces LLM token counts by 22–55%:
+compact table syntax that reduces LLM token counts by 15–36%:
 
-    [: id, name, score; 1, Alice, 95; 2, Bob, 87 ]   (default)
-    [3: id, name, score; 1, Alice, 95; 2, Bob, 87 ]  (row_count=True)
-    [2]{id,name}:                                      (multiline_zen=True)
-      1, Alice
-      2, Bob
+    [3: id, name, score; 1, Alice, 95; 2, Bob, 87; 3, Carol, 92 ]
 
 dumps() options:
   zen_grid=True           — Enable Zen Grid table output (default: True)
@@ -24,62 +20,14 @@ dumps() options:
   implicit_null=False     — Write missing Zen Grid cells as empty
   indent=None             — Pretty-print with N spaces per indent level
   row_count=True          — Add [N] row count to Zen Grid header (default: True)
-  multiline_zen=False     — TOON-compatible multi-line output (best LLM accuracy)
   delimiter="comma"       — "comma" (default), "tab" (max tokens), or "pipe"
 """
 
-from .jton_core import __version__, __simd__, loads, dumps, loads_many, dumps_many, format_hint
+from .jton_core import __version__, __simd__, loads, dumps, format_hint
 
 # Convenient aliases
 encode = dumps   # familiar for users coming from orjson / msgspec
 decode = loads
-
-
-def loads_as(data, model_type, *, strict: bool = False):
-    """
-    Parse a JTON/JSON string and validate against a Pydantic model or dataclass.
-
-    This combines ``jton.loads()`` with Pydantic v2 ``model_validate()`` (or
-    Pydantic v1 ``parse_obj()``), giving you a fully validated model instance
-    in one call.
-
-    Args:
-        data:       JTON/JSON string or bytes to parse.
-        model_type: A Pydantic BaseModel subclass, dataclass, or any callable
-                    that accepts a single dict/list argument.
-        strict:     Passed to Pydantic v2 ``model_validate(strict=...)``.
-                    Ignored for non-Pydantic types.
-
-    Returns:
-        An instance of ``model_type`` populated with the parsed data.
-
-    Raises:
-        ValidationError: If Pydantic validation fails.
-        TypeError:        If ``model_type`` cannot be constructed from parsed data.
-
-    Example::
-
-        >>> from pydantic import BaseModel
-        >>> import jton
-        >>> class User(BaseModel):
-        ...     id: int
-        ...     name: str
-        >>> jton.loads_as('[{"id":1,"name":"Alice"},{"id":2,"name":"Bob"}]', list)
-        [{'id': 1, 'name': 'Alice'}, {'id': 2, 'name': 'Bob'}]
-        >>> jton.loads_as('{"id":1,"name":"Alice"}', User)
-        User(id=1, name='Alice')
-    """
-    parsed = loads(data)
-    # Pydantic v2
-    if hasattr(model_type, "model_validate"):
-        return model_type.model_validate(parsed, strict=strict)
-    # Pydantic v1
-    if hasattr(model_type, "parse_obj"):
-        return model_type.parse_obj(parsed)
-    # Dataclass or plain callable
-    if isinstance(parsed, dict):
-        return model_type(**parsed)
-    return model_type(parsed)
 
 
 def token_count(data, tokenizer: str = "o200k_base") -> dict:
@@ -142,7 +90,7 @@ def token_count(data, tokenizer: str = "o200k_base") -> dict:
         "json_pretty",
     )
     _entry(json_compact, "json_compact")
-    _entry(dumps(data, zen_grid=True, row_count=True), "zen_grid")
+    _entry(dumps(data, zen_grid=True, row_count=False), "zen_grid")
     _entry(dumps(data, zen_grid=True, row_count=True), "zen_grid_rowcount")
     _entry(dumps(data, zen_grid=True, delimiter="tab"), "zen_grid_tab")
     _entry(dumps(data, zen_grid=True, multiline_zen=True), "zen_grid_multiline")
@@ -157,9 +105,6 @@ def token_count(data, tokenizer: str = "o200k_base") -> dict:
 __all__ = [
     "loads",
     "dumps",
-    "loads_many",
-    "dumps_many",
-    "loads_as",
     "encode",
     "decode",
     "format_hint",

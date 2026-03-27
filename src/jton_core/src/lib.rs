@@ -1,45 +1,12 @@
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 
-mod c_api;
 mod parser;
 mod serializer;
 mod simd;
 mod types;
 
 use types::{FieldDescriptor, FieldType, ParseContext};
-
-/// Convert a `serde_json::Value` into a Python object (requires GIL).
-fn json_value_to_py(py: Python, v: &serde_json::Value) -> PyResult<PyObject> {
-    match v {
-        serde_json::Value::Null => Ok(py.None()),
-        serde_json::Value::Bool(b) => Ok(b.to_object(py)),
-        serde_json::Value::Number(n) => {
-            if let Some(i) = n.as_i64() {
-                Ok(i.to_object(py))
-            } else if let Some(u) = n.as_u64() {
-                Ok(u.to_object(py))
-            } else {
-                Ok(n.as_f64().unwrap_or(f64::NAN).to_object(py))
-            }
-        }
-        serde_json::Value::String(s) => Ok(s.to_object(py)),
-        serde_json::Value::Array(arr) => {
-            let list = pyo3::types::PyList::empty(py);
-            for item in arr {
-                list.append(json_value_to_py(py, item)?)?;
-            }
-            Ok(list.to_object(py))
-        }
-        serde_json::Value::Object(map) => {
-            let dict = pyo3::types::PyDict::new(py);
-            for (k, val) in map {
-                dict.set_item(k, json_value_to_py(py, val)?)?;
-            }
-            Ok(dict.to_object(py))
-        }
-    }
-}
 
 /// Parse JTON/JSON data from bytes or string
 ///
@@ -156,99 +123,6 @@ fn dumps(
     serializer::serialize(py, &obj, &opts)
 }
 
-/// Decode many JSON/JTON strings in parallel using a Rayon thread pool.
-///
-/// This function releases the GIL and parses all strings concurrently — ideal
-/// for server workloads where you receive a batch of requests at once.
-///
-/// Args:
-///     texts: List of JSON/JTON strings to parse.
-///
-/// Returns:
-///     List of parsed Python objects in the same order as the input.
-///
-/// Raises:
-///     ValueError: If any string is invalid JSON/JTON.
-///
-/// Example:
-///     >>> import jton
-///     >>> jton.loads_many(['{"x":1}', '{"x":2}', '{"x":3}'])
-///     [{'x': 1}, {'x': 2}, {'x': 3}]
-#[pyfunction]
-fn loads_many(py: Python, texts: Vec<std::string::String>) -> PyResult<Vec<PyObject>> {
-    use rayon::prelude::*;
-
-    // Phase 1 — parse to serde_json::Value in parallel, GIL released
-    let parsed: Vec<Result<serde_json::Value, serde_json::Error>> =
-        py.allow_threads(|| texts.par_iter().map(|s| serde_json::from_str(s)).collect());
-
-    // Phase 2 — convert to Python objects (needs GIL)
-    parsed
-        .into_iter()
-        .map(|r| {
-            let v = r.map_err(|e| {
-                pyo3::exceptions::PyValueError::new_err(e.to_string())
-            })?;
-            json_value_to_py(py, &v)
-        })
-        .collect()
-}
-
-/// Encode many Python objects to JTON/JSON strings in parallel.
-///
-/// Converts Python objects to JSON trees sequentially (GIL-bound), then
-/// serialises each tree to a string in parallel via Rayon — giving
-/// meaningful throughput gains for large batches.
-///
-/// Args:
-///     data:      List of Python objects to serialise.
-///     zen_grid:  Enable Zen Grid table encoding (default: True).
-///     row_count: Prepend row count to Zen Grid header (default: True).
-///
-/// Returns:
-///     List of JTON/JSON strings in the same order as the input.
-///
-/// Example:
-///     >>> import jton
-///     >>> jton.dumps_many([{"x": 1}, {"x": 2}])
-///     ['{"x":1}', '{"x":2}']
-#[pyfunction(signature = (data, *, zen_grid=true, row_count=true))]
-fn dumps_many(
-    py: Python,
-    data: &PyAny,
-    zen_grid: bool,
-    row_count: bool,
-) -> PyResult<Vec<std::string::String>> {
-    let opts = serializer::DumpsOptions {
-        zen_grid,
-        unquoted_keys: false,
-        indent: None,
-        bare_strings: false,
-        implicit_null: false,
-        row_count,
-        multiline_zen: false,
-        delimiter: serializer::ZenGridDelimiter::Comma,
-    };
-
-    // Phase 1 — extract Python objects to owned serde_json::Value trees (GIL held)
-    let mut json_values: Vec<serde_json::Value> = Vec::new();
-    for item in data.iter()? {
-        let obj = item?.to_object(py);
-        let s = serializer::serialize(py, &obj, &opts)?;
-        // For now collect the serialised strings directly (buffer pool reuse)
-        json_values.push(serde_json::Value::String(s));
-    }
-
-    // Strings already produced; extract them
-    Ok(json_values
-        .into_iter()
-        .map(|v| match v {
-            serde_json::Value::String(s) => s,
-            _ => unreachable!(),
-        })
-        .collect())
-}
-
 /// Return a concise format description for pasting into LLM system prompts.
 ///
 /// Use this to teach an LLM how to read JTON Zen Grid data before sending it.
@@ -327,8 +201,6 @@ fn jton_core(_py: Python, m: &PyModule) -> PyResult<()> {
     // Add loads() and dumps() functions
     m.add_function(wrap_pyfunction!(loads, m)?)?;
     m.add_function(wrap_pyfunction!(dumps, m)?)?;
-    m.add_function(wrap_pyfunction!(loads_many, m)?)?;
-    m.add_function(wrap_pyfunction!(dumps_many, m)?)?;
     m.add_function(wrap_pyfunction!(format_hint, m)?)?;
 
     Ok(())

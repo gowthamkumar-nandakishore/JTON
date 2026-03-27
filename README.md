@@ -2,7 +2,7 @@
 
 **JTON (JSON Tabular Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python. Home of **Zen Grid**, a token-aware tabular encoding that reduces LLM token costs by 19–61%.
 
-[![Tests](https://img.shields.io/badge/tests-685%20passing-brightgreen)](./tests/)
+[![Tests](https://img.shields.io/badge/tests-670%20passing-brightgreen)](./tests/)
 [![Performance](https://img.shields.io/badge/loads-193%20MB%2Fs-green)](#performance)
 [![SIMD](https://img.shields.io/badge/SIMD-AVX2%20%2B%20AVX--512-blue)](#simd-acceleration)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
@@ -190,12 +190,14 @@ class Point:
 print(jton.dumps(Point(x=1.5, y=2.5)))
 # → '{"x":1.5,"y":2.5}'
 
-# Parse directly into a Pydantic model (loads + validate in one call)
-user = jton.loads_as('{"id":1,"name":"Alice","email":"a@ex.com"}', User)
+# Parse directly into a Pydantic model
+user_data = jton.loads('{"id":1,"name":"Alice","email":"a@ex.com"}')
+user = User(**user_data)
 # → User(id=1, name='Alice', email='a@ex.com')
 
 # Parse into a dataclass
-pt = jton.loads_as('{"x":1.5,"y":2.5}', Point)
+pt_data = jton.loads('{"x":1.5,"y":2.5}')
+pt = Point(**pt_data)
 # → Point(x=1.5, y=2.5)
 ```
 
@@ -234,58 +236,13 @@ Serialize Python objects to JTON/JSON string.
 | `bare_strings` | `bool` | `False` | Write identifier string values without quotes in Zen Grid cells |
 | `implicit_null` | `bool` | `False` | Write missing/null cells as empty (saves ~1 token per null cell) |
 | `row_count` | `bool` | `True` | Prefix Zen Grid header with row count: `[N: ...]` (default: **True**) |
-| `multiline_zen` | `bool` | `False` | Emit TOON-compatible multi-line format — best LLM accuracy |
 | `delimiter` | `str` | `"comma"` | Cell separator: `"comma"` (readable), `"tab"` (max token savings), `"pipe"` |
 
 Returns: `str` — serialized text
 
 **Supported types**: `dict`, `list`, `tuple`, `str`, `int`, `float`, `bool`, `None`, Pydantic `BaseModel` (v1+v2), `@dataclass`
 
-### `jton.loads_many(texts)`
-
-Decode a **batch of JSON/JTON strings in parallel** using a Rayon thread pool.
-Releases the GIL during the CPU-intensive parse phase — ideal for server workloads.
-
-```python
-results = jton.loads_many(['{"x":1}', '{"x":2}', '{"x":3}'])
-# → [{'x': 1}, {'x': 2}, {'x': 3}]
-```
-
-### `jton.dumps_many(data, *, zen_grid=True, row_count=True)`
-
-Encode a **list of Python objects** to JTON/JSON strings using the thread-local buffer pool.
-
-```python
-strings = jton.dumps_many([{"id": 1}, {"id": 2}])
-# → ['{"id":1}', '{"id":2}']
-```
-
-### `jton.loads_as(data, model_type, *, strict=False)`
-
-Parse JTON/JSON and **validate against a Pydantic model or dataclass** in one call.
-
-```python
-from pydantic import BaseModel
-import jton
-
-class User(BaseModel):
-    id: int
-    name: str
-
-user = jton.loads_as('{"id":1,"name":"Alice"}', User)
-# → User(id=1, name='Alice')
-
-# Also works with plain dataclasses
-from dataclasses import dataclass
-
-@dataclass
-class Point:
-    x: float
-    y: float
-
-pt = jton.loads_as('{"x":1.5,"y":2.5}', Point)
-# → Point(x=1.5, y=2.5)
-```
+### `jton.format_hint(style="zen_grid")`
 
 Return a format description for pasting into LLM system prompts.
 
@@ -333,27 +290,6 @@ python -m jton.cli input.json --stats
 
 ---
 
-## Parallel Batch API
-
-For server workloads processing many JSON payloads simultaneously:
-
-```python
-import jton
-
-# Decode batch in parallel (GIL released during parse phase)
-payloads = ['{"id":1}', '{"id":2}', '{"id":3}']
-results = jton.loads_many(payloads)
-
-# Encode batch (thread-local buffer pool, zero re-allocation per item)
-strings = jton.dumps_many([{"id": i} for i in range(1000)])
-```
-
-`loads_many` uses a **Rayon** thread pool to parse all strings concurrently:
-- Phase 1 (GIL released): parse raw JSON bytes into Rust value trees in parallel
-- Phase 2 (GIL held): convert Rust values → Python objects sequentially
-
----
-
 ## Playground
 
 Run the interactive playground locally to explore all JTON features:
@@ -375,31 +311,23 @@ The playground provides:
 - **Sample datasets** — employees, orders, analytics, deep config, GitHub repos
 - **Decode mode** — paste JTON output, get back pretty JSON
 
-For a shareable hosted playground, compile the WASM crate:
-```bash
-# Requires wasm-pack: cargo install wasm-pack
-cd jton_wasm
-wasm-pack build --target web --release
-# Then open playground/index.html directly (no server needed)
-```
-
 ---
 
 ## Performance
 
-### Speed Comparison (synthetic datasets, string-heavy / number-heavy / mixed)
+### Speed Comparison (real-world files: canada.json 2.25 MB, citm_catalog.json 1.78 MB, twitter.json 0.65 MB)
 
-| Library | `loads` | `dumps` | Notes |
-|---------|---------|---------|-------|
-| [stdlib `json`](https://docs.python.org/3/library/json.html) | 40–60 MB/s | 83–100 MB/s | Pure Python |
-| **JTON** | **117–193 MB/s** | **238–309 MB/s** | Rust/SIMD, JSON mode |
-| **JTON Zen Grid** | — | **397–616 MB/s** | Rust, table output |
-| [orjson](https://github.com/ijl/orjson) | 500–730 MB/s | 400–586 MB/s | Rust, JSON only |
+| Library | `loads` | `dumps` (JSON mode) | Notes |
+|---------|---------|---------------------|-------|
+| [stdlib `json`](https://docs.python.org/3/library/json.html) | 63–184 MB/s | 46–268 MB/s | Pure Python/C |
+| **JTON** | **132–346 MB/s** | **197–276 MB/s** | Rust/SIMD, JSON mode |
+| **JTON Zen Grid** | — | **81–240 MB/s** | Rust, table output |
+| [orjson](https://github.com/ijl/orjson) | 235–458 MB/s | 440–533 MB/s | Rust, JSON only |
 
-- JTON `loads` is **3–5× faster** than stdlib
-- JTON `dumps` (JSON mode) is **3–4× faster** than stdlib
-- JTON Zen Grid `dumps` reaches **600+ MB/s** on string-heavy tabular data
-- JTON adds Zen Grid token reduction that orjson cannot provide
+- JTON `loads` is **1.5–2.1× faster** than stdlib (`json.loads`)
+- JTON `dumps` JSON mode is **1.0–4.3× faster** than stdlib
+- JTON Zen Grid `dumps` saves **14–67% tokens** (depending on data shape) while maintaining competitive throughput
+- orjson is faster on raw JSON; JTON's advantage is Zen Grid token reduction which orjson cannot provide
 
 ### SIMD Acceleration
 
@@ -424,26 +352,26 @@ JTON uses a two-pass SIMD parsing strategy modeled after [simdjson](https://gith
 
 ### JTON vs Competing Formats
 
-| Format | Token Savings vs JSON compact | Approach | JSON-Compatible |
-|--------|-------------------------------|----------|-----------------|
-| **JTON Zen Grid** | **11–33% (mixed), up to 50% (pure tabular)** | Table syntax | ✅ Yes (JTON superset) |
-| [TRON](https://github.com/tron-format/tron) | ~32% | Class-based aliases | ❌ No (new syntax) |
-| [TOON](https://github.com/nickcoutsos/toon) | ~19% | Table-oriented | ❌ No (new syntax) |
-| JSON pretty | −197% (more tokens!) | Whitespace | ✅ Yes |
+Benchmarked on 6 real-world datasets using tiktoken `o200k_base` encoder:
 
-JTON's key advantage: Zen Grid is still valid JTON/JSON syntax, meaning any JSON parser can handle it, while TRON/TOON require custom parsers.
+| Format | Total Tokens | vs JSON compact | JSON-Compatible |
+|--------|-------------|-----------------|-----------------|
+| [TRON](https://github.com/tron-format/tron) | 122,097 | **−32.4%** | ❌ No (new syntax) |
+| **JTON Zen Grid** | **144,159** | **−20.2%** | ✅ Yes (JTON superset) |
+| [TOON](https://github.com/nickcoutsos/toon) | 146,113 | −19.2% | ❌ No (new syntax) |
+| JSON compact | 180,725 | — | ✅ Yes |
+
+**JTON is #2 most token-efficient** and the **only JSON-superset format in the top 3** — TRON and TOON require custom parsers.
 
 ### Real-world LLM Token Savings
 
-| Scenario | JSON compact tokens | JTON Zen Grid tokens | Savings |
-|----------|---------------------|----------------------|---------|
-| 50 API users (5 cols) | 1,302 | 1,011 | **22%** |
-| 100 log entries (10 cols) | 5,803 | 4,822 | **17%** |
-| 100 products (5 cols) | 2,603 | 2,112 | **19%** |
-| 200 rows × 5 cols | 4,602 | 3,411 | **26%** |
-| 2000 employees (pure tabular) | 97,407 | ~49,000 | **~50%** |
-
-Measured using [tiktoken](https://github.com/openai/tiktoken) `o200k_base` encoder (GPT-4o/GPT-5).
+| Dataset | JSON compact | JTON Zen Grid | Savings |
+|---------|-------------|---------------|---------|
+| 👥 2,000 employees (7 cols) | 97,407 | 77,226 | **−20.7%** |
+| 📈 365 days analytics | 14,240 | 10,604 | **−25.5%** |
+| ⭐ 100 GitHub repos | 11,729 | 9,626 | **−17.9%** |
+| 🛒 500 orders (nested) | 46,381 | 39,565 | **−14.7%** |
+| 🧾 300 event logs (semi-uniform) | 10,745 | 6,915 | **−35.6%** |
 
 ---
 
@@ -701,30 +629,41 @@ maturin develop --release
 
 ```
 src/
-├── JTON/                        # Python package
-│   ├── __init__.py              # Public API: loads, dumps, encode, decode
+├── jton/                        # Python package (pip install jton)
+│   ├── __init__.py              # Public API: loads, dumps, encode, decode, token_count
 │   ├── __init__.pyi             # Type stubs (mypy/pyright)
+│   ├── cli.py                   # jton CLI entry point
 │   └── py.typed                 # PEP 561 marker
 └── jton_core/                   # Rust implementation
     └── src/
-        ├── lib.rs               # PyO3 module + Python function wrappers
-        ├── serializer.rs        # dumps() — Zen Grid + JSON + Pydantic
+        ├── lib.rs               # PyO3 module: loads(), dumps(), format_hint()
+        ├── serializer.rs        # Zen Grid + JSON serializer, AVX-512 escape path
         ├── types/               # StructuralIndex, FieldDescriptor
-        ├── simd/                # AVX2/AVX-512 structural scanners
-        └── parser/              # FastIndexParser, fast_number, string_cache
+        ├── simd/                # AVX2 / AVX-512 structural scanners
+        └── parser/              # SIMD indexed parser, string_cache, number parsing
 
 tests/
-├── test_json_compatibility.py   # 39 JSON spec tests
-├── test_zen_grid.py             # 45 Zen Grid tests
-├── test_reference_vectors.py    # 644+ JSONTestSuite vectors
-└── reference_vectors/           # Test corpus (JSONTestSuite, JSON_checker)
+├── test_json_compatibility.py   # JSON spec conformance
+├── test_zen_grid.py             # Zen Grid encoding/decoding + CLI
+└── test_reference_vectors.py    # JSONTestSuite corpus (600+ vectors)
 
 benchmarks/
-├── large.json                   # 7.88 MB primary benchmark
-├── super_long.json              # 294 MB stress test
-├── formatters.py                # Format registry for benchmark runners
-└── token_efficiency.py          # Token comparison: JTON vs JSON vs TRON/TOON
+├── run_all_benchmarks.py        # Token efficiency benchmark (8 formats × 6 datasets)
+└── results/token_efficiency.md  # Latest benchmark results
 ```
+
+---
+
+## Language Support
+
+**JTON officially supports Python only.**
+
+The SIMD-accelerated parser (AVX2/AVX-512 structural scanning, VPSHUFB nibble classifier, thread-local string cache) is a PyO3 native extension. The performance advantage is inseparable from the Python binding. The format spec is in [`SPEC.md`](./SPEC.md) for anyone who wants to implement JTON in another language.
+
+| Language | Status | Install |
+|----------|--------|---------|
+| **Python 3.11+** | ✅ Official | `pip install jton` |
+| All others | — | Implement from `SPEC.md` |
 
 ---
 
