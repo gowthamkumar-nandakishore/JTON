@@ -10,7 +10,7 @@ authors = ["Gowthamkumar Nandakishore"]
 
 [lib]
 name = "jton_core"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 path = "src/jton_core/src/lib.rs"
 
 [dependencies]

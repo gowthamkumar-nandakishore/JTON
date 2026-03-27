@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""UOON Benchmark Runner"""
+"""JTON Benchmark Runner"""
 
 import os
 import sys
@@ -10,15 +10,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 BENCH_DIR = PROJECT_ROOT / "benchmarks"
 
 print("=" * 60)
-print("1. Python and uoon version check")
+print("1. Python and JTON version check")
 print("=" * 60)
 
 try:
-    import uoon
+    import jton
     print(f"Python version: {sys.version}")
-    print(f"uoon version: {uoon.__version__}")
+    print(f"JTON version: {jton.__version__}")
 except ImportError as e:
-    print(f"Error importing uoon: {e}")
+    print(f"Error importing JTON: {e}")
     sys.exit(1)
 
 print("\n" + "=" * 60)
@@ -31,12 +31,12 @@ try:
     
     # Warmup
     for _ in range(2):
-        uoon.loads(data)
+        jton.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(3):
-        uoon.loads(data)
+        jton.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 3 / elapsed / 1e6
@@ -55,12 +55,12 @@ try:
     
     # Warmup
     for _ in range(5):
-        uoon.loads(data)
+        jton.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(50):
-        uoon.loads(data)
+        jton.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 50 / elapsed / 1e6
@@ -70,16 +70,16 @@ except Exception as e:
     print(f"Error: {e}")
 
 print("\n" + "=" * 60)
-print("4. Check uoon functions (dumps support)")
+print("4. Check JTON functions (dumps support)")
 print("=" * 60)
 
 try:
-    import uoon
-    print("Available uoon attributes:")
-    uoon_attrs = [attr for attr in dir(uoon) if not attr.startswith('_')]
-    print(uoon_attrs)
-    print(f"\nHas 'dumps' function: {hasattr(uoon, 'dumps')}")
-    print(f"Has 'loads' function: {hasattr(uoon, 'loads')}")
+    import jton
+    print("Available JTON attributes:")
+    JTON_attrs = [attr for attr in dir(JTON) if not attr.startswith('_')]
+    print(JTON_attrs)
+    print(f"\nHas 'dumps' function: {hasattr(JTON, 'dumps')}")
+    print(f"Has 'loads' function: {hasattr(JTON, 'loads')}")
 except Exception as e:
     print(f"Error: {e}")
 
@@ -105,15 +105,15 @@ print("=" * 60)
 
 
 print("=" * 60)
-print("1. Python and uoon version check")
+print("1. Python and JTON version check")
 print("=" * 60)
 
 try:
-    import uoon
+    import jton
     print(f"Python version: {sys.version}")
-    print(f"uoon version: {uoon.__version__}")
+    print(f"JTON version: {jton.__version__}")
 except ImportError as e:
-    print(f"Error importing uoon: {e}")
+    print(f"Error importing JTON: {e}")
     sys.exit(1)
 
 print("\n" + "=" * 60)
@@ -126,12 +126,12 @@ try:
     
     # Warmup
     for _ in range(2):
-        uoon.loads(data)
+        jton.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(3):
-        uoon.loads(data)
+        jton.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 3 / elapsed / 1e6
@@ -150,12 +150,12 @@ try:
     
     # Warmup
     for _ in range(5):
-        uoon.loads(data)
+        jton.loads(data)
     
     # Benchmark
     t = time.perf_counter()
     for _ in range(50):
-        uoon.loads(data)
+        jton.loads(data)
     elapsed = time.perf_counter() - t
     
     throughput = len(data) * 50 / elapsed / 1e6
@@ -165,16 +165,16 @@ except Exception as e:
     print(f"Error: {e}")
 
 print("\n" + "=" * 60)
-print("4. Check uoon functions (dumps support)")
+print("4. Check JTON functions (dumps support)")
 print("=" * 60)
 
 try:
-    import uoon
-    print("Available uoon attributes:")
-    uoon_attrs = [attr for attr in dir(uoon) if not attr.startswith('_')]
-    print(uoon_attrs)
-    print(f"\nHas 'dumps' function: {hasattr(uoon, 'dumps')}")
-    print(f"Has 'loads' function: {hasattr(uoon, 'loads')}")
+    import jton
+    print("Available JTON attributes:")
+    JTON_attrs = [attr for attr in dir(JTON) if not attr.startswith('_')]
+    print(JTON_attrs)
+    print(f"\nHas 'dumps' function: {hasattr(JTON, 'dumps')}")
+    print(f"Has 'loads' function: {hasattr(JTON, 'loads')}")
 except Exception as e:
     print(f"Error: {e}")
 
@@ -198,3 +198,5 @@ except Exception as e:
 print("\n" + "=" * 60)
 print("Benchmark completed")
 print("=" * 60)
+
+

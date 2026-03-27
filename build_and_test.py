@@ -33,10 +33,10 @@ print("RUNNING SMOKE TEST")
 print("=" * 80)
 smoke_result = subprocess.run(
     ['python', '-c', '''
-import uoon
-print(uoon.dumps({"name": "Alice", "age": 30}))
-print(uoon.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}]))
-print(uoon.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}], zen_grid=False))
+import jton
+print(jton.dumps({"name": "Alice", "age": 30}))
+print(jton.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}]))
+print(jton.dumps([{"id": 1, "x": 10}, {"id": 2, "x": 20}], zen_grid=False))
 '''],
     cwd=str(PROJECT_ROOT),
     capture_output=True, text=True
@@ -52,4 +52,6 @@ if smoke_result.returncode == 0:
 else:
     print("\n❌ SMOKE TEST FAILED")
     sys.exit(1)
+
+
 

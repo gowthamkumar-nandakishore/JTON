@@ -26,6 +26,7 @@ env/
 build/
 dist/
 pip-wheel-metadata/
+build_output.txt
 
 # Testing outputs
 .pytest_cache/
@@ -48,3 +49,5 @@ paper/
 *.swp
 *.swo
 *.log
+akbe_doc_classifier.json
+complex.json
