@@ -1,14 +1,14 @@
-# UOON Code Owners
+# JTON Code Owners
 # These owners are automatically requested for review on PRs.
 
 # Default: owner reviews all changes
 * @gowthamkumar-nandakishore
 
 # Rust core
-/src/uoon_core/ @gowthamkumar-nandakishore
+/src/JTON_core/ @gowthamkumar-nandakishore
 
 # Python bindings
-/src/uoon/ @gowthamkumar-nandakishore
+/src/JTON/ @gowthamkumar-nandakishore
 
 # CI/CD and workflows
 /.github/ @gowthamkumar-nandakishore

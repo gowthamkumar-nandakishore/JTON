@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simple test runner for UOON - executes all test steps"""
+"""Simple test runner for JTON - executes all test steps"""
 
 import subprocess
 import sys
@@ -40,24 +40,24 @@ print("=" * 80)
 
 script = '''
 try:
-    import uoon, json
+    import jton, json
     
     # Test 1: basic JSON output
-    r = uoon.dumps({"name": "Alice", "age": 30})
+    r = jton.dumps({"name": "Alice", "age": 30})
     print("Test 1:", r)
     assert json.loads(r) == {"name": "Alice", "age": 30}
     
     # Test 2: zen grid table
     data = [{"id": 1, "name": "Alice", "score": 95}, {"id": 2, "name": "Bob", "score": 87}]
-    r = uoon.dumps(data, zen_grid=True)
+    r = jton.dumps(data, zen_grid=True)
     print("Test 2 (zen grid):", r)
-    rt = uoon.loads(r)
+    rt = jton.loads(r)
     assert rt == data, f"Round-trip failed: {rt} != {data}"
     print("Round-trip: OK")
     
     # Test 3: token savings
     data_large = [{"employee_id": i, "first_name": f"Name{i}", "dept": "Eng"} for i in range(100)]
-    zen = uoon.dumps(data_large, zen_grid=True)
+    zen = jton.dumps(data_large, zen_grid=True)
     compact = json.dumps(data_large, separators=(",",":"))
     print(f"Test 3: zen={len(zen)} chars, json={len(compact)} chars, savings={100*(len(compact)-len(zen))/len(compact):.1f}%")
 except ImportError as e:
@@ -92,4 +92,6 @@ except Exception as e:
     print(f"Step 4 failed: {e}")
 
 print("\nAll steps completed!")
+
+
 

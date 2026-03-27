@@ -3,10 +3,10 @@ requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "uoon"
-version = "0.1.0"
+name = "jton"
+version = "1.0.0"
 requires-python = ">=3.10"
-description = "High-performance, token-efficient JSON superset with Zen Grid tabular encoding"
+description = "JTON (JSON Tabular Object Notation) — A Tabular JSON-Superset Encoding for Efficient LLM Data Processing"
 authors = [{name = "Gowthamkumar Nandakishore"}]
 license = {text = "MIT"}
 readme = "README.md"
@@ -14,12 +14,17 @@ classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+
+[project.scripts]
+jton = "jton.cli:main"
 
 [tool.maturin]
 python-source = "src"
-module-name = "uoon.uoon_core"
-include = ["src/uoon/py.typed", "src/uoon/__init__.pyi"]
+module-name = "jton.jton_core"
+include = ["src/jton/py.typed", "src/jton/__init__.pyi"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,4 +1,4 @@
-# 🎮 TRON Playground Analysis & UOON Roadmap
+# 🎮 TRON Playground Analysis & JTON Roadmap
 
 **Source**: https://tron-format.github.io/#/playground
 
@@ -169,7 +169,7 @@ Icons: lucide-react
 
 ---
 
-## 🚀 UOON Playground Roadmap
+## 🚀 JTON Playground Roadmap
 
 ### Phase 1: Parity with TRON (2-3 days)
 
@@ -188,7 +188,7 @@ Icons: lucide-react
   - XML
   - TOON
   - TRON
-  - UOON
+  - JTON
   
 - [ ] **Token Visualization**
   - GPT-4o/GPT-5 tokenization (o200k_base)
@@ -220,7 +220,7 @@ Use our existing datasets:
 
 ### Phase 2: Enhanced Features (Beyond TRON)
 
-#### Unique UOON Playground Features
+#### Unique JTON Playground Features
 - [ ] **Performance Metrics**
   - Encoding/decoding speed comparison
   - Memory usage stats
@@ -232,7 +232,7 @@ Use our existing datasets:
   - Input/output token breakdown
   
 - [ ] **Live Zen Grid Visualization**
-  - Show how UOON detects tabular structures
+  - Show how JTON detects tabular structures
   - Highlight grid boundaries
   - Display compression strategy
   
@@ -372,15 +372,15 @@ Use our existing datasets:
 
 ## 💡 Competitive Advantages
 
-### UOON Playground vs TRON Playground
+### JTON Playground vs TRON Playground
 
-| Feature | TRON | UOON (Planned) | Advantage |
+| Feature | TRON | JTON (Planned) | Advantage |
 |---------|------|-----------------|-----------|
 | Formats | 5 | 8 | ✅ +60% more formats |
 | Datasets | 5 | 6 | ✅ Better coverage |
 | Performance Metrics | ❌ | ✅ | ✅ Speed & memory |
 | Cost Calculator | ❌ | ✅ | ✅ ROI analysis |
-| Zen Grid Visualization | ❌ | ✅ | ✅ Unique to UOON |
+| Zen Grid Visualization | ❌ | ✅ | ✅ Unique to JTON |
 | Structure Analyzer | ❌ | ✅ | ✅ AI-powered insights |
 | Code Generation | ❌ | ✅ | ✅ Developer productivity |
 | Multi-Tokenizer | ❌ | ✅ | ✅ GPT, Claude, Llama |
@@ -469,7 +469,7 @@ Use our benchmarks:
 
 ## 🎉 Expected Outcome
 
-**By Week 3**: UOON will have the **most comprehensive format comparison playground** ever built, featuring:
+**By Week 3**: JTON will have the **most comprehensive format comparison playground** ever built, featuring:
 
 - **8 formats** (vs TRON's 5)
 - **6 diverse datasets** (0-100% tabular)
@@ -480,9 +480,9 @@ Use our benchmarks:
 - **Multi-tokenizer support** (GPT, Claude, Llama)
 - **Export capabilities** (PNG, PDF, reports)
 
-**This will establish UOON as the gold standard for data serialization benchmarking!** 🏆
+**This will establish JTON as the gold standard for data serialization benchmarking!** 🏆
 
 ---
 
 *Generated: December 25, 2025*  
-*Based on: TRON playground analysis + UOON holy grail benchmarks*
+*Based on: TRON playground analysis + JTON holy grail benchmarks*

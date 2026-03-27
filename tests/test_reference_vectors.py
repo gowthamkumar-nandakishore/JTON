@@ -11,7 +11,7 @@ from typing import Iterator
 
 import pytest
 
-import uoon
+import jton
 
 DATA_ROOT = Path(__file__).parent / "reference_vectors"
 JSON_ROOT = DATA_ROOT / "json"
@@ -42,7 +42,7 @@ PARSING_Y_KNOWN_XFAILS = {
     "y_string_unicode_U+1FFFE_nonchar.json",
 }
 
-# Invalid RFC 8259 files we intentionally accept because the UOON parser ships
+# Invalid RFC 8259 files we intentionally accept because the JTON parser ships
 # with relaxed extensions (comments, trailing commas, unquoted keys, etc.).
 PARSING_EXTENSION_ACCEPTED = {
     "n_array_extra_comma.json",
@@ -231,14 +231,14 @@ def test_json_parsing_corpus(case_path: Path, prefix: str) -> None:
     text = _read_json_text(case_path)
     if prefix == "y":
         reference = json.loads(text)
-        result = uoon.loads(text)
+        result = jton.loads(text)
         assert result == reference
     else:
         if case_path.name in PARSING_EXTENSION_ACCEPTED:
-            assert uoon.loads(text) is not None
+            assert jton.loads(text) is not None
         else:
             with pytest.raises(ValueError):
-                uoon.loads(text)
+                jton.loads(text)
 
 
 @pytest.mark.parametrize(
@@ -248,7 +248,7 @@ def test_json_parsing_corpus(case_path: Path, prefix: str) -> None:
 )
 def test_json_checker_pass_cases(case_path: Path) -> None:
     text = _read_json_text(case_path)
-    assert uoon.loads(text) == json.loads(text)
+    assert jton.loads(text) == json.loads(text)
 
 
 @pytest.mark.parametrize(
@@ -259,10 +259,10 @@ def test_json_checker_pass_cases(case_path: Path) -> None:
 def test_json_checker_fail_cases(case_path: Path) -> None:
     text = _read_json_text(case_path)
     if case_path.name in JSON_CHECKER_RELAXED_ACCEPT:
-        assert uoon.loads(text) is not None
+        assert jton.loads(text) is not None
     else:
         with pytest.raises(ValueError):
-            uoon.loads(text)
+            jton.loads(text)
 
 
 @pytest.mark.parametrize(
@@ -272,7 +272,7 @@ def test_json_checker_fail_cases(case_path: Path) -> None:
 )
 def test_roundtrip_corpus(case_path: Path) -> None:
     text = _read_json_text(case_path)
-    assert uoon.loads(text) == json.loads(text)
+    assert jton.loads(text) == json.loads(text)
 
 
 @pytest.mark.parametrize(
@@ -283,7 +283,7 @@ def test_roundtrip_corpus(case_path: Path) -> None:
 def test_transform_corpus(case_path: Path) -> None:
     _xfail_case(case_path, TRANSFORM_KNOWN_XFAILS)
     text = _read_json_text(case_path)
-    assert uoon.loads(text) == json.loads(text)
+    assert jton.loads(text) == json.loads(text)
 
 
 def _extension_tags(path: Path) -> set[str]:
@@ -309,13 +309,13 @@ def test_extension_suite(case_path: Path) -> None:
     expectation = _extension_expectation(tags)
     text = _read_json_text(case_path)
     if expectation == "pass":
-        assert uoon.loads(text) is not None
+        assert jton.loads(text) is not None
     elif expectation == "bignum":
-        result = uoon.loads(text)
+        result = jton.loads(text)
         assert _contains_infinite(result) or _contains_large_int(result)
     else:
         with pytest.raises(ValueError):
-            uoon.loads(text)
+            jton.loads(text)
 
 
 def _classify_number_case(path: Path) -> str:
@@ -340,10 +340,10 @@ def test_number_reference_vectors(case_path: Path, mode: str) -> None:
     assert lines, f"No payloads found in {case_path.name}"
     for snippet in lines:
         if mode == "accept":
-            value = uoon.loads(snippet)
+            value = jton.loads(snippet)
             assert isinstance(value, (int, float))
         elif mode == "inf":
-            value = uoon.loads(snippet)
+            value = jton.loads(snippet)
             if isinstance(value, float):
                 assert math.isinf(value)
             else:
@@ -351,4 +351,5 @@ def test_number_reference_vectors(case_path: Path, mode: str) -> None:
                 assert abs(value) >= 1 << 63
         else:
             with pytest.raises(ValueError):
-                uoon.loads(snippet)
+                jton.loads(snippet)
+

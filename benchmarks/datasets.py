@@ -293,7 +293,7 @@ def get_dataset(name: str) -> Dict[str, Any]:
 if __name__ == "__main__":
     import json
     
-    print("📊 UOON Benchmark Datasets\n")
+    print("📊 JTON Benchmark Datasets\n")
     print("Available datasets:")
     for name, info in DATASETS.items():
         print(f"  {info['icon']} {name:12s} - {info['description']}")
@@ -305,3 +305,4 @@ if __name__ == "__main__":
         data = get_dataset(name)
         size = len(json.dumps(data))
         print(f"  ✓ {name}: {size:,} bytes")
+

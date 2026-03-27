@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Format converters for benchmarking.
-Converts data to: JSON, JSON-compact, YAML, XML, TOON, UOON
+Converts data to: JSON, JSON-compact, YAML, XML, TOON, JTON
 """
 
 import json
@@ -9,7 +9,7 @@ from typing import Any, Dict
 import sys
 from pathlib import Path
 
-# Add src to path for UOON import
+# Add src to path for JTON import
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
@@ -171,13 +171,13 @@ def format_toon(data: Any) -> str:
     return toon_encode(data)
 
 
-def format_UOON(data: Any) -> str:
-    """Format as UOON (Zen Grid format) — uses real Zen Grid serialization."""
+def format_JTON(data: Any) -> str:
+    """Format as JTON (Zen Grid format) — uses real Zen Grid serialization."""
     try:
-        import uoon
-        return uoon.dumps(data, zen_grid=True)
+        import jton
+        return jton.dumps(data, zen_grid=True)
     except ImportError:
-        print("❌ UOON not installed. Run: maturin develop --release")
+        print("❌ JTON not installed. Run: maturin develop --release")
         return ""
     except Exception as e:
         # Fallback to JSON compact if serialization fails
@@ -248,7 +248,7 @@ FORMATTERS = {
     "xml": format_xml,
     "toon": format_toon,
     "tron": format_tron,
-    "UOON": format_UOON,
+    "JTON": format_JTON,
     "csv": format_csv,
 }
 
@@ -260,7 +260,7 @@ FORMATTER_DISPLAY_NAMES = {
     "xml": "XML",
     "toon": "TOON",
     "tron": "TRON",
-    "UOON": "UOON",
+    "JTON": "JTON",
     "csv": "CSV",
 }
 
@@ -297,3 +297,5 @@ if __name__ == "__main__":
             print(f"\n({len(result)} total bytes)")
         else:
             print("(not applicable for this data structure)")
+
+

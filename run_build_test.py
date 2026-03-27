@@ -22,18 +22,18 @@ if result.returncode == 0:
     print("=" * 80)
     
     test_code = """
-import uoon
+import jton
 
 print("Test 1: Simple dict")
-result = uoon.dumps({'name': 'Alice', 'age': 30})
+result = jton.dumps({'name': 'Alice', 'age': 30})
 print(result)
 
 print("\\nTest 2: List of dicts with zen_grid=True (default)")
-result = uoon.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}])
+result = jton.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}])
 print(result)
 
 print("\\nTest 3: List of dicts with zen_grid=False")
-result = uoon.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}], zen_grid=False)
+result = jton.dumps([{'id': 1, 'x': 10}, {'id': 2, 'x': 20}], zen_grid=False)
 print(result)
 """
     
@@ -44,4 +44,6 @@ print(result)
     print('RC:', result.returncode)
 else:
     print("\nBuild failed! Please fix the compile errors above.")
+
+
 

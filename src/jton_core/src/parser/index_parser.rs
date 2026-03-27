@@ -134,6 +134,17 @@ impl<'a> FastIndexParser<'a> {
         crate::simd::whitespace::skip_whitespace_scalar(self.input, &mut self.pos);
     }
 
+    /// Skip only ASCII spaces (0x20). Used between Zen Grid cells so that tab/pipe
+    /// delimiters are NOT consumed as whitespace and can be detected as separators.
+    #[inline(always)]
+    fn skip_spaces_only(&mut self) {
+        while self.pos < self.input.len()
+            && unsafe { *self.input.get_unchecked(self.pos) } == b' '
+        {
+            self.pos += 1;
+        }
+    }
+
     /// Parse top-level value
     pub fn parse(&mut self, py: Python, ctx: &mut ParseContext) -> PyResult<PyObject> {
         self.skip_ws();
@@ -284,10 +295,27 @@ impl<'a> FastIndexParser<'a> {
         self.pos += 1; // Skip '['
         self.consume_open_bracket(opening_bracket);
 
-        // Check for Zen Grid
+        // Check for Zen Grid: `[: ...]` or `[N: ...]` (optional row count prefix)
         self.skip_ws();
-        if self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b':' {
-            return self.parse_zen_grid_indexed(py, ctx, opening_bracket);
+        if self.pos < self.input.len() {
+            let b = unsafe { *self.input.get_unchecked(self.pos) };
+            if b == b':' {
+                return self.parse_zen_grid_indexed(py, ctx, opening_bracket);
+            }
+            // [N: ...] — skip the row count digits (metadata, ignored on decode) then colon
+            if b.is_ascii_digit() {
+                let mut p = self.pos + 1;
+                while p < self.input.len() && unsafe { *self.input.get_unchecked(p) }.is_ascii_digit() {
+                    p += 1;
+                }
+                while p < self.input.len() && unsafe { *self.input.get_unchecked(p) } == b' ' {
+                    p += 1;
+                }
+                if p < self.input.len() && unsafe { *self.input.get_unchecked(p) } == b':' {
+                    self.pos = p; // advance to ':' so parse_zen_grid_indexed finds it
+                    return self.parse_zen_grid_indexed(py, ctx, opening_bracket);
+                }
+            }
         }
 
         // Empty array check
@@ -645,15 +673,13 @@ impl<'a> FastIndexParser<'a> {
             let key_ptr = self.parse_table_header_key(py)?;
             headers.push(key_ptr);
 
-            self.skip_ws();
+            self.skip_spaces_only();
             if self.pos >= self.input.len() {
                 return Err(ParseError::unexpected_eof(self.pos).into());
             }
             match unsafe { *self.input.get_unchecked(self.pos) } {
-                b',' => {
-                    let comma_pos = self.pos;
-                    self.pos += 1;
-                    self.consume_comma(comma_pos);
+                b',' | b'\t' | b'|' => {
+                    self.pos += 1; // consume delimiter (not a structural char, no cursor update)
                 }
                 b';' => {
                     let semi_pos = self.pos;
@@ -718,7 +744,7 @@ impl<'a> FastIndexParser<'a> {
 
             // Parse row values
             for col in 0..headers.len() {
-                self.skip_ws();
+                self.skip_spaces_only();
 
                 // Row ended early
                 if self.pos < self.input.len() {
@@ -773,7 +799,7 @@ impl<'a> FastIndexParser<'a> {
                     }
                 }
 
-                self.skip_ws();
+                self.skip_spaces_only();
                 if self.pos >= self.input.len() {
                     unsafe { ffi::Py_DECREF(row_dict_ptr) };
                     unsafe { ffi::Py_DECREF(list_ptr) };
@@ -784,10 +810,8 @@ impl<'a> FastIndexParser<'a> {
                 }
 
                 match unsafe { *self.input.get_unchecked(self.pos) } {
-                    b',' => {
-                        let comma_pos = self.pos;
-                        self.pos += 1;
-                        self.consume_comma(comma_pos);
+                    b',' | b'\t' | b'|' => {
+                        self.pos += 1; // consume cell delimiter
                     }
                     b';' => {
                         let semi_pos = self.pos;
@@ -881,7 +905,7 @@ impl<'a> FastIndexParser<'a> {
         let mut saw_escape = false;
         while self.pos < self.input.len() {
             match unsafe { *self.input.get_unchecked(self.pos) } {
-                b',' | b';' | b']' => break,
+                b',' | b';' | b']' | b'\t' | b'|' => break,
                 b'\\' => {
                     saw_escape = true;
                     self.pos += 1;
@@ -1013,11 +1037,11 @@ impl<'a> FastIndexParser<'a> {
                 }
             }
             _ => {
-                // Unquoted header token: read until ',' or ';' or ']'
+                // Unquoted header token: read until ',', ';', ']', '\t', or '|'
                 let start = self.pos;
                 while self.pos < self.input.len() {
                     match unsafe { *self.input.get_unchecked(self.pos) } {
-                        b',' | b';' | b']' => break,
+                        b',' | b';' | b']' | b'\t' | b'|' => break,
                         _ => self.pos += 1,
                     }
                 }

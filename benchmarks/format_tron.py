@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-TRON Format Support for UOON Benchmarks
+TRON Format Support for JTON Benchmarks
 
 TRON (Token Reduced Object Notation) is a class-based format that extends JSON.
 It reduces token count by defining schemas (classes) and using positional arguments.
@@ -206,7 +206,7 @@ def decode_tron(tron_str: str) -> Any:
     )
 
 
-# === Integration with UOON Benchmarks ===
+# === Integration with JTON Benchmarks ===
 
 def format_tron_compact(data: Any) -> str:
     """Format as TRON (compact/compressed)"""
@@ -295,3 +295,4 @@ if __name__ == "__main__":
     
     print()
     print("=" * 80)
+

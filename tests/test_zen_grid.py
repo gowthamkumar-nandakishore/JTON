@@ -8,84 +8,90 @@ Tests for Zen Grid table format:
 """
 
 import json
+import re
 import pytest
-import uoon
+import jton
+
+
+def _is_zen_grid(s: str) -> bool:
+    """Accept both [: and [N: prefixes (row_count is now default)."""
+    return bool(re.match(r'^\[\d*:', s))
 
 
 # ── Serialization tests ──────────────────────────────────────────────────────
 
 class TestDumpsBasic:
     def test_simple_object(self):
-        result = uoon.dumps({"name": "Alice", "age": 30})
+        result = jton.dumps({"name": "Alice", "age": 30})
         assert result == '{"name":"Alice","age":30}'
 
     def test_simple_array_non_uniform(self):
         """Non-uniform arrays stay as JSON."""
-        result = uoon.dumps([1, 2, 3])
+        result = jton.dumps([1, 2, 3])
         assert result == "[1,2,3]"
 
     def test_null(self):
-        assert uoon.dumps(None) == "null"
+        assert jton.dumps(None) == "null"
 
     def test_bool(self):
-        assert uoon.dumps(True) == "true"
-        assert uoon.dumps(False) == "false"
+        assert jton.dumps(True) == "true"
+        assert jton.dumps(False) == "false"
 
     def test_integer(self):
-        assert uoon.dumps(42) == "42"
-        assert uoon.dumps(-999) == "-999"
-        assert uoon.dumps(0) == "0"
+        assert jton.dumps(42) == "42"
+        assert jton.dumps(-999) == "-999"
+        assert jton.dumps(0) == "0"
 
     def test_float(self):
-        assert uoon.dumps(3.14) == "3.14"
-        assert uoon.dumps(1.0) == "1.0"
-        assert uoon.dumps(float("inf")) == "Infinity"
-        assert uoon.dumps(float("-inf")) == "-Infinity"
-        assert uoon.dumps(float("nan")) == "NaN"
+        assert jton.dumps(3.14) == "3.14"
+        assert jton.dumps(1.0) == "1.0"
+        assert jton.dumps(float("inf")) == "Infinity"
+        assert jton.dumps(float("-inf")) == "-Infinity"
+        assert jton.dumps(float("nan")) == "NaN"
 
     def test_string_escape(self):
-        assert uoon.dumps('say "hi"') == r'"say \"hi\""'
-        assert uoon.dumps("new\nline") == r'"new\nline"'
-        assert uoon.dumps("tab\there") == r'"tab\there"'
+        assert jton.dumps('say "hi"') == r'"say \"hi\""'
+        assert jton.dumps("new\nline") == r'"new\nline"'
+        assert jton.dumps("tab\there") == r'"tab\there"'
 
     def test_nested_dict(self):
-        result = uoon.dumps({"a": {"b": 1}})
+        result = jton.dumps({"a": {"b": 1}})
         assert json.loads(result) == {"a": {"b": 1}}
 
     def test_empty_dict(self):
-        assert uoon.dumps({}) == "{}"
+        assert jton.dumps({}) == "{}"
 
     def test_empty_list(self):
-        assert uoon.dumps([]) == "[]"
+        assert jton.dumps([]) == "[]"
 
 
 class TestDumpsUnquotedKeys:
     def test_simple_identifier(self):
-        result = uoon.dumps({"name": "Alice"}, unquoted_keys=True)
+        result = jton.dumps({"name": "Alice"}, unquoted_keys=True)
         assert result == '{name:"Alice"}'
 
     def test_non_identifier_stays_quoted(self):
-        result = uoon.dumps({"my-key": 1}, unquoted_keys=True)
-        # hyphen is valid in UOON identifiers
+        result = jton.dumps({"my-key": 1}, unquoted_keys=True)
+        # hyphen is valid in JTON identifiers
         assert result == '{my-key:1}'
 
     def test_numeric_key_stays_quoted(self):
-        result = uoon.dumps({"123": 1}, unquoted_keys=True)
+        result = jton.dumps({"123": 1}, unquoted_keys=True)
         assert result == '{"123":1}'
 
     def test_space_key_stays_quoted(self):
-        result = uoon.dumps({"my key": 1}, unquoted_keys=True)
+        result = jton.dumps({"my key": 1}, unquoted_keys=True)
         assert result == '{"my key":1}'
 
 
 class TestDumpsIndent:
     def test_indent_simple(self):
-        result = uoon.dumps({"a": 1}, indent=2)
+        result = jton.dumps({"a": 1}, indent=2)
         assert '"a": 1' in result
         assert '\n' in result
 
     def test_indent_array(self):
-        result = uoon.dumps([1, 2, 3], indent=2)
+        result = jton.dumps([1, 2, 3], indent=2)
         assert '\n' in result
 
 
@@ -94,8 +100,8 @@ class TestDumpsIndent:
 class TestZenGridDumps:
     def test_two_row_table(self):
         data = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
-        result = uoon.dumps(data, zen_grid=True)
-        assert result.startswith("[:")
+        result = jton.dumps(data, zen_grid=True)
+        assert _is_zen_grid(result)
         assert "id" in result
         assert "name" in result
         assert "Alice" in result
@@ -107,8 +113,8 @@ class TestZenGridDumps:
             {"id": 2, "name": "Bob",   "score": 87},
             {"id": 3, "name": "Carol", "score": 91},
         ]
-        result = uoon.dumps(data, zen_grid=True)
-        assert result.startswith("[:")
+        result = jton.dumps(data, zen_grid=True)
+        assert _is_zen_grid(result)
         # Headers appear once
         assert result.count("id") == 1
         assert result.count("name") == 1
@@ -120,7 +126,7 @@ class TestZenGridDumps:
 
     def test_zen_grid_disabled_gives_json(self):
         data = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
-        result = uoon.dumps(data, zen_grid=False)
+        result = jton.dumps(data, zen_grid=False)
         assert result.startswith("[{") or result.startswith('[{')
         # Should be parseable as standard JSON
         parsed = json.loads(result)
@@ -129,14 +135,14 @@ class TestZenGridDumps:
     def test_single_item_no_table(self):
         """Single item arrays don't qualify for Zen Grid (need ≥2 rows)."""
         data = [{"id": 1, "name": "Alice"}]
-        result = uoon.dumps(data, zen_grid=True)
+        result = jton.dumps(data, zen_grid=True)
         # Still valid JSON array, just not a table
         assert json.loads(result) == data
 
     def test_mixed_types_no_table(self):
         """Mixed-type arrays don't get Zen Grid."""
         data = [1, "hello", None]
-        result = uoon.dumps(data, zen_grid=True)
+        result = jton.dumps(data, zen_grid=True)
         assert result == '[1,"hello",null]'
 
     def test_token_savings_vs_json(self):
@@ -145,7 +151,7 @@ class TestZenGridDumps:
             {"employee_id": i, "first_name": f"Name{i}", "department": "Engineering"}
             for i in range(20)
         ]
-        zen_result  = uoon.dumps(data, zen_grid=True)
+        zen_result  = jton.dumps(data, zen_grid=True)
         json_result = json.dumps(data, separators=(",", ":"))
         # Zen Grid should be shorter
         assert len(zen_result) < len(json_result), (
@@ -154,8 +160,8 @@ class TestZenGridDumps:
 
     def test_indent_zen_grid(self):
         data = [{"id": 1, "x": 10}, {"id": 2, "x": 20}]
-        result = uoon.dumps(data, zen_grid=True, indent=2)
-        assert result.startswith("[:")
+        result = jton.dumps(data, zen_grid=True, indent=2)
+        assert _is_zen_grid(result)
         assert '\n' in result
 
 
@@ -164,47 +170,47 @@ class TestZenGridDumps:
 class TestZenGridLoads:
     def test_basic_table(self):
         src = '[: name, age; "Alice", 30; "Bob", 25 ]'
-        result = uoon.loads(src)
+        result = jton.loads(src)
         assert result == [
             {"name": "Alice", "age": 30},
             {"name": "Bob",   "age": 25},
         ]
 
     def test_empty_table(self):
-        result = uoon.loads('[:]')
+        result = jton.loads('[:]')
         assert result == []
 
     def test_single_row(self):
-        result = uoon.loads('[: x, y; 1, 2 ]')
+        result = jton.loads('[: x, y; 1, 2 ]')
         assert result == [{"x": 1, "y": 2}]
 
     def test_nested_dict_in_cell(self):
-        result = uoon.loads('[: id, meta; 1, {"k": 10}; 2, {"k": 20} ]')
+        result = jton.loads('[: id, meta; 1, {"k": 10}; 2, {"k": 20} ]')
         assert result == [
             {"id": 1, "meta": {"k": 10}},
             {"id": 2, "meta": {"k": 20}},
         ]
 
     def test_nested_list_in_cell(self):
-        result = uoon.loads('[: id, tags; 1, ["a","b"]; 2, ["c"] ]')
+        result = jton.loads('[: id, tags; 1, ["a","b"]; 2, ["c"] ]')
         assert result == [
             {"id": 1, "tags": ["a", "b"]},
             {"id": 2, "tags": ["c"]},
         ]
 
     def test_null_values(self):
-        result = uoon.loads('[: id, val; 1, null; 2, null ]')
+        result = jton.loads('[: id, val; 1, null; 2, null ]')
         assert result == [{"id": 1, "val": None}, {"id": 2, "val": None}]
 
     def test_bool_values(self):
-        result = uoon.loads('[: name, active; "Alice", true; "Bob", false ]')
+        result = jton.loads('[: name, active; "Alice", true; "Bob", false ]')
         assert result == [
             {"name": "Alice", "active": True},
             {"name": "Bob",   "active": False},
         ]
 
     def test_float_values(self):
-        result = uoon.loads('[: x, y; 1.5, 2.7; 3.0, 4.1 ]')
+        result = jton.loads('[: x, y; 1.5, 2.7; 3.0, 4.1 ]')
         assert len(result) == 2
         assert abs(result[0]["x"] - 1.5) < 1e-9
 
@@ -213,8 +219,8 @@ class TestZenGridLoads:
 
 class TestRoundTrip:
     def _roundtrip(self, data, **kwargs):
-        serialized = uoon.dumps(data, **kwargs)
-        return uoon.loads(serialized)
+        serialized = jton.dumps(data, **kwargs)
+        return jton.loads(serialized)
 
     def test_flat_table_roundtrip(self):
         data = [
@@ -274,7 +280,7 @@ class TestPydanticSupport:
                 active: bool = True
 
             user = User(id=1, name="Alice")
-            result = uoon.dumps(user)
+            result = jton.dumps(user)
             parsed = json.loads(result)
             assert parsed["id"] == 1
             assert parsed["name"] == "Alice"
@@ -291,9 +297,9 @@ class TestPydanticSupport:
                 y: float
 
             points = [Point(x=1.0, y=2.0), Point(x=3.0, y=4.0)]
-            result = uoon.dumps(points, zen_grid=True)
+            result = jton.dumps(points, zen_grid=True)
             # Should be a Zen Grid since all items are uniform dicts
-            assert result.startswith("[:")
+            assert _is_zen_grid(result)
         except ImportError:
             pytest.skip("pydantic not installed")
 
@@ -308,7 +314,7 @@ class TestDataclassSupport:
             y: float
 
         p = Point(x=1.5, y=2.5)
-        result = uoon.dumps(p)
+        result = jton.dumps(p)
         parsed = json.loads(result)
         assert parsed == {"x": 1.5, "y": 2.5}
 
@@ -321,15 +327,15 @@ class TestDataclassSupport:
             val: str
 
         rows = [Row(id=1, val="a"), Row(id=2, val="b")]
-        result = uoon.dumps(rows, zen_grid=True)
-        assert result.startswith("[:")
+        result = jton.dumps(rows, zen_grid=True)
+        assert _is_zen_grid(result)
 
 
 # ── Token efficiency tests ────────────────────────────────────────────────────
 
 class TestTokenEfficiency:
     def _char_reduction(self, data):
-        zen_len  = len(uoon.dumps(data, zen_grid=True))
+        zen_len  = len(jton.dumps(data, zen_grid=True))
         json_len = len(json.dumps(data, separators=(",", ":")))
         return (json_len - zen_len) / json_len
 
@@ -345,3 +351,402 @@ class TestTokenEfficiency:
         data = [{"id": i, "name": f"Bob{i}", "val": i} for i in range(50)]
         reduction = self._char_reduction(data)
         assert reduction >= 0.25, f"Expected ≥25% reduction, got {reduction:.1%}"
+
+
+# ── Row count option tests ─────────────────────────────────────────────────────
+
+class TestRowCount:
+    DATA = [{"id": i, "name": f"U{i}"} for i in range(1, 4)]
+
+    def test_row_count_prefix(self):
+        result = jton.dumps(self.DATA, row_count=True)
+        assert result.startswith("[3:")
+
+    def test_row_count_round_trip(self):
+        enc = jton.dumps(self.DATA, row_count=True)
+        assert jton.loads(enc) == self.DATA
+
+    def test_row_count_various_sizes(self):
+        for n in [2, 5, 10, 50, 100]:
+            data = [{"x": i} for i in range(n)]
+            enc = jton.dumps(data, row_count=True)
+            assert enc.startswith(f"[{n}:")
+            assert jton.loads(enc) == data
+
+    def test_row_count_with_tab_delimiter(self):
+        enc = jton.dumps(self.DATA, row_count=True, delimiter="tab")
+        assert enc.startswith("[3:")
+        assert jton.loads(enc) == self.DATA
+
+    def test_row_count_with_pipe_delimiter(self):
+        enc = jton.dumps(self.DATA, row_count=True, delimiter="pipe")
+        assert enc.startswith("[3:")
+        assert jton.loads(enc) == self.DATA
+
+    def test_row_count_no_regression_without_flag(self):
+        """With row_count=False the legacy [: prefix is produced."""
+        enc = jton.dumps(self.DATA, row_count=False)
+        assert enc.startswith("[:")
+        assert not enc.startswith("[3:")
+
+
+# ── Multiline Zen Grid tests ───────────────────────────────────────────────────
+
+class TestMultilineZen:
+    DATA = [{"id": 1, "name": "Alice", "score": 95},
+            {"id": 2, "name": "Bob",   "score": 87}]
+
+    def test_header_format(self):
+        result = jton.dumps(self.DATA, multiline_zen=True)
+        # First line: [N]{col1,col2,...}:
+        first_line = result.split("\n")[0]
+        assert first_line.startswith("[2]{")
+        assert first_line.endswith("}:")
+
+    def test_header_contains_all_fields(self):
+        result = jton.dumps(self.DATA, multiline_zen=True)
+        first_line = result.split("\n")[0]
+        assert "id" in first_line
+        assert "name" in first_line
+        assert "score" in first_line
+
+    def test_correct_row_count(self):
+        for n in [2, 5, 10]:
+            data = [{"x": i} for i in range(n)]
+            result = jton.dumps(data, multiline_zen=True)
+            assert result.startswith(f"[{n}]{{")
+
+    def test_rows_are_indented(self):
+        result = jton.dumps(self.DATA, multiline_zen=True)
+        lines = result.split("\n")
+        # All lines after the header must be indented
+        for line in lines[1:]:
+            assert line.startswith("  "), f"Row line not indented: {line!r}"
+
+    def test_newline_separated_rows(self):
+        result = jton.dumps(self.DATA, multiline_zen=True)
+        lines = [l for l in result.split("\n") if l.strip()]
+        # 1 header + N data rows
+        assert len(lines) == 1 + len(self.DATA)
+
+    def test_token_savings_vs_default(self):
+        """multiline_zen uses slightly more chars than compact but far fewer than JSON."""
+        import json as _json
+        data = [{"id": i, "v": i} for i in range(50)]
+        ml_len  = len(jton.dumps(data, multiline_zen=True))
+        json_len = len(_json.dumps(data, separators=(",", ":")))
+        assert ml_len < json_len, "multiline_zen should use fewer chars than JSON"
+
+
+# ── Delimiter tests ────────────────────────────────────────────────────────────
+
+class TestDelimiters:
+    DATA = [{"id": i, "name": f"U{i}", "score": i * 10} for i in range(1, 4)]
+
+    def _roundtrip(self, data, **kw):
+        return jton.loads(jton.dumps(data, **kw))
+
+    # Comma (default)
+    def test_comma_is_default(self):
+        enc = jton.dumps(self.DATA)
+        assert ", " in enc  # comma-space separator
+
+    def test_comma_round_trip(self):
+        assert self._roundtrip(self.DATA) == self.DATA
+
+    # Tab delimiter
+    def test_tab_in_output(self):
+        enc = jton.dumps(self.DATA, delimiter="tab")
+        assert "\t" in enc
+
+    def test_tab_fewer_chars_than_comma(self):
+        comma_len = len(jton.dumps(self.DATA, delimiter="comma"))
+        tab_len   = len(jton.dumps(self.DATA, delimiter="tab"))
+        assert tab_len < comma_len
+
+    def test_tab_round_trip(self):
+        assert self._roundtrip(self.DATA, delimiter="tab") == self.DATA
+
+    def test_tab_large_table(self):
+        data = [{"id": i, "name": f"Name{i}", "dept": "Eng", "val": i} for i in range(50)]
+        assert self._roundtrip(data, delimiter="tab") == data
+
+    def test_tab_with_row_count(self):
+        assert self._roundtrip(self.DATA, delimiter="tab", row_count=True) == self.DATA
+
+    # Pipe delimiter
+    def test_pipe_in_output(self):
+        enc = jton.dumps(self.DATA, delimiter="pipe")
+        assert " | " in enc
+
+    def test_pipe_round_trip(self):
+        assert self._roundtrip(self.DATA, delimiter="pipe") == self.DATA
+
+    def test_pipe_large_table(self):
+        data = [{"a": i, "b": i * 2, "c": f"x{i}"} for i in range(30)]
+        assert self._roundtrip(data, delimiter="pipe") == data
+
+    # Quoted string values with all delimiters
+    def test_quoted_strings_with_tab(self):
+        data = [{"name": "Alice Smith", "city": "New York"} for _ in range(3)]
+        assert self._roundtrip(data, delimiter="tab") == data
+
+    def test_quoted_strings_with_pipe(self):
+        data = [{"name": "Alice | Bob", "val": 1}, {"name": "Carol | Dave", "val": 2}]
+        # Pipe IN string values must be properly quoted
+        enc = jton.dumps(data, delimiter="pipe")
+        # Quoted strings survive round-trip
+        result = jton.loads(enc)
+        assert result == data
+
+
+# ── Format hint tests ─────────────────────────────────────────────────────────
+
+class TestFormatHint:
+    def test_default_style(self):
+        hint = jton.format_hint()
+        assert "Zen Grid" in hint
+        assert ";" in hint  # shows example with semicolons
+
+    def test_zen_grid_style(self):
+        hint = jton.format_hint("zen_grid")
+        assert "[:" in hint or "[ :" in hint or "col" in hint
+
+    def test_zen_grid_rowcount_style(self):
+        hint = jton.format_hint("zen_grid_rowcount")
+        assert "[N:" in hint or "row count" in hint.lower()
+
+    def test_multiline_style(self):
+        hint = jton.format_hint("multiline")
+        assert "[N]{" in hint
+        assert "}:" in hint
+
+    def test_tab_style(self):
+        hint = jton.format_hint("tab")
+        assert "tab" in hint.lower()
+        assert "\\t" in hint
+
+    def test_all_styles_non_empty(self):
+        for style in ["zen_grid", "zen_grid_rowcount", "multiline", "tab"]:
+            hint = jton.format_hint(style)
+            assert len(hint) > 50, f"format_hint({style!r}) too short"
+
+    def test_unknown_style_returns_default(self):
+        hint = jton.format_hint("unknown_style_xyz")
+        assert len(hint) > 50  # Falls through to default
+
+
+# ── Bare strings and implicit null ────────────────────────────────────────────
+
+class TestBareStrings:
+    def test_identifier_values_unquoted(self):
+        data = [{"name": "Alice", "dept": "Eng"}, {"name": "Bob", "dept": "Mkt"}]
+        result = jton.dumps(data, bare_strings=True)
+        # Alice, Bob, Eng, Mkt should appear without quotes
+        assert '"Alice"' not in result
+        assert 'Alice' in result
+
+    def test_non_identifier_stays_quoted(self):
+        data = [{"name": "Alice Smith"}, {"name": "Bob Jones"}]
+        result = jton.dumps(data, bare_strings=True)
+        # Spaces → must remain quoted
+        assert '"Alice Smith"' in result
+
+    def test_bare_strings_round_trip(self):
+        data = [{"status": "active", "role": "admin"}, {"status": "inactive", "role": "user"}]
+        enc = jton.dumps(data, bare_strings=True)
+        assert jton.loads(enc) == data
+
+
+class TestImplicitNull:
+    def test_null_cells_empty(self):
+        data = [{"id": 1, "val": None}, {"id": 2, "val": None}]
+        enc = jton.dumps(data, implicit_null=True)
+        # "null" should not appear in Zen Grid rows
+        # The commas will still be there but cells are empty
+        assert enc.count("null") == 0
+
+    def test_implicit_null_round_trip(self):
+        data = [{"id": 1, "val": None}, {"id": 2, "val": None}]
+        enc = jton.dumps(data, implicit_null=True)
+        result = jton.loads(enc)
+        # Empty cells decode back to None
+        assert result[0]["id"] == 1
+        assert result[1]["id"] == 2
+        # val may be None or missing key — both acceptable
+
+
+# ── Conformance: mixed options ────────────────────────────────────────────────
+
+class TestMixedOptions:
+    """Verify combinations of new options work together."""
+
+    DATA = [{"id": i, "name": f"User{i}", "score": i * 5} for i in range(1, 6)]
+
+    def _rt(self, **kw):
+        return jton.loads(jton.dumps(self.DATA, **kw))
+
+    def test_row_count_plus_bare_strings(self):
+        enc = jton.dumps(self.DATA, row_count=True, bare_strings=True)
+        assert enc.startswith("[5:")
+
+    def test_tab_plus_row_count_round_trip(self):
+        assert self._rt(delimiter="tab", row_count=True) == self.DATA
+
+    def test_pipe_plus_row_count_round_trip(self):
+        assert self._rt(delimiter="pipe", row_count=True) == self.DATA
+
+    def test_tab_plus_bare_strings(self):
+        data = [{"name": "Alice", "dept": "Eng"}, {"name": "Bob", "dept": "Mkt"}]
+        enc = jton.dumps(data, delimiter="tab", bare_strings=True)
+        assert "\t" in enc
+        assert jton.loads(enc) == data
+
+    def test_zen_grid_false_ignores_all_grid_options(self):
+        enc = jton.dumps(self.DATA, zen_grid=False, row_count=True, multiline_zen=True)
+        # Falls back to pure JSON array
+        assert enc.startswith("[{")
+        assert json.loads(enc) == self.DATA
+
+
+# ── Batch parallel API tests ──────────────────────────────────────────────────
+
+class TestLoadsManyDumpsMany:
+    DICTS = [{"id": i, "name": f"User{i}", "score": i * 10} for i in range(5)]
+
+    def test_loads_many_basic(self):
+        texts = [json.dumps(d) for d in self.DICTS]
+        result = jton.loads_many(texts)
+        assert result == self.DICTS
+
+    def test_loads_many_empty_list(self):
+        assert jton.loads_many([]) == []
+
+    def test_loads_many_single(self):
+        assert jton.loads_many(['{"x": 1}']) == [{"x": 1}]
+
+    def test_loads_many_mixed_types(self):
+        texts = ['1', '"hello"', 'null', '[1,2]', '{"a":1}']
+        result = jton.loads_many(texts)
+        assert result == [1, "hello", None, [1, 2], {"a": 1}]
+
+    def test_loads_many_large_batch(self):
+        texts = [json.dumps({"id": i, "val": i * 2}) for i in range(200)]
+        result = jton.loads_many(texts)
+        assert len(result) == 200
+        assert result[0] == {"id": 0, "val": 0}
+        assert result[199] == {"id": 199, "val": 398}
+
+    def test_loads_many_invalid_raises(self):
+        with pytest.raises(Exception):
+            jton.loads_many(['{"x": 1}', 'not-json'])
+
+    def test_dumps_many_basic(self):
+        result = jton.dumps_many([{"a": 1}, {"a": 2}])
+        assert isinstance(result, list)
+        assert len(result) == 2
+        for s in result:
+            assert isinstance(s, str)
+
+    def test_dumps_many_empty(self):
+        assert jton.dumps_many([]) == []
+
+    def test_dumps_many_round_trip(self):
+        original = [{"id": i, "name": f"X{i}"} for i in range(10)]
+        encoded = jton.dumps_many(original)
+        decoded = jton.loads_many(encoded)
+        assert decoded == original
+
+    def test_dumps_many_no_zen_grid(self):
+        original = [{"a": 1}, {"a": 2}]
+        result = jton.dumps_many(original, zen_grid=False)
+        for s, expected in zip(result, original):
+            assert json.loads(s) == expected
+
+
+# ── loads_as Pydantic/dataclass tests ─────────────────────────────────────────
+
+class TestLoadsAs:
+    def test_loads_as_dict(self):
+        result = jton.loads_as('{"id":1,"name":"Alice"}', dict)
+        assert result == {"id": 1, "name": "Alice"}
+
+    def test_loads_as_list(self):
+        result = jton.loads_as('[1,2,3]', list)
+        assert result == [1, 2, 3]
+
+    def test_loads_as_pydantic_v2(self):
+        try:
+            from pydantic import BaseModel
+
+            class User(BaseModel):
+                id: int
+                name: str
+
+            result = jton.loads_as('{"id":1,"name":"Alice"}', User)
+            assert result.id == 1
+            assert result.name == "Alice"
+        except ImportError:
+            pytest.skip("pydantic not installed")
+
+    def test_loads_as_dataclass(self):
+        import dataclasses
+
+        @dataclasses.dataclass
+        class Point:
+            x: float
+            y: float
+
+        result = jton.loads_as('{"x":1.5,"y":2.5}', Point)
+        assert result.x == 1.5
+        assert result.y == 2.5
+
+    def test_loads_as_zen_grid_input(self):
+        """loads_as must also work on Zen Grid input, not just JSON."""
+        enc = jton.dumps([{"id": 1, "val": "a"}, {"id": 2, "val": "b"}])
+        result = jton.loads_as(enc, list)
+        assert len(result) == 2
+        assert result[0]["id"] == 1
+
+
+# ── CLI tests ─────────────────────────────────────────────────────────────────
+
+class TestCLI:
+    """Smoke-test the JTON CLI module."""
+
+    def _run(self, *args, stdin=None):
+        import subprocess
+        import sys
+        return subprocess.run(
+            [sys.executable, "-m", "jton.cli", *args],
+            input=stdin, capture_output=True, text=True
+        )
+
+    def test_version_flag(self):
+        r = self._run("--version")
+        assert r.returncode == 0
+        assert "jton" in r.stdout.lower()
+
+    def test_encode_from_stdin(self):
+        r = self._run(stdin='[{"id":1,"name":"Alice"},{"id":2,"name":"Bob"}]')
+        assert r.returncode == 0
+        assert "[2:" in r.stdout or "[:" in r.stdout
+
+    def test_hint_flag(self):
+        r = self._run("--hint")
+        assert r.returncode == 0
+        assert "Zen Grid" in r.stdout
+
+    def test_no_zen_grid_gives_compact_json(self):
+        r = self._run("--no-zen-grid", stdin='{"x":1}')
+        assert r.returncode == 0
+        assert json.loads(r.stdout.strip()) == {"x": 1}
+
+    def test_decode_round_trip(self):
+        enc = jton.dumps([{"id": 1, "v": "a"}, {"id": 2, "v": "b"}])
+        r = self._run("--decode", stdin=enc)
+        assert r.returncode == 0
+        assert json.loads(r.stdout) == [{"id": 1, "v": "a"}, {"id": 2, "v": "b"}]
+
+
+

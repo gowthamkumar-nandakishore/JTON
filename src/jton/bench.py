@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-python -m uoon.bench <file.json>
+python -m jton.bench <file.json>
 
-Quick benchmark comparing UOON vs stdlib json vs orjson for:
+Quick benchmark comparing JTON vs stdlib json vs orjson for:
   - Parse speed (MB/s)
   - Serialize speed (MB/s)
   - Token count (requires tiktoken)
   - Character count
 
 Usage:
-    python -m uoon.bench benchmarks/twitter.json
-    python -m uoon.bench benchmarks/canada.json
-    python -m uoon.bench my_data.json
+    python -m jton.bench benchmarks/twitter.json
+    python -m jton.bench benchmarks/canada.json
+    python -m jton.bench my_data.json
 """
 
 import sys
@@ -22,10 +22,10 @@ from pathlib import Path
 
 # Add src to path for development installs
 _src = Path(__file__).parent.parent.parent
-if (_src / "uoon").exists():
+if (_src / "JTON").exists():
     sys.path.insert(0, str(_src))
 
-import uoon
+import jton
 
 
 def bench_parse(parser, data_bytes: bytes, iters: int) -> float:
@@ -77,7 +77,7 @@ def run(path: str):
     data_bytes = file_path.read_bytes()
     data_mb = len(data_bytes) / 1e6
     print(f"\n{'═' * 65}")
-    print(f" UOON Benchmark: {file_path.name}  ({data_mb:.2f} MB)")
+    print(f" JTON Benchmark: {file_path.name}  ({data_mb:.2f} MB)")
     print(f"{'═' * 65}\n")
 
     # Determine iteration count based on file size
@@ -110,17 +110,17 @@ def run(path: str):
     except ImportError:
         results["orjson"] = 0.0
 
-    # uoon
+    # JTON
     try:
-        results["uoon"] = bench_parse(uoon.loads, data_bytes, iters)
+        results["JTON"] = bench_parse(jton.loads, data_bytes, iters)
     except Exception as e:
-        results["uoon"] = 0.0
-        print(f"  UOON: ERROR {e}")
+        results["JTON"] = 0.0
+        print(f"  JTON: ERROR {e}")
 
     max_speed = max(results.values()) or 1
     for name, speed in results.items():
         if speed == 0:
-            print(f"  {'UOON' if name=='uoon' else name.ljust(9)}: N/A")
+            print(f"  {'JTON' if name=='JTON' else name.ljust(9)}: N/A")
             continue
         bar = format_bar(speed, max_speed)
         ratio = f"({speed/results.get('orjson', speed)*100:.0f}% of orjson)" if results.get("orjson") else ""
@@ -148,14 +148,14 @@ def run(path: str):
         pass
 
     try:
-        ser_results["uoon(zen)"] = bench_serialize(
-            lambda o: uoon.dumps(o, zen_grid=True), obj, iters
+        ser_results["JTON(zen)"] = bench_serialize(
+            lambda o: jton.dumps(o, zen_grid=True), obj, iters
         )
-        ser_results["uoon(json)"] = bench_serialize(
-            lambda o: uoon.dumps(o, zen_grid=False), obj, iters
+        ser_results["JTON(json)"] = bench_serialize(
+            lambda o: jton.dumps(o, zen_grid=False), obj, iters
         )
     except Exception as e:
-        print(f"  UOON serialize: ERROR {e}")
+        print(f"  JTON serialize: ERROR {e}")
 
     max_ser = max(ser_results.values()) or 1
     for name, speed in ser_results.items():
@@ -171,8 +171,8 @@ def run(path: str):
     formats = {
         "JSON pretty": json.dumps(obj, indent=2),
         "JSON compact": json.dumps(obj, separators=(",", ":")),
-        "UOON (zen)": uoon.dumps(obj, zen_grid=True),
-        "UOON (keys)": uoon.dumps(obj, unquoted_keys=True, zen_grid=True),
+        "JTON (zen)": jton.dumps(obj, zen_grid=True),
+        "JTON (keys)": jton.dumps(obj, unquoted_keys=True, zen_grid=True),
     }
 
     try:
@@ -207,18 +207,18 @@ def run(path: str):
             )
 
     # ── Summary ────────────────────────────────────────────────────────────────
-    uoon_zen_chars = token_results.get("UOON (zen)", (0, 0))[0]
-    uoon_zen_tokens = token_results.get("UOON (zen)", (0, 0))[1]
-    if uoon_zen_chars and json_compact_chars:
-        char_reduction = (1 - uoon_zen_chars / json_compact_chars) * 100
+    JTON_zen_chars = token_results.get("JTON (zen)", (0, 0))[0]
+    JTON_zen_tokens = token_results.get("JTON (zen)", (0, 0))[1]
+    if JTON_zen_chars and json_compact_chars:
+        char_reduction = (1 - JTON_zen_chars / json_compact_chars) * 100
         print(f"\n{'─' * 65}")
         if char_reduction > 0:
-            print(f" ✅ UOON Zen Grid saves {char_reduction:.1f}% characters vs JSON compact")
+            print(f" ✅ JTON Zen Grid saves {char_reduction:.1f}% characters vs JSON compact")
         else:
-            print(f" ℹ️  Data is not tabular — UOON Zen Grid is not applicable")
-        if uoon_zen_tokens > 0 and json_compact_tokens > 0:
-            tok_reduction = (1 - uoon_zen_tokens / json_compact_tokens) * 100
-            print(f" ✅ UOON Zen Grid saves {tok_reduction:.1f}% LLM tokens vs JSON compact")
+            print(f" ℹ️  Data is not tabular — JTON Zen Grid is not applicable")
+        if JTON_zen_tokens > 0 and json_compact_tokens > 0:
+            tok_reduction = (1 - JTON_zen_tokens / json_compact_tokens) * 100
+            print(f" ✅ JTON Zen Grid saves {tok_reduction:.1f}% LLM tokens vs JSON compact")
     print(f"{'═' * 65}\n")
 
 
@@ -236,3 +236,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

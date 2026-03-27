@@ -1,20 +1,20 @@
-# 🏆 UOON Holy Grail Benchmark Results
+# 🏆 JTON Holy Grail Benchmark Results
 
 **Generated**: 2025-12-25 12:16:02  
 **Tokenizer**: tiktoken o200k_base (GPT-4o/GPT-5)  
-**Formats**: JSON, JSON-compact, orjson, YAML, XML, TOON, TRON, UOON
+**Formats**: JSON, JSON-compact, orjson, YAML, XML, TOON, TRON, JTON
 
 ---
 
 ## 🏅 Overall Rankings
 
-| Rank | Format | Total Tokens | vs UOON | vs JSON |
+| Rank | Format | Total Tokens | vs JTON | vs JSON |
 |------|--------|--------------|----------|----------|
 | 🥇 1 | **TRON** | 122,097 | -32.4% | -56.8% |
 | 🥈 2 | **TOON** | 146,113 | -19.2% | -48.2% |
 | 🥉 3 | **JSON compact** | 180,725 | +0.0% | -36.0% |
 |  4 | **orjson** | 180,725 | +0.0% | -36.0% |
-|  5 | **UOON** | 180,725 | +0.0% | -36.0% |
+|  5 | **JTON** | 180,725 | +0.0% | -36.0% |
 |  6 | **YAML** | 220,129 | +21.8% | -22.0% |
 |  7 | **JSON** | 282,332 | +56.2% | +0.0% |
 |  8 | **XML** | 332,171 | +83.8% | +17.7% |
@@ -25,23 +25,23 @@
 
 ### 100% Tabular (Employees, Analytics, GitHub)
 
-| Format | Tokens | vs UOON |
+| Format | Tokens | vs JTON |
 |--------|--------|----------|
 | TRON | 82,929 | -32.8% |
 | TOON | 91,642 | -25.7% |
 | JSON compact | 123,376 | +0.0% |
 | orjson | 123,376 | +0.0% |
-| UOON | 123,376 | +0.0% |
+| JTON | 123,376 | +0.0% |
 
 ### Mixed Structure (Orders, Events)
 
-| Format | Tokens | vs UOON |
+| Format | Tokens | vs JTON |
 |--------|--------|----------|
 | TRON | 38,945 | -31.8% |
 | TOON | 54,136 | -5.2% |
 | JSON compact | 57,126 | +0.0% |
 | orjson | 57,126 | +0.0% |
-| UOON | 57,126 | +0.0% |
+| JTON | 57,126 | +0.0% |
 
 ---
 
@@ -55,7 +55,7 @@
 | TOON | 71,421 | 183,599 |
 | JSON compact | 97,407 | 319,133 |
 | orjson | 97,407 | 319,133 |
-| UOON | 97,407 | 319,133 |
+| JTON | 97,407 | 319,133 |
 | YAML | 119,404 | 315,529 |
 | JSON | 151,211 | 467,141 |
 | XML | 177,623 | 545,571 |
@@ -68,7 +68,7 @@
 | TOON | 10,965 | 17,519 |
 | JSON compact | 14,240 | 36,809 |
 | orjson | 14,240 | 36,809 |
-| UOON | 14,240 | 36,809 |
+| JTON | 14,240 | 36,809 |
 | YAML | 17,522 | 38,265 |
 | JSON | 22,274 | 57,987 |
 | XML | 27,396 | 73,349 |
@@ -81,7 +81,7 @@
 | TOON | 9,256 | 21,470 |
 | JSON compact | 11,729 | 33,876 |
 | orjson | 11,729 | 33,876 |
-| UOON | 11,729 | 33,876 |
+| JTON | 11,729 | 33,876 |
 | YAML | 13,326 | 33,840 |
 | JSON | 15,899 | 45,284 |
 | XML | 18,345 | 52,579 |
@@ -93,7 +93,7 @@
 | TRON | 30,913 | 72,885 |
 | JSON compact | 46,381 | 152,788 |
 | orjson | 46,381 | 152,788 |
-| UOON | 46,381 | 152,788 |
+| JTON | 46,381 | 152,788 |
 | TOON | 47,526 | 127,359 |
 | YAML | 57,175 | 157,789 |
 | JSON | 76,898 | 261,850 |
@@ -107,7 +107,7 @@
 | TRON | 8,032 | 17,961 |
 | JSON compact | 10,745 | 31,327 |
 | orjson | 10,745 | 31,327 |
-| UOON | 10,745 | 31,327 |
+| JTON | 10,745 | 31,327 |
 | YAML | 12,422 | 30,303 |
 | JSON | 15,669 | 44,415 |
 | XML | 18,921 | 53,028 |
@@ -119,7 +119,7 @@
 | JSON compact | 223 | 745 |
 | orjson | 223 | 745 |
 | TRON | 223 | 745 |
-| UOON | 223 | 745 |
+| JTON | 223 | 745 |
 | YAML | 280 | 913 |
 | TOON | 335 | 1,235 |
 | JSON | 381 | 1,321 |

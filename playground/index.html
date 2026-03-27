@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JTON Playground</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --accent: #58a6ff; --accent2: #3fb950; --accent3: #f78166;
+    --text: #e6edf3; --muted: #8b949e; --code-bg: #1e2430;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; }
+  header { padding: 12px 20px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  header h1 { font-size: 1.1rem; font-weight: 600; color: var(--accent); }
+  header span.badge { background: #238636; color: #fff; border-radius: 12px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600; }
+  header span.sub { color: var(--muted); font-size: 0.82rem; }
+  .main { display: flex; flex: 1; overflow: hidden; }
+  .sidebar { width: 220px; min-width: 200px; border-right: 1px solid var(--border); background: var(--surface); padding: 16px 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+  .sidebar h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+  .opt-group { display: flex; flex-direction: column; gap: 8px; }
+  .opt-row { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .opt-row input[type=checkbox] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
+  .opt-row label { font-size: 0.83rem; cursor: pointer; }
+  .opt-row small { color: var(--muted); font-size: 0.72rem; display: block; padding-left: 22px; margin-top: -4px; }
+  select { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 5px 8px; font-size: 0.82rem; width: 100%; }
+  .editors { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; }
+  .pane { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
+  .pane:last-child { border-right: none; }
+  .pane-header { padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .pane-title { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .pane-actions { display: flex; gap: 8px; }
+  button { background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; transition: background 0.15s; }
+  button:hover { background: rgba(88,166,255,0.1); border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+  button.primary:hover { background: #79c0ff; }
+  textarea { flex: 1; background: var(--code-bg); border: none; color: var(--text); font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 13px; line-height: 1.6; padding: 14px; resize: none; outline: none; tab-size: 2; }
+  textarea::placeholder { color: var(--muted); }
+  .statusbar { padding: 6px 14px; background: var(--surface); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 20px; font-size: 0.75rem; color: var(--muted); flex-wrap: wrap; }
+  .stat { display: flex; align-items: center; gap: 5px; }
+  .stat .val { color: var(--text); font-weight: 600; }
+  .stat .pill { padding: 1px 7px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; }
+  .pill.green { background: rgba(63,185,80,0.2); color: var(--accent2); }
+  .pill.blue { background: rgba(88,166,255,0.2); color: var(--accent); }
+  .pill.red { background: rgba(247,129,102,0.2); color: var(--accent3); }
+  .hint-bar { padding: 10px 14px; background: #161b22; border-top: 1px solid var(--border); font-size: 0.76rem; color: var(--muted); font-family: monospace; white-space: pre-wrap; display: none; max-height: 140px; overflow-y: auto; }
+  .bottom-bar { padding: 8px 14px; background: var(--surface); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .samples { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sample-btn { font-size: 0.72rem; padding: 3px 8px; border-radius: 10px; }
+  #error-msg { color: var(--accent3); font-size: 0.78rem; padding: 6px 14px; background: rgba(247,129,102,0.08); border-top: 1px solid rgba(247,129,102,0.3); display: none; }
+  .token-bars { display: flex; flex-direction: column; gap: 4px; padding: 8px 14px; border-top: 1px solid var(--border); }
+  .tok-row { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; }
+  .tok-label { width: 110px; color: var(--muted); }
+  .tok-bar-wrap { flex: 1; background: #1e2430; border-radius: 3px; height: 10px; overflow: hidden; }
+  .tok-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s; }
+  .tok-num { width: 60px; text-align: right; color: var(--text); }
+  #spinner { display: none; font-size: 0.78rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ JTON Playground</h1>
+  <span class="badge">v0.1</span>
+  <span class="sub">Ultra-Optimized Object Notation — JSON superset with Zen Grid encoding</span>
+  <span id="spinner">⏳ encoding…</span>
+</header>
+
+<div class="main">
+  <!-- Options sidebar -->
+  <div class="sidebar">
+    <div>
+      <h3>Output Format</h3>
+      <div class="opt-group">
+        <div class="opt-row">
+          <input type="checkbox" id="opt-zen" checked>
+          <label for="opt-zen">Zen Grid</label>
+        </div>
+        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Compact table encoding</small>
+
+        <div class="opt-row">
+          <input type="checkbox" id="opt-row-count">
+          <label for="opt-row-count">Row count [N:]</label>
+        </div>
+        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Prefix header with row count</small>
+
+        <div class="opt-row">
+          <input type="checkbox" id="opt-multiline">
+          <label for="opt-multiline">Multiline (TOON-compat)</label>
+        </div>
+        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Best LLM accuracy</small>
+      </div>
+    </div>
+
+    <div>
+      <h3>Cell Encoding</h3>
+      <div class="opt-group">
+        <div class="opt-row">
+          <input type="checkbox" id="opt-bare">
+          <label for="opt-bare">Bare strings</label>
+        </div>
+        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">alice vs "alice"</small>
+
+        <div class="opt-row">
+          <input type="checkbox" id="opt-null">
+          <label for="opt-null">Implicit null</label>
+        </div>
+        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Empty cell = null</small>
+
+        <div class="opt-row">
+          <input type="checkbox" id="opt-keys">
+          <label for="opt-keys">Unquoted keys</label>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Delimiter</h3>
+      <select id="opt-delim">
+        <option value="comma" selected>Comma (readable)</option>
+        <option value="tab">Tab (max tokens)</option>
+        <option value="pipe">Pipe (alt readable)</option>
+      </select>
+    </div>
+
+    <div>
+      <h3>Pretty Print</h3>
+      <select id="opt-indent">
+        <option value="0" selected>Compact</option>
+        <option value="2">2 spaces</option>
+        <option value="4">4 spaces</option>
+      </select>
+    </div>
+
+    <div>
+      <h3>LLM Prompt</h3>
+      <button onclick="showHint()" style="width:100%;font-size:.78rem">📋 Copy format hint</button>
+      <div style="margin-top:6px">
+        <select id="hint-style">
+          <option value="zen_grid">Zen Grid</option>
+          <option value="zen_grid_rowcount">With row count</option>
+          <option value="multiline">Multiline</option>
+          <option value="tab">Tab-delimited</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editor panels -->
+  <div class="editors">
+    <div class="pane">
+      <div class="pane-header">
+        <span class="pane-title">📥 JSON Input</span>
+        <div class="pane-actions">
+          <button onclick="clearInput()">Clear</button>
+          <button onclick="formatJson()">Format</button>
+        </div>
+      </div>
+      <textarea id="input" placeholder='Paste JSON here…&#10;&#10;Example:&#10;[{"id":1,"name":"Alice","score":95},&#10; {"id":2,"name":"Bob","score":87}]' spellcheck="false"></textarea>
+    </div>
+
+    <div class="pane">
+      <div class="pane-header">
+        <span class="pane-title">📤 JTON Output</span>
+        <div class="pane-actions">
+          <button onclick="copyOutput()">Copy</button>
+          <button onclick="decodeOutput()">→ JSON</button>
+        </div>
+      </div>
+      <textarea id="output" placeholder="JTON output will appear here…" readonly spellcheck="false"></textarea>
+    </div>
+  </div>
+</div>
+
+<div id="error-msg"></div>
+
+<!-- Token comparison bars -->
+<div class="token-bars" id="tok-bars" style="display:none">
+  <div class="tok-row"><span class="tok-label">JSON (pretty)</span><div class="tok-bar-wrap"><div class="tok-bar" id="tb-json-pretty" style="width:100%;background:#555"></div></div><span class="tok-num" id="tn-json-pretty">-</span></div>
+  <div class="tok-row"><span class="tok-label">JSON (compact)</span><div class="tok-bar-wrap"><div class="tok-bar" id="tb-json-compact" style="width:100%;background:#888"></div></div><span class="tok-num" id="tn-json-compact">-</span></div>
+  <div class="tok-row"><span class="tok-label" style="color:var(--accent)">JTON (current)</span><div class="tok-bar-wrap"><div class="tok-bar" id="tb-JTON" style="background:var(--accent)"></div></div><span class="tok-num" id="tn-JTON">-</span></div>
+</div>
+
+<div class="statusbar">
+  <div class="stat">Input: <span class="val" id="s-chars-in">0</span> chars</div>
+  <div class="stat">Output: <span class="val" id="s-chars-out">0</span> chars</div>
+  <div class="stat">Savings: <span id="s-savings">—</span></div>
+  <div class="stat">Encode: <span class="val" id="s-time">—</span></div>
+  <div class="stat" id="stat-rtcheck" style="display:none">Round-trip: <span id="s-rt" class="pill green">✓ lossless</span></div>
+</div>
+
+<div class="hint-bar" id="hint-bar"></div>
+
+<div class="bottom-bar">
+  <span style="font-size:.75rem;color:var(--muted)">Sample datasets:</span>
+  <div class="samples">
+    <button class="sample-btn" onclick="loadSample('employees')">👥 Employees (10)</button>
+    <button class="sample-btn" onclick="loadSample('orders')">🛒 Orders (nested)</button>
+    <button class="sample-btn" onclick="loadSample('analytics')">📈 Analytics</button>
+    <button class="sample-btn" onclick="loadSample('config')">⚙️ Deep config</button>
+    <button class="sample-btn" onclick="loadSample('github')">⭐ GitHub repos</button>
+  </div>
+  <div style="margin-left:auto">
+    <a href="https://github.com/your-org/JTON" target="_blank" style="color:var(--muted);font-size:.75rem;text-decoration:none">GitHub →</a>
+  </div>
+</div>
+
+<script>
+// ── Sample datasets ────────────────────────────────────────────────────────────
+const SAMPLES = {
+  employees: JSON.stringify(
+    Array.from({length:10}, (_,i) => ({
+      id: i+1, name: ["Alice","Bob","Carol","David","Eve","Frank","Grace","Henry","Ivy","Jack"][i],
+      department: ["Engineering","Marketing","Engineering","Sales","Engineering","HR","Marketing","Sales","Engineering","HR"][i],
+      salary: 60000 + i*5000, yearsExp: i+1, active: i%3 !== 2
+    })), null, 2),
+  orders: JSON.stringify([
+    {orderId:"ORD-001",customer:{name:"Alice",email:"alice@example.com"},items:[{sku:"A1",qty:2,price:29.99},{sku:"B3",qty:1,price:99.00}],total:158.98,status:"shipped"},
+    {orderId:"ORD-002",customer:{name:"Bob",email:"bob@example.com"},items:[{sku:"C5",qty:3,price:9.99}],total:29.97,status:"pending"},
+    {orderId:"ORD-003",customer:{name:"Carol",email:"carol@example.com"},items:[{sku:"A1",qty:1,price:29.99},{sku:"D2",qty:2,price:49.50}],total:129.00,status:"delivered"}
+  ], null, 2),
+  analytics: JSON.stringify(
+    Array.from({length:14}, (_,i) => {
+      const d = new Date(2025,0,i+1);
+      return {date: d.toISOString().slice(0,10), pageviews: 1000+Math.round(Math.random()*5000), sessions: 200+Math.round(Math.random()*1500), bounceRate: +(0.3+Math.random()*0.4).toFixed(2), avgDuration: 90+Math.round(Math.random()*180)};
+    }), null, 2),
+  config: JSON.stringify({
+    server:{host:"0.0.0.0",port:8080,tls:{enabled:true,certPath:"/etc/ssl/cert.pem",keyPath:"/etc/ssl/key.pem"}},
+    database:{primary:{host:"db1.example.com",port:5432,name:"prod",pool:{min:5,max:20}},replica:{host:"db2.example.com",port:5432}},
+    cache:{redis:{host:"cache.example.com",port:6379,ttl:3600}},
+    features:{zenGrid:true,simd:true,parallelParsing:false},
+    logging:{level:"info",format:"json",outputs:["stdout","file"]}
+  }, null, 2),
+  github: JSON.stringify(
+    [["freeCodeCamp","JavaScript",393000],["996.ICU","","267000"],["free-programming-books","","329000"],["awesome","","312000"],["coding-interview-university","","307000"]].map(([name,lang,stars]) => ({name,language:lang||null,stars,forks:Math.round(stars*0.15),openIssues:Math.round(stars*0.005),archived:false}))
+  , null, 2),
+};
+
+// ── API call to Python server ─────────────────────────────────────────────────
+const API = location.origin;
+let debounceTimer = null;
+
+async function callApi(endpoint, body) {
+  const r = await fetch(`${API}/${endpoint}`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  return r.json();
+}
+
+async function doEncode() {
+  const inp = document.getElementById('input').value.trim();
+  if (!inp) { clearStats(); return; }
+  showError('');
+  document.getElementById('spinner').style.display = 'inline';
+
+  const opts = getOpts();
+  const t0 = performance.now();
+  try {
+    const res = await callApi('encode', {input: inp, ...opts});
+    const ms = (performance.now() - t0).toFixed(1);
+    if (res.error) { showError(res.error); return; }
+    document.getElementById('output').value = res.output;
+    updateStats(inp, res.output, ms, res.char_savings, res.token_counts, res.roundtrip_ok);
+  } catch(e) {
+    showError('Server error: ' + e.message + ' — make sure playground/server.py is running');
+  } finally {
+    document.getElementById('spinner').style.display = 'none';
+  }
+}
+
+async function decodeOutput() {
+  const out = document.getElementById('output').value.trim();
+  if (!out) return;
+  try {
+    const res = await callApi('decode', {input: out});
+    if (res.error) { showError(res.error); return; }
+    document.getElementById('input').value = res.output;
+    clearStats();
+  } catch(e) { showError('Decode error: ' + e.message); }
+}
+
+async function showHint() {
+  const style = document.getElementById('hint-style').value;
+  try {
+    const res = await callApi('hint', {style});
+    const bar = document.getElementById('hint-bar');
+    bar.textContent = res.hint;
+    bar.style.display = 'block';
+    await navigator.clipboard.writeText(res.hint);
+    bar.textContent = '✓ Copied to clipboard!\n\n' + res.hint;
+    setTimeout(() => { bar.style.display = 'none'; }, 4000);
+  } catch(e) {
+    // fallback: just show
+    document.getElementById('hint-bar').textContent = 'Could not connect to server.';
+    document.getElementById('hint-bar').style.display = 'block';
+  }
+}
+
+// ── UI helpers ─────────────────────────────────────────────────────────────────
+function getOpts() {
+  return {
+    zen_grid:      document.getElementById('opt-zen').checked,
+    row_count:     document.getElementById('opt-row-count').checked,
+    multiline_zen: document.getElementById('opt-multiline').checked,
+    bare_strings:  document.getElementById('opt-bare').checked,
+    implicit_null: document.getElementById('opt-null').checked,
+    unquoted_keys: document.getElementById('opt-keys').checked,
+    delimiter:     document.getElementById('opt-delim').value,
+    indent:        parseInt(document.getElementById('opt-indent').value) || null,
+  };
+}
+
+function updateStats(inp, out, ms, savings, tokenCounts, rtOk) {
+  document.getElementById('s-chars-in').textContent  = inp.length.toLocaleString();
+  document.getElementById('s-chars-out').textContent = out.length.toLocaleString();
+  document.getElementById('s-time').textContent = ms + ' ms';
+
+  const pct = savings != null ? savings.toFixed(1) : null;
+  const savEl = document.getElementById('s-savings');
+  if (pct !== null) {
+    const cls = pct > 0 ? 'pill green' : pct < 0 ? 'pill red' : 'pill blue';
+    savEl.innerHTML = `<span class="${cls}">${pct > 0 ? '−' : '+'}${Math.abs(pct)}% chars vs JSON</span>`;
+  } else { savEl.innerHTML = '—'; }
+
+  const rtEl = document.getElementById('stat-rtcheck');
+  if (rtOk !== undefined) {
+    rtEl.style.display = 'flex';
+    const rt = document.getElementById('s-rt');
+    rt.className = rtOk ? 'pill green' : 'pill red';
+    rt.textContent = rtOk ? '✓ lossless' : '✗ lossy';
+  } else { rtEl.style.display = 'none'; }
+
+  if (tokenCounts) {
+    const tb = document.getElementById('tok-bars');
+    tb.style.display = 'block';
+    const maxTok = Math.max(tokenCounts.json_pretty, tokenCounts.json_compact, tokenCounts.JTON);
+    const set = (id, n) => {
+      document.getElementById('tb-' + id).style.width = (n / maxTok * 100).toFixed(1) + '%';
+      document.getElementById('tn-' + id).textContent = n.toLocaleString() + ' tok';
+    };
+    set('json-pretty', tokenCounts.json_pretty);
+    set('json-compact', tokenCounts.json_compact);
+    set('JTON', tokenCounts.JTON);
+  }
+}
+
+function clearStats() {
+  document.getElementById('s-chars-in').textContent = '0';
+  document.getElementById('s-chars-out').textContent = '0';
+  document.getElementById('s-time').textContent = '—';
+  document.getElementById('s-savings').innerHTML = '—';
+  document.getElementById('stat-rtcheck').style.display = 'none';
+  document.getElementById('tok-bars').style.display = 'none';
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+function loadSample(name) {
+  document.getElementById('input').value = SAMPLES[name] || '';
+  doEncode();
+}
+
+function clearInput() {
+  document.getElementById('input').value = '';
+  document.getElementById('output').value = '';
+  clearStats();
+  showError('');
+}
+
+function formatJson() {
+  try {
+    const v = JSON.parse(document.getElementById('input').value);
+    document.getElementById('input').value = JSON.stringify(v, null, 2);
+  } catch(e) { showError('Invalid JSON: ' + e.message); }
+}
+
+function copyOutput() {
+  const out = document.getElementById('output').value;
+  if (!out) return;
+  navigator.clipboard.writeText(out).then(() => {
+    const btn = event.target;
+    btn.textContent = '✓ Copied';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ── Event listeners ────────────────────────────────────────────────────────────
+let encTimer = null;
+document.getElementById('input').addEventListener('input', () => {
+  clearTimeout(encTimer);
+  encTimer = setTimeout(doEncode, 400);
+});
+
+['opt-zen','opt-row-count','opt-multiline','opt-bare','opt-null','opt-keys'].forEach(id =>
+  document.getElementById(id).addEventListener('change', doEncode));
+['opt-delim','opt-indent'].forEach(id =>
+  document.getElementById(id).addEventListener('change', doEncode));
+
+// Load a sample on startup
+loadSample('employees');
+</script>
+</body>
+</html>
+
