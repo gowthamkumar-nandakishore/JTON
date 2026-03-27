@@ -196,7 +196,7 @@ unsafe fn write_escaped_str_avx512(s: &[u8], buf: &mut Vec<u8>) {
     let v_quote = _mm512_set1_epi8(b'"' as i8);
     let v_slash = _mm512_set1_epi8(b'\\' as i8);
     // Control chars: byte + 0x80 in range [0x80, 0xA0)
-    let v_bias  = _mm512_set1_epi8(-128_i8);          // +0x80
+    let v_bias = _mm512_set1_epi8(-128_i8); // +0x80
     let v_limit = _mm512_set1_epi8((-128_i8).wrapping_add(0x20)); // 0xA0 as i8
 
     let mut i = 0usize;
@@ -207,8 +207,8 @@ unsafe fn write_escaped_str_avx512(s: &[u8], buf: &mut Vec<u8>) {
 
         let m_quote: u64 = _mm512_cmpeq_epi8_mask(chunk, v_quote);
         let m_slash: u64 = _mm512_cmpeq_epi8_mask(chunk, v_slash);
-        let biased        = _mm512_add_epi8(chunk, v_bias);
-        let m_ctrl: u64   = _mm512_cmpgt_epi8_mask(v_limit, biased);
+        let biased = _mm512_add_epi8(chunk, v_bias);
+        let m_ctrl: u64 = _mm512_cmpgt_epi8_mask(v_limit, biased);
 
         let mask: u64 = m_quote | m_slash | m_ctrl;
 

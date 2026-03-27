@@ -10,4 +10,3 @@ fn main() {
         arch => println!("cargo:warning=Building JTON for {arch} - scalar fallback will be used"),
     }
 }
-

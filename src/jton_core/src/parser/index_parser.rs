@@ -158,8 +158,7 @@ impl<'a> FastIndexParser<'a> {
     /// delimiters are NOT consumed as whitespace and can be detected as separators.
     #[inline(always)]
     fn skip_spaces_only(&mut self) {
-        while self.pos < self.input.len()
-            && unsafe { *self.input.get_unchecked(self.pos) } == b' '
+        while self.pos < self.input.len() && unsafe { *self.input.get_unchecked(self.pos) } == b' '
         {
             self.pos += 1;
         }
@@ -325,7 +324,9 @@ impl<'a> FastIndexParser<'a> {
             // [N: ...] — skip the row count digits (metadata, ignored on decode) then colon
             if b.is_ascii_digit() {
                 let mut p = self.pos + 1;
-                while p < self.input.len() && unsafe { *self.input.get_unchecked(p) }.is_ascii_digit() {
+                while p < self.input.len()
+                    && unsafe { *self.input.get_unchecked(p) }.is_ascii_digit()
+                {
                     p += 1;
                 }
                 while p < self.input.len() && unsafe { *self.input.get_unchecked(p) } == b' ' {
