@@ -425,8 +425,7 @@ Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, 
 
 | Model | Family | Few-shot Valid | Zero-shot Valid |
 |-------|--------|---------------|-----------------|
-| GPT-5-mini (WTG) | OpenAI | **100%** | **100%** |
-| GPT-5-mini (Azure) | OpenAI | **100%** | **100%** |
+| GPT-5-mini | OpenAI | **100%** | **100%** |
 | GPT-5.1 | OpenAI | **100%** | **100%** |
 | GPT-4o | OpenAI | **100%** | **100%** |
 | Claude Sonnet 4 | Anthropic | **100%** | **100%** |
