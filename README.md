@@ -258,6 +258,48 @@ Measured using [tiktoken](https://github.com/openai/tiktoken) `o200k_base` encod
 
 ---
 
+## LLM Comprehension Evaluation
+
+We evaluated whether LLMs can correctly interpret Zen Grid data across **12 models** from six providers, using 7 real-world datasets × 5 question types × 2 formats (840 total API calls).
+
+### Per-Model Results
+
+| Model | Family | JSON | Zen Grid | Delta | n |
+|-------|--------|------|----------|-------|---|
+| GPT-5.1 | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
+| GPT-5.1-codex | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
+| GPT-5-mini | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
+| GPT-4o | OpenAI | 71.4% | 62.9% | −8.6 pp | 35 |
+| Gemini 2.5 Flash | Google | 68.6% | 53.8% | −14.7 pp | 26* |
+| Gemini 2.5 Pro | Google | 68.6% | 57.1% | −11.4 pp | 35 |
+| Gemini 3 Flash | Google | 65.7% | 57.1% | −8.6 pp | 35 |
+| Kimi K2 | Moonshot | 65.7% | 57.1% | −8.6 pp | 35 |
+| Llama 3.3 70B | Meta | 54.3% | 54.3% | 0.0 pp | 35 |
+| Qwen3 32B | Alibaba | 51.4% | **54.3%** | **+2.9 pp** | 35 |
+| GPT-OSS 120B | Open-src | 42.9% | 42.9% | 0.0 pp | 35 |
+| Llama 4 Scout 17B | Meta | 37.1% | **40.0%** | **+2.9 pp** | 35 |
+| **Overall** | | **61.7%** | **58.6%** | **−3.0 pp** | 420/411 |
+
+\* Gemini 2.5 Flash returned null for 9/35 Zen Grid queries (model limitation, not format issue).
+
+### By Question Type
+
+| Question Type | JSON | Zen Grid | Delta |
+|---------------|------|----------|-------|
+| Lookup | 96.4% | 94.0% | −2.4 pp |
+| Aggregation | 54.8% | 51.8% | −3.0 pp |
+| Filtering | 48.8% | 44.6% | −4.2 pp |
+| Comparison | 51.2% | 52.6% | +1.4 pp |
+| Count | 57.1% | 49.4% | −7.7 pp |
+
+### Key Findings
+
+Five of twelve models improve with Zen Grid (GPT-5.x family, Qwen3 32B, Llama 4 Scout — all gaining 2.9 pp), two are neutral (Llama 3.3 70B, GPT-OSS 120B), and five regress (Gemini family at −8.6 to −14.7 pp, GPT-4o and Kimi K2 at −8.6 pp each). Overall, Zen Grid costs 3.0 pp in accuracy for 32% fewer tokens — a favorable cost-per-correct-answer trade-off.
+
+Within OpenAI's lineup, GPT-5.x consistently benefits while the older GPT-4o does not, suggesting that newer model generations generalize better to the tabular syntax. Lookup tasks remain robust across all models (96%/94%).
+
+---
+
 ## Features
 
 ### ✅ Implemented
