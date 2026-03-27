@@ -40,6 +40,9 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Paper / experiments (not for public repo)
+paper/
+
 # Temp files
 *.tmp
 *.swp

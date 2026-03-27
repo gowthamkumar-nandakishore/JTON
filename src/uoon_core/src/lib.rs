@@ -112,7 +112,7 @@ fn dumps(
     serializer::serialize(py, &obj, &opts)
 }
 
-/// UOON (Zero-overhead Serialized Object Notation) SIMD-accelerated parser for Python
+/// UOON (Ultra-Optimized Object Notation) SIMD-accelerated parser for Python
 ///
 /// This module provides high-performance parsing of UOON/JSON data using
 /// Rust with AVX2/AVX-512 SIMD intrinsics.

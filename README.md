@@ -5,7 +5,7 @@
 [![Tests](https://img.shields.io/badge/tests-622%20passing-brightgreen)](./tests/)
 [![Performance](https://img.shields.io/badge/loads-193%20MB%2Fs-green)](#performance)
 [![SIMD](https://img.shields.io/badge/SIMD-AVX2%20%2B%20AVX--512-blue)](#simd-acceleration)
-[![License](https://img.shields.io/badge/license-MIT-blue)](./NOTICE)
+[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 ---
 

@@ -1,5 +1,5 @@
 """
-UOON (Zero-overhead Serialized Object Notation) — high-performance JSON superset
+UOON (Ultra-Optimized Object Notation) — high-performance JSON superset
 with SIMD-accelerated parsing and Zen Grid token-efficient serialization.
 
 Key functions:

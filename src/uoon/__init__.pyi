@@ -1,5 +1,5 @@
 """
-Type stubs for UOON — Zero-overhead Serialized Object Notation.
+Type stubs for UOON — Ultra-Optimized Object Notation.
 """
 
 from typing import Any, Optional, Union

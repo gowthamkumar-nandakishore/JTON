@@ -6,9 +6,14 @@ build-backend = "maturin"
 name = "uoon"
 version = "0.1.0"
 requires-python = ">=3.10"
+description = "High-performance, token-efficient JSON superset with Zen Grid tabular encoding"
+authors = [{name = "Gowthamkumar Nandakishore"}]
+license = {text = "MIT"}
+readme = "README.md"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
+    "License :: OSI Approved :: MIT License",
 ]
 
 [tool.maturin]
