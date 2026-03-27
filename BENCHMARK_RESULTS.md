@@ -19,18 +19,18 @@
 | **dumps Zen Grid — string-heavy** | **240 MB/s** | 268 MB/s | — |
 | **AKBE parse — large object-heavy (338.1 MB)** | 139 MB/s | **193 MB/s** | — |
 | **AKBE dumps JSON mode — large object-heavy (338.1 MB)** | **127 MB/s** | 57 MB/s | — |
-| **Token savings vs JSON compact (avg tabular)** | **20–36%** | — | — |
-| **Token savings vs JSON compact (twitter-style)** | **67%** | — | — |
+| **Token savings vs JSON compact (avg tabular)** | **15–36%** | — | — |
+| **Token savings vs JSON compact (twitter-style)** | **60%** | — | — |
 
 Key findings:
 - ✅ `jton.loads()` is **1.5–2.1× faster** than stdlib `json.loads`
 - ✅ `jton.dumps()` JSON mode is **1.5–5.5× faster** than stdlib across all datasets
 - ✅ On the 338 MB `akbe_doc_classifier.json` payload, JTON dump is **2.2× faster** than stdlib
 - ⚠️ On that same AKBE payload, stdlib parse is faster than JTON
-- ✅ Zen Grid saves **20–36% tokens** vs JSON compact across 5 real-world benchmark datasets
-- ✅ Zen Grid saves **67% tokens** on twitter-style highly-tabular string data
+- ✅ Zen Grid saves **15–36% tokens** vs JSON compact across 5 real-world benchmark datasets
+- ✅ Zen Grid saves **60% tokens** on twitter-style highly-tabular string data
 - ✅ JTON is **#2 most token-efficient** format overall (after TRON), while being the only JSON-superset in the top 3
-- ✅ 680 tests passing, 0 failures
+- ✅ 683 tests passing, 0 failures
 
 ---
 
@@ -76,7 +76,7 @@ Measured from the repository payload on this machine:
 | twitter.json (string-heavy) | **276 MB/s** | **240 MB/s** | 268 MB/s | 440 MB/s |
 
 > JTON JSON mode is **1.5–5.5× faster than stdlib** across all datasets.  
-> Zen Grid is most effective on twitter-style tabular data (67% token savings).
+> Zen Grid is most effective on twitter-style tabular data (60% token savings).
 
 ---
 
@@ -178,7 +178,7 @@ users = [
 ## Test Suite
 
 ```
-680 passed, 52 skipped, 58 xfailed, 6 xpassed in ~1.3s
+683 passed, 52 skipped, 58 xfailed, 6 xpassed in ~10.7s
 ```
 
 | Suite | Tests | Coverage |
@@ -395,7 +395,7 @@ Savings increase with more rows (header amortized) and more columns (key names s
 | Gemini 3 Pro Preview | Google | 68.6% | 68.6% | 0.0 pp | 35 |
 | Kimi K2 | Moonshot | 62.9% | **68.6%** | **+5.7 pp** | 35 |
 | Qwen3 32B | Alibaba | 60.0% | 57.1% | −2.9 pp | 35 |
-| Llama 3.3 70B | Meta | 55.9% | 55.9% | 0.0 pp | 34 |
+| Llama 3.3 70B | Meta | 54.3% | 54.3% | 0.0 pp | 35 |
 | Llama 3.1 8B | Meta | 45.7% | **48.6%** | **+2.9 pp** | 35 |
 | GPT-OSS 120B | Open-src | 42.9% | **45.7%** | **+2.9 pp** | 35 |
 | Llama 4 Scout 17B | Meta | 40.0% | **45.7%** | **+5.7 pp** | 35 |
@@ -425,7 +425,8 @@ Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, 
 
 | Model | Family | Few-shot Valid | Zero-shot Valid |
 |-------|--------|---------------|-----------------|
-| GPT-5-mini | OpenAI | **100%** | **100%** |
+| GPT-5-mini (WTG) | OpenAI | **100%** | **100%** |
+| GPT-5-mini (Azure) | OpenAI | **100%** | **100%** |
 | GPT-5.1 | OpenAI | **100%** | **100%** |
 | GPT-4o | OpenAI | **100%** | **100%** |
 | Claude Sonnet 4 | Anthropic | **100%** | **100%** |
@@ -443,7 +444,7 @@ Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, 
 
 - **All 13 models achieve 100% validity** in both few-shot and zero-shot modes
 - **100% accuracy** across all 13 models — the `[N: ...]` syntax is universally understood
-- All OpenAI models (GPT-5-mini, GPT-5.1) achieve perfect scores
+- All OpenAI models (GPT-5-mini WTG, GPT-5-mini Azure, GPT-5.1, GPT-4o) achieve perfect scores
 - All three Anthropic Claude models (Sonnet 4, 3.5 Haiku, 3 Haiku) achieve perfect scores
 - All three Google Gemini models (2.5 Flash, 2.5 Pro, 3 Flash Preview) achieve perfect scores
 - Task complexity has minimal impact — validity is consistent from 3×3 to 8×5
@@ -456,27 +457,27 @@ Token counts using `o200k_base` tokenizer on real-world datasets:
 
 | Dataset | JSON Pretty | JSON Compact | CSV | Markdown | YAML | Zen Grid |
 |---------|------------|-------------|-----|----------|------|----------|
-| Twitter (20 rows, 7 cols) | 4,166 | 3,673 | 1,303 | 1,430 | 1,916 | 1,466 |
-| GitHub (20 rows, 6 cols) | 1,388 | 968 | 688 | 792 | 1,185 | 820 |
-| Financial (20 rows, 5 cols) | 1,023 | 643 | 408 | 505 | 840 | 514 |
+| Twitter (20 rows, 7 cols) | 4,166 | 3,673 | 1,303 | 1,430 | 1,916 | 1,653 |
+| GitHub (20 rows, 6 cols) | 1,388 | 968 | 688 | 792 | 1,185 | 968 |
+| Financial (20 rows, 5 cols) | 1,023 | 643 | 408 | 505 | 840 | 516 |
 
 ### Savings vs JSON Compact
 
 | Format | Avg Savings | JSON-compatible | Type-safe |
 |--------|------------|-----------------|-----------|
-| CSV | **−54.5%** | ❌ No | ❌ No nulls/bools |
-| Zen Grid | **−47.0%** | ✅ Yes (JTON superset) | ✅ Full JSON types |
-| Markdown | −48.3% | ❌ No | ❌ No types |
-| YAML | −25.2% | ❌ No | ✅ Yes |
+| CSV | **−43.3%** | ❌ No | ❌ No nulls/bools |
+| Zen Grid | **−24.9%** | ✅ Yes (JTON superset) | ✅ Full JSON types |
+| Markdown | −33.6% | ❌ No | ❌ No types |
+| YAML | +1.7% | ❌ No | ✅ Yes |
 
-CSV wins on raw token count but has no type system. **Zen Grid is the only format that achieves >45% token savings while preserving JSON's full type system.**
+CSV wins on raw token count but has no type system. **Zen Grid is the only JSON-compatible format that achieves significant token savings while preserving JSON's full type system.**
 
 ---
 
 ## Test Suite
 
 ```
-680 passed, 52 skipped, 58 xfailed, 6 xpassed in ~1.3s
+683 passed, 52 skipped, 58 xfailed, 6 xpassed in ~10.7s
 ```
 
 | Suite | Count | What it covers |
@@ -512,10 +513,8 @@ OS: Windows x64
 | Library | GitHub | PyPI | Language | Notes |
 |---------|--------|------|----------|-------|
 | [orjson](https://github.com/ijl/orjson) | [GitHub](https://github.com/ijl/orjson) | [PyPI](https://pypi.org/project/orjson/) | Rust | Industry standard; 5–50× stdlib |
-| [ujson](https://github.com/ultrajson/ultrajson) | [GitHub](https://github.com/ultrajson/ultrajson) | [PyPI](https://pypi.org/project/ujson/) | C | Ultra-fast; less maintained |
 | [simdjson](https://github.com/simdjson/simdjson) | [GitHub](https://github.com/simdjson/simdjson) | — | C++ | Architecture inspiration for JTON |
 | [pysimdjson](https://github.com/TkTech/pysimdjson) | [GitHub](https://github.com/TkTech/pysimdjson) | [PyPI](https://pypi.org/project/pysimdjson/) | Rust/C++ | Python bindings for simdjson |
 | [yapic.json](https://github.com/nfomon/yapic.json) | [GitHub](https://github.com/nfomon/yapic.json) | [PyPI](https://pypi.org/project/yapic.json/) | C/Python | 2–3× stdlib |
-| [TRON](https://github.com/tron-format/tron) | [GitHub](https://github.com/tron-format/tron) | [npm](https://www.npmjs.com/package/@tron-format/tron) | JS/TS | 32% token savings; not JSON-compatible |
 | [TOON](https://github.com/nickcoutsos/toon) | [GitHub](https://github.com/nickcoutsos/toon) | [npm](https://www.npmjs.com/package/@toon-format/toon) | JS/TS | 19% token savings; not JSON-compatible |
 

@@ -1,8 +1,8 @@
 # JTON
 
-**JTON (JSON Tabular Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python. Home of **Zen Grid**, a token-aware tabular encoding that reduces LLM token costs by 19–61%.
+**JTON (JSON Tabular Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python. Home of **Zen Grid**, a token-aware tabular encoding that reduces LLM token costs by 15–60%.
 
-[![Tests](https://img.shields.io/badge/tests-680%20passing-brightgreen)](./tests/)
+[![Tests](https://img.shields.io/badge/tests-683%20passing-brightgreen)](./tests/)
 [![Performance](https://img.shields.io/badge/loads-193%20MB%2Fs-green)](#performance)
 [![SIMD](https://img.shields.io/badge/SIMD-AVX2%20%2B%20AVX--512-blue)](#simd-acceleration)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
@@ -13,8 +13,8 @@
 
 JTON is a JSON superset designed for LLM applications and high-throughput data processing:
 
-- **Zen Grid**: Tabular encoding reduces token count by **19–61%** on real-world data vs JSON compact (32% average across 7 domains)
-- **LLM-Validated**: 10 models tested for comprehension, 13 models tested for generation — all achieve 100% generation validity (100% few-shot, 100% zero-shot)
+- **Zen Grid**: Tabular encoding reduces token count by **15–60%** on benchmarked data vs JSON compact (23% average across 6 datasets, ~60% on highly-tabular Twitter-style rows)
+- **LLM-Validated**: 10 models tested for comprehension, 13 models tested for generation -- all achieve 100% generation validity (100% few-shot, 100% zero-shot)
 - **SIMD Acceleration**: AVX2 (32-byte) and AVX-512 (64-byte) structural scanning
 - **JSON-compatible**: supports `load()` / `loads()` / `dump()` / `dumps()` for common JSON workflows — all valid JSON is valid JTON
 - **Serialization**: `dumps()` with Zen Grid table output, Pydantic v1/v2 and dataclass support
@@ -490,7 +490,7 @@ The playground provides:
 
 - JTON `loads` is **1.5–2.1× faster** than stdlib (`json.loads`)
 - JTON `dumps` JSON mode is **1.0–4.3× faster** than stdlib
-- JTON Zen Grid `dumps` saves **14–67% tokens** (depending on data shape) while maintaining competitive throughput
+- JTON Zen Grid `dumps` saves **14–60% tokens** (depending on data shape) while maintaining competitive throughput
 - orjson is faster on raw JSON; JTON's advantage is Zen Grid token reduction which orjson cannot provide
 
 ### Large-file static benchmark: `akbe_doc_classifier.json` (338.1 MB)
@@ -569,7 +569,7 @@ We evaluated whether LLMs can correctly interpret Zen Grid data across **10 mode
 | Gemini 3 Pro Preview | Google | 68.6% | 68.6% | 0.0 pp | 35 |
 | Kimi K2 | Moonshot | 62.9% | **68.6%** | **+5.7 pp** | 35 |
 | Qwen3 32B | Alibaba | 60.0% | 57.1% | −2.9 pp | 35 |
-| Llama 3.3 70B | Meta | 55.9% | 55.9% | 0.0 pp | 34 |
+| Llama 3.3 70B | Meta | 54.3% | 54.3% | 0.0 pp | 35 |
 | Llama 3.1 8B | Meta | 45.7% | **48.6%** | **+2.9 pp** | 35 |
 | GPT-OSS 120B | Open-src | 42.9% | **45.7%** | **+2.9 pp** | 35 |
 | Llama 4 Scout 17B | Meta | 40.0% | **45.7%** | **+5.7 pp** | 35 |
@@ -619,12 +619,12 @@ Token counts on real-world data (`o200k_base` tokenizer):
 | Format | Twitter | GitHub | Financial | Avg Savings vs JSON |
 |--------|---------|--------|-----------|---------------------|
 | JSON Compact | 3,673 | 968 | 643 | baseline |
-| CSV | 1,303 | 688 | 408 | **−54.5%** (no types) |
-| Markdown | 1,430 | 792 | 505 | −48.3% (no types) |
-| YAML | 1,916 | 1,185 | 840 | −25.2% |
-| **Zen Grid** | **1,466** | **820** | **514** | **−47.0%** (full types) |
+| CSV | 1,303 | 688 | 408 | **−43.3%** (no types) |
+| Markdown | 1,430 | 792 | 505 | −33.6% (no types) |
+| YAML | 1,916 | 1,185 | 840 | +1.7% |
+| **Zen Grid** | **1,653** | **968** | **516** | **−24.9%** (full types) |
 
-Zen Grid is the only format that achieves >45% savings while preserving JSON's full type system.
+**Zen Grid is the only JSON-compatible format that achieves significant token savings while preserving JSON's full type system.**
 
 ---
 
