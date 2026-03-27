@@ -179,6 +179,47 @@ Savings increase with more rows (header amortized) and more columns (key names s
 
 ---
 
+## LLM Comprehension Evaluation (12 Models)
+
+**Methodology**: 7 real-world datasets × 5 question types × 2 formats (JSON compact vs Zen Grid) per model = 840 total API calls across 12 LLMs from 6 providers. Questions include lookup, aggregation, filtering, comparison, and count tasks with deterministic ground-truth answers.
+
+### Per-Model Accuracy
+
+| Model | Family | JSON Acc | Zen Grid Acc | Delta | n |
+|-------|--------|----------|--------------|-------|---|
+| GPT-5.1 | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
+| GPT-5.1-codex | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
+| GPT-5-mini | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
+| GPT-4o | OpenAI | 71.4% | 62.9% | −8.6 pp | 35 |
+| Gemini 2.5 Flash | Google | 68.6% | 53.8% | −14.7 pp | 26* |
+| Gemini 2.5 Pro | Google | 68.6% | 57.1% | −11.4 pp | 35 |
+| Gemini 3 Flash | Google | 65.7% | 57.1% | −8.6 pp | 35 |
+| Kimi K2 | Moonshot | 65.7% | 57.1% | −8.6 pp | 35 |
+| Llama 3.3 70B | Meta | 54.3% | 54.3% | 0.0 pp | 35 |
+| Qwen3 32B | Alibaba | 51.4% | **54.3%** | **+2.9 pp** | 35 |
+| GPT-OSS 120B | Open-src | 42.9% | 42.9% | 0.0 pp | 35 |
+| Llama 4 Scout 17B | Meta | 37.1% | **40.0%** | **+2.9 pp** | 35 |
+| **Overall** | | **61.7%** | **58.6%** | **−3.0 pp** | 420/411 |
+
+\* Gemini 2.5 Flash returned null for 9/35 Zen Grid queries (model limitation).
+
+### By Model Family
+
+| Family | Models | JSON | Zen Grid | Delta |
+|--------|--------|------|----------|-------|
+| OpenAI (GPT-5.x, 4o) | 4 | 71.4% | 71.4% | 0.0 pp |
+| Google (Gemini) | 3 | 67.6% | 56.2% | −11.4 pp |
+| Meta (Llama) | 2 | 45.7% | 47.1% | +1.4 pp |
+| Alibaba (Qwen3) | 1 | 51.4% | 54.3% | +2.9 pp |
+| Moonshot (Kimi K2) | 1 | 65.7% | 57.1% | −8.6 pp |
+| Open-source (GPT-OSS) | 1 | 42.9% | 42.9% | 0.0 pp |
+
+### Summary
+
+Five of twelve models do better with Zen Grid (GPT-5.x, Qwen3, Llama 4 Scout), two show no difference (Llama 3.3, GPT-OSS), and five regress (Gemini family, GPT-4o, Kimi K2). The overall accuracy costs 3.0 pp for 32% fewer tokens — a favorable trade-off on cost-per-correct-answer. The generational split within OpenAI (GPT-5.x improves, GPT-4o does not) suggests newer models generalize better to the tabular syntax.
+
+---
+
 ## Test Suite
 
 ```
@@ -224,35 +265,4 @@ OS: Windows x64
 | [yapic.json](https://github.com/nfomon/yapic.json) | [GitHub](https://github.com/nfomon/yapic.json) | [PyPI](https://pypi.org/project/yapic.json/) | C/Python | 2–3× stdlib |
 | [TRON](https://github.com/tron-format/tron) | [GitHub](https://github.com/tron-format/tron) | [npm](https://www.npmjs.com/package/@tron-format/tron) | JS/TS | 32% token savings; not JSON-compatible |
 | [TOON](https://github.com/nickcoutsos/toon) | [GitHub](https://github.com/nickcoutsos/toon) | [npm](https://www.npmjs.com/package/@toon-format/toon) | JS/TS | 19% token savings; not JSON-compatible |
-
----
-
-## Executive Summary
-
-| Metric | UOON | stdlib json | orjson |
-|--------|------|-------------|--------|
-| **loads** | **65 MB/s** | 40 MB/s | 87 MB/s |
-| **dumps (JSON mode)** | **133 MB/s** | 83 MB/s | 586 MB/s |
-| **dumps (Zen Grid)** | **106 MB/s** | 83 MB/s | — |
-| **Token savings (tabular)** | **11–26%** | baseline | baseline |
-
-Key findings:
-- ✅ `uoon.loads()` is **1.6× faster** than stdlib `json.loads`
-- ✅ `uoon.dumps()` (JSON mode) is **1.6× faster** than stdlib `json.dumps`
-- ✅ `uoon.dumps(zen_grid=True)` is **1.3× faster** than stdlib with 11–31% fewer tokens
-- ✅ All 622 tests pass, 0 failures
-
----
-
-## Parse Speed
-
-| Parser | Speed | vs stdlib | vs orjson |
-|--------|-------|-----------|-----------|
-| stdlib json | 40 MB/s | 1.00× | 0.46× |
-| **orjson** | **87 MB/s** | **2.2×** | **1.00×** |
-| **UOON** | **65 MB/s** | **1.6×** | 0.75× |
-
-> Optimizations applied: StructuralIndex pre-allocation (avoids Vec reallocation
-> during SIMD scan), thread-local string cache (eliminates mutex overhead on key
-> interning), hoisted SIMD constant vectors, lexical-core for float parsing.
 
