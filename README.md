@@ -14,9 +14,9 @@
 JTON is a JSON superset designed for LLM applications and high-throughput data processing:
 
 - **Zen Grid**: Tabular encoding reduces token count by **19–61%** on real-world data vs JSON compact (32% average across 7 domains)
-- **LLM-Validated**: 12 models tested for comprehension, 13 models tested for generation — 10/13 achieve 100% generation validity
+- **LLM-Validated**: 10 models tested for comprehension, 13 models tested for generation — all achieve 100% generation validity (100% few-shot, 100% zero-shot)
 - **SIMD Acceleration**: AVX2 (32-byte) and AVX-512 (64-byte) structural scanning
-- **Python-compatible**: Drop-in replacement for `json.loads()` / `json.dumps()` — all valid JSON is valid JTON
+- **JSON-compatible**: supports `load()` / `loads()` / `dump()` / `dumps()` for common JSON workflows — all valid JSON is valid JTON
 - **Serialization**: `dumps()` with Zen Grid table output, Pydantic v1/v2 and dataclass support
 - **JSON Extensions**: Unquoted keys, `//` and `/* */` comments, `Infinity`/`NaN` special numbers
 - **Strict correctness**: Rejects invalid JSON numbers (`-01`, `1.`, `0.e1`) that many parsers accept silently
@@ -69,6 +69,142 @@ jton.dumps({"name": "Alice", "age": 30})
 jton.encode(data)   # same as dumps()
 jton.decode(text)   # same as loads()
 ```
+
+---
+
+## Using JTON with existing `json`-based code
+
+JTON works well with existing JSON-heavy codebases — with one important rule:
+
+- **Parsing is the easy win**: `jton.load()` / `jton.loads()` accept normal JSON unchanged
+- **Serialization is JSON-compatible for common usage**, but JTON's serializer has an extra default: `zen_grid=True`
+- That means if you simply replace `import json` with `import jton as json`, some `list[dict]` payloads may serialize as **Zen Grid** instead of strict RFC 8259 JSON
+
+### What happens if you just replace `json` with `jton`?
+
+```python
+import jton as json
+
+# Existing JSON input still works
+obj = json.loads('{"name":"Alice","age":30}')
+
+# Existing file APIs still work
+with open("data.json") as f:
+    obj = json.load(f)
+```
+
+For output:
+
+```python
+import jton as json
+
+json.dumps({"name": "Alice", "age": 30})
+# -> '{"name":"Alice","age":30}'   # still normal JSON
+
+json.dumps([
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"},
+])
+# -> '[2: id, name; 1, "Alice"; 2, "Bob" ]'   # JTON Zen Grid, not strict JSON
+```
+
+So the practical behavior is:
+
+- **`load()` / `loads()`**: safe replacement for existing JSON parsing
+- **`dump()` / `dumps()`** on ordinary objects: usually still emits JSON
+- **`dump()` / `dumps()`** on homogeneous arrays of objects: may emit **Zen Grid** by default
+
+### Recommended migration path
+
+#### 1. Parsing-only replacement
+
+If you want a no-risk first step, replace only parsing:
+
+```python
+import jton
+
+data = jton.loads(existing_json_text)
+```
+
+This gives you faster parsing plus JTON extensions on input, without changing output format anywhere.
+
+#### 2. Full json-module replacement, but keep strict JSON output
+
+If you want `import jton as json`, but still need normal JSON output:
+
+```python
+import jton as json
+
+text = json.dumps(obj, zen_grid=False)
+with open("out.json", "w") as f:
+    json.dump(obj, f, zen_grid=False)
+```
+
+This is the safest pattern for APIs, files, and systems that expect standard JSON.
+
+#### 3. Enable JTON only where it helps
+
+Use strict JSON for machines, and JTON for LLM-facing payloads:
+
+```python
+api_payload = jton.dumps(data, zen_grid=False)   # strict JSON
+llm_payload = jton.dumps(data)                   # JTON / Zen Grid when eligible
+```
+
+### JSON-in / JSON-out compatibility cheat sheet
+
+If you want output that stays valid JSON, use:
+
+```python
+jton.dumps(
+    obj,
+    zen_grid=False,
+    unquoted_keys=False,
+    bare_strings=False,
+    implicit_null=False,
+    multiline_zen=False,
+)
+```
+
+Notes:
+
+- **Only `zen_grid=False` is required** for strict JSON output in normal use
+- `row_count` and `delimiter` matter **only** when `zen_grid=True`
+- `indent=2` or `indent=4` still gives valid pretty JSON
+- `default=` works like `json.dumps(default=...)`
+
+### When output stops being strict JSON
+
+These options move you out of plain JSON output:
+
+- `zen_grid=True` on homogeneous `list[dict]` values
+- `unquoted_keys=True`
+- `multiline_zen=True`
+- `bare_strings=True` inside Zen Grid cells
+- `implicit_null=True` inside Zen Grid cells
+
+So the short rule is:
+
+- **Use `jton.loads()` everywhere**
+- **Use `jton.dumps(..., zen_grid=False)` anywhere strict JSON is required**
+- **Use default `jton.dumps()` for LLM/token-optimized payloads**
+
+### Current compatibility scope
+
+JTON supports the common Python JSON workflow:
+
+- `load`
+- `loads`
+- `dump`
+- `dumps`
+- `default=...`
+- file objects
+
+It is **not** a byte-for-byte clone of every stdlib `json` keyword argument yet. Think of it as:
+
+- **fully compatible parser for JSON input**
+- **mostly compatible serializer for common usage**
+- **plus opt-in JTON/Zen Grid output when you want it**
 
 ---
 
@@ -205,7 +341,7 @@ pt = Point(**pt_data)
 
 ## API Reference
 
-JTON is a **drop-in replacement for `import json`** — `load`, `dump`, `loads`, `dumps` all work identically, plus Zen Grid options on top.
+JTON provides the core `load`, `dump`, `loads`, and `dumps` APIs used in common JSON workflows. The main behavioral difference is that `dumps()` defaults to `zen_grid=True`, which may emit JTON Zen Grid for homogeneous arrays of objects.
 
 ### `jton.loads(data, schema=None)`
 
@@ -220,7 +356,7 @@ jton.loads('// comment\n{a:1}') # comments OK
 
 ### `jton.load(fp)`
 
-Parse JTON/JSON from a **file object** — drop-in for `json.load()`.
+Parse JTON/JSON from a **file object** — compatible with normal `json.load()` usage.
 
 ```python
 with open("data.json") as f:
@@ -229,7 +365,7 @@ with open("data.json") as f:
 
 ### `jton.dumps(data, *, zen_grid=True, ..., default=None)`
 
-Serialize Python objects to JTON/JSON string — drop-in for `json.dumps()`.
+Serialize Python objects to JTON/JSON string — compatible with common `json.dumps()` usage.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -242,6 +378,8 @@ Serialize Python objects to JTON/JSON string — drop-in for `json.dumps()`.
 | `row_count` | `bool` | `True` | Prefix Zen Grid header with `[N: ...]` row count |
 | `delimiter` | `str` | `"comma"` | `"comma"` (readable), `"tab"` (max savings), `"pipe"` |
 | `default` | `callable \| None` | `None` | For non-serializable objects, same as `json.dumps(default=...)` |
+
+If you want **strict JSON output**, set `zen_grid=False`.
 
 ```python
 # Standard usage
@@ -261,7 +399,7 @@ jton.dumps([{"id":1,"d":date(2025,1,1)}], default=str)
 
 ### `jton.dump(obj, fp, **kwargs)`
 
-Serialize to a **file object** — drop-in for `json.dump()`.
+Serialize to a **file object** — compatible with common `json.dump()` usage.
 
 ```python
 with open("out.jton", "w") as f:
@@ -355,6 +493,22 @@ The playground provides:
 - JTON Zen Grid `dumps` saves **14–67% tokens** (depending on data shape) while maintaining competitive throughput
 - orjson is faster on raw JSON; JTON's advantage is Zen Grid token reduction which orjson cannot provide
 
+### Large-file static benchmark: `akbe_doc_classifier.json` (338.1 MB)
+
+Measured on this machine using the repository's `akbe_doc_classifier.json` payload in JSON-compatible mode (`zen_grid=False` for JTON dump):
+
+| Operation | stdlib `json` | JTON | Result |
+|-----------|---------------|------|--------|
+| Parse / decode | **1.75 s** (193.5 MB/s) | 2.43 s (138.9 MB/s) | stdlib faster on this file |
+| Dump / encode | 1.78 s (57.3 MB/s) | **0.81 s** (126.5 MB/s) | **JTON 2.2× faster** |
+
+Notes:
+
+- This file is a large, object-heavy classifier payload rather than a tabular Zen Grid sweet spot
+- On this benchmark, JTON wins strongly on **dump/encode**
+- Stdlib `json` wins on **parse/decode** for this specific file shape
+- Output benchmarking used JSON-compatible serialization (`jton.dumps(..., zen_grid=False)`)
+
 ### SIMD Acceleration
 
 JTON uses a two-pass SIMD parsing strategy modeled after [simdjson](https://github.com/simdjson/simdjson):
@@ -403,64 +557,60 @@ Benchmarked on 6 real-world datasets using tiktoken `o200k_base` encoder:
 
 ## LLM Comprehension Evaluation
 
-We evaluated whether LLMs can correctly interpret Zen Grid data across **12 models** from six providers, using 7 real-world datasets × 5 question types × 2 formats (840 total API calls).
+We evaluated whether LLMs can correctly interpret Zen Grid data across **10 models** from six providers, using 7 real-world datasets × 5 question types × 2 formats (700 total API calls). Uses JTON 1.0 `[N: ...]` syntax with `bare_strings=True`.
 
 ### Per-Model Results
 
 | Model | Family | JSON | Zen Grid | Delta | n |
 |-------|--------|------|----------|-------|---|
-| GPT-5.1 | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
-| GPT-5.1-codex | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
-| GPT-5-mini | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
-| GPT-4o | OpenAI | 71.4% | 62.9% | −8.6 pp | 35 |
-| Gemini 2.5 Flash | Google | 68.6% | 53.8% | −14.7 pp | 26* |
-| Gemini 2.5 Pro | Google | 68.6% | 57.1% | −11.4 pp | 35 |
-| Gemini 3 Flash | Google | 65.7% | 57.1% | −8.6 pp | 35 |
-| Kimi K2 | Moonshot | 65.7% | 57.1% | −8.6 pp | 35 |
-| Llama 3.3 70B | Meta | 54.3% | 54.3% | 0.0 pp | 35 |
-| Qwen3 32B | Alibaba | 51.4% | **54.3%** | **+2.9 pp** | 35 |
-| GPT-OSS 120B | Open-src | 42.9% | 42.9% | 0.0 pp | 35 |
-| Llama 4 Scout 17B | Meta | 37.1% | **40.0%** | **+2.9 pp** | 35 |
-| **Overall** | | **61.7%** | **58.6%** | **−3.0 pp** | 420/411 |
-
-\* Gemini 2.5 Flash returned null for 9/35 Zen Grid queries (model limitation, not format issue).
+| GPT-5.1-codex | OpenAI | 74.3% | 71.4% | −2.9 pp | 35 |
+| GPT-5.1 | OpenAI | 71.4% | 62.9% | −8.6 pp | 35 |
+| GPT-5-mini | OpenAI | 71.4% | 71.4% | 0.0 pp | 35 |
+| Gemini 3 Pro Preview | Google | 68.6% | 68.6% | 0.0 pp | 35 |
+| Kimi K2 | Moonshot | 62.9% | **68.6%** | **+5.7 pp** | 35 |
+| Qwen3 32B | Alibaba | 60.0% | 57.1% | −2.9 pp | 35 |
+| Llama 3.3 70B | Meta | 55.9% | 55.9% | 0.0 pp | 34 |
+| Llama 3.1 8B | Meta | 45.7% | **48.6%** | **+2.9 pp** | 35 |
+| GPT-OSS 120B | Open-src | 42.9% | **45.7%** | **+2.9 pp** | 35 |
+| Llama 4 Scout 17B | Meta | 40.0% | **45.7%** | **+5.7 pp** | 35 |
+| **Overall** | | **59.1%** | **59.4%** | **+0.3 pp** | 350 |
 
 ### By Question Type
 
 | Question Type | JSON | Zen Grid | Delta |
 |---------------|------|----------|-------|
-| Lookup | 96.4% | 94.0% | −2.4 pp |
-| Aggregation | 54.8% | 51.8% | −3.0 pp |
-| Filtering | 48.8% | 44.6% | −4.2 pp |
-| Comparison | 51.2% | 52.6% | +1.4 pp |
-| Count | 57.1% | 49.4% | −7.7 pp |
+| Lookup | 95.7% | 95.7% | 0.0 pp |
+| Filtering | 52.9% | 51.4% | −1.4 pp |
+| Count | 51.4% | 48.6% | −2.9 pp |
+| Aggregation | 47.1% | 51.4% | +4.3 pp |
+| Comparison | 48.6% | 50.0% | +1.4 pp |
 
 ### Key Findings
 
-Five of twelve models improve with Zen Grid (GPT-5.x family, Qwen3 32B, Llama 4 Scout — all gaining 2.9 pp), two are neutral (Llama 3.3 70B, GPT-OSS 120B), and five regress (Gemini family at −8.6 to −14.7 pp, GPT-4o and Kimi K2 at −8.6 pp each). Overall, Zen Grid costs 3.0 pp in accuracy for 32% fewer tokens — a favorable cost-per-correct-answer trade-off.
-
-Within OpenAI's lineup, GPT-5.x consistently benefits while the older GPT-4o does not, suggesting that newer model generations generalize better to the tabular syntax. Lookup tasks remain robust across all models (96%/94%).
+Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, Llama 3.1 8B +2.9pp, GPT-OSS 120B +2.9pp), three are neutral (GPT-5-mini, Gemini 3 Pro, Llama 3.3 70B), and three regress (GPT-5.1 −8.6pp being the worst). Overall, Zen Grid is **+0.3 pp** ahead of JSON for ~20% fewer tokens — a clear win on cost-per-correct-answer. Lookup tasks (95.7%) are perfectly preserved across formats.
 
 ### LLM Generation Results
 
-Can LLMs **produce** valid Zen Grid output? We tested 13 models from 8 providers with few-shot and zero-shot prompting:
+Can LLMs **produce** valid Zen Grid output? We tested 13 models from 7 providers with few-shot and zero-shot prompting on the JTON 1.0 `[N: ...]` syntax:
 
 | Model | Few-shot Valid | Zero-shot Valid |
 |-------|---------------|------------------|
-| GPT-5-mini | **100%** | **100%** |
+| GPT-5-mini (WTG) | **100%** | **100%** |
+| GPT-5-mini (Azure) | **100%** | **100%** |
 | GPT-5.1 | **100%** | **100%** |
 | GPT-4o | **100%** | **100%** |
 | Claude Sonnet 4 | **100%** | **100%** |
 | Claude 3.5 Haiku | **100%** | **100%** |
 | Claude 3 Haiku | **100%** | **100%** |
 | Gemini 2.5 Flash | **100%** | **100%** |
-| Gemini 3 Flash | 83% | 83% |
+| Gemini 2.5 Pro | **100%** | **100%** |
+| Gemini 3 Flash Preview | **100%** | **100%** |
 | Llama 3.3 70B | **100%** | **100%** |
 | Llama 4 Scout 17B | **100%** | **100%** |
 | Kimi K2 | **100%** | **100%** |
-| **Overall** | **87.2%** | **85.7%** |
+| **Overall** | **100%** | **100%** |
 
-10 of 13 models achieve 100% validity, including all Anthropic Claude models. Zen Grid works for **bidirectional** LLM pipelines — both input and output.
+All 13 models achieve 100% validity in both modes. Zen Grid works for **bidirectional** LLM pipelines — both input and output.
 
 ### Format Comparison
 

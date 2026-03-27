@@ -119,6 +119,26 @@ impl<'a> FastIndexParser<'a> {
         {
             self.semicolon_idx += 1;
         }
+        while self.open_brace_idx < self.index.open_braces.len()
+            && self.index.open_braces[self.open_brace_idx] < p
+        {
+            self.open_brace_idx += 1;
+        }
+        while self.close_brace_idx < self.index.close_braces.len()
+            && self.index.close_braces[self.close_brace_idx] < p
+        {
+            self.close_brace_idx += 1;
+        }
+        while self.open_bracket_idx < self.index.open_brackets.len()
+            && self.index.open_brackets[self.open_bracket_idx] < p
+        {
+            self.open_bracket_idx += 1;
+        }
+        while self.close_bracket_idx < self.index.close_brackets.len()
+            && self.index.close_brackets[self.close_bracket_idx] < p
+        {
+            self.close_bracket_idx += 1;
+        }
     }
 
     #[inline(always)]

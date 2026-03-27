@@ -24,8 +24,10 @@ from pathlib import Path
 
 # ── Ensure the package is importable ──────────────────────────────────────────
 ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 import jton  # noqa: E402
+from benchmarks.formatters import format_toon  # noqa: E402
 
 # ── Optional: tiktoken for live token counts ──────────────────────────────────
 try:
@@ -90,8 +92,19 @@ class PlaygroundHandler(BaseHTTPRequestHandler):
             if indent:
                 opts["indent"] = int(indent)
 
-            # Parse input first (validates JSON / JTON)
-            parsed = jton.loads(inp)
+            import json as _json
+
+            bench_loops = 50 if len(inp) < 50_000 else 10
+
+            def _bench(fn, loops=bench_loops):
+                t0 = time.perf_counter()
+                result = None
+                for _ in range(loops):
+                    result = fn()
+                return result, ((time.perf_counter() - t0) * 1000 / loops)
+
+            parsed_json, json_parse_ms = _bench(lambda: _json.loads(inp))
+            parsed, jton_parse_ms = _bench(lambda: jton.loads(inp))
 
             t0 = time.perf_counter()
             output = jton.dumps(parsed, **opts)
@@ -105,15 +118,25 @@ class PlaygroundHandler(BaseHTTPRequestHandler):
                 roundtrip_ok = False
 
             # Char savings vs compact JSON
-            import json as _json
             json_compact = _json.dumps(parsed, separators=(",", ":"), ensure_ascii=False)
             char_savings = (len(json_compact) - len(output)) / max(len(json_compact), 1) * 100
 
+            json_dump_kwargs = {"ensure_ascii": False}
+            if indent:
+                json_dump_kwargs["indent"] = int(indent)
+            else:
+                json_dump_kwargs["separators"] = (",", ":")
+
+            _, json_encode_ms = _bench(lambda: _json.dumps(parsed_json, **json_dump_kwargs))
+            _, jton_encode_ms = _bench(lambda: jton.dumps(parsed, **opts))
+
             # Token counts (if tiktoken available)
             json_pretty = _json.dumps(parsed, indent=2, ensure_ascii=False)
+            TOON_ref = format_toon(parsed)
             token_counts = {
                 "json_pretty":  _count(json_pretty),
                 "json_compact": _count(json_compact),
+                "TOON":         _count(TOON_ref),
                 "JTON":         _count(output),
             }
 
@@ -123,6 +146,12 @@ class PlaygroundHandler(BaseHTTPRequestHandler):
                 "char_savings": round(char_savings, 2),
                 "token_counts": token_counts,
                 "roundtrip_ok": roundtrip_ok,
+                "speed_metrics": {
+                    "json_parse_ms": round(json_parse_ms, 4),
+                    "jton_parse_ms": round(jton_parse_ms, 4),
+                    "json_encode_ms": round(json_encode_ms, 4),
+                    "jton_encode_ms": round(jton_encode_ms, 4),
+                },
                 "has_tiktoken": HAS_TIKTOKEN,
             })
         except Exception as e:
@@ -152,6 +181,7 @@ class PlaygroundHandler(BaseHTTPRequestHandler):
 
             json_compact = _json.dumps(parsed, separators=(",", ":"), ensure_ascii=False)
             json_pretty  = _json.dumps(parsed, indent=2, ensure_ascii=False)
+            TOON_ref     = format_toon(parsed)
             JTON_default = jton.dumps(parsed, zen_grid=True, row_count=True)
             JTON_tab     = jton.dumps(parsed, zen_grid=True, row_count=True, delimiter="tab")
             JTON_bare    = jton.dumps(parsed, zen_grid=True, row_count=True, bare_strings=True, implicit_null=True)
@@ -173,6 +203,7 @@ class PlaygroundHandler(BaseHTTPRequestHandler):
                 "formats": [
                     _entry(json_pretty,  "JSON (pretty)"),
                     _entry(json_compact, "JSON (compact)"),
+                    _entry(TOON_ref,     "TOON (not JSON-compatible)"),
                     _entry(JTON_default, "JTON Zen Grid"),
                     _entry(JTON_tab,     "JTON Zen Grid (tab)"),
                     _entry(JTON_bare,    "JTON Zen Grid (bare+null)"),
@@ -213,10 +244,10 @@ def main():
     parser.add_argument("--host", default="127.0.0.1")
     args = parser.parse_args()
 
-    print(f"\n⚡ JTON Playground")
+    print(f"\nJTON Playground")
     print(f"   JTON v{jton.__version__}  |  SIMD: {jton.__simd__}")
-    print(f"   Token counts: {'✓ tiktoken (o200k_base)' if HAS_TIKTOKEN else '✗ approximation (pip install tiktoken)'}")
-    print(f"\n   Open → http://{args.host}:{args.port}\n")
+    print(f"   Token counts: {'tiktoken (o200k_base)' if HAS_TIKTOKEN else 'approximation (pip install tiktoken)'}")
+    print(f"\n   Open -> http://{args.host}:{args.port}\n")
 
     server = HTTPServer((args.host, args.port), PlaygroundHandler)
     try:

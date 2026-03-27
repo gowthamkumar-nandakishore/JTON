@@ -1,6 +1,6 @@
 """
 Type stubs for JTON — JSON Tabular Object Notation.
-Drop-in replacement for the stdlib `json` module.
+JSON-compatible API for common stdlib `json` workflows.
 """
 
 from typing import Any, Callable, IO, Literal, Optional, Union
@@ -16,7 +16,7 @@ def loads(
     ...
 
 def load(fp: IO[Any], **kwargs: Any) -> Any:
-    """Parse JTON/JSON from a file-like object. Drop-in for json.load()."""
+    """Parse JTON/JSON from a file-like object. Compatible with normal json.load() usage."""
     ...
 
 def dumps(
@@ -33,7 +33,7 @@ def dumps(
     default: Optional[Callable[[Any], Any]] = None,
 ) -> str:
     """
-    Serialize a Python object to a JTON/JSON string. Drop-in for json.dumps().
+    Serialize a Python object to a JTON/JSON string. Compatible with common json.dumps() usage.
 
     Args:
         data:          Any serializable Python object.
@@ -50,7 +50,7 @@ def dumps(
     ...
 
 def dump(obj: Any, fp: IO[Any], **kwargs: Any) -> None:
-    """Serialize a Python object to a file-like object. Drop-in for json.dump()."""
+    """Serialize a Python object to a file-like object. Compatible with normal json.dump() usage."""
     ...
 
 def format_hint(

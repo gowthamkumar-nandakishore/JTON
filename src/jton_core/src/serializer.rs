@@ -14,7 +14,7 @@
 
 use pyo3::ffi;
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList, PyTuple};
+use pyo3::types::{PyBool, PyDict, PyFloat, PyList, PyLong, PyString, PyTuple};
 
 #[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
@@ -640,6 +640,7 @@ where
 ///   - len >= 2
 ///   - all items are dicts
 ///   - first item has at least 1 key
+///   - sampled cell values are scalar JSON values (nested dict/list cells stay in JSON mode)
 ///   - ≥70% of items contain all the header keys from the first item
 fn detect_zen_grid_candidate(list: &PyList) -> PyResult<Option<Vec<String>>> {
     let len = list.len();
@@ -654,6 +655,10 @@ fn detect_zen_grid_candidate(list: &PyList) -> PyResult<Option<Vec<String>>> {
     }
     let first_dict: &PyDict = first.downcast()?;
     if first_dict.is_empty() {
+        return Ok(None);
+    }
+
+    if !dict_has_only_scalar_zen_grid_cells(first_dict)? {
         return Ok(None);
     }
 
@@ -677,6 +682,9 @@ fn detect_zen_grid_candidate(list: &PyList) -> PyResult<Option<Vec<String>>> {
             return Ok(None); // non-dict in list → never a table
         }
         let item_dict: &PyDict = item.downcast()?;
+        if !dict_has_only_scalar_zen_grid_cells(item_dict)? {
+            return Ok(None);
+        }
         if item_dict.len() != n_headers {
             all_exact = false;
             break;
@@ -708,6 +716,9 @@ fn detect_zen_grid_candidate(list: &PyList) -> PyResult<Option<Vec<String>>> {
             return Ok(None);
         }
         let item_dict: &PyDict = item.downcast()?;
+        if !dict_has_only_scalar_zen_grid_cells(item_dict)? {
+            return Ok(None);
+        }
         let mut found = 0usize;
         for h in &headers {
             if item_dict.get_item(h.as_str())?.is_some() {
@@ -724,6 +735,52 @@ fn detect_zen_grid_candidate(list: &PyList) -> PyResult<Option<Vec<String>>> {
     } else {
         Ok(None)
     }
+}
+
+#[inline]
+fn is_safe_zen_grid_string(text: &str) -> bool {
+    !text.bytes().any(|b| {
+        matches!(
+            b,
+            b'"' | b'\\'
+                | b','
+                | b';'
+                | b':'
+                | b'|'
+                | b'['
+                | b']'
+                | b'{'
+                | b'}'
+                | b'\n'
+                | b'\r'
+                | b'\t'
+        )
+    })
+}
+
+#[inline]
+fn is_scalar_zen_grid_cell(value: &PyAny) -> PyResult<bool> {
+    if value.is_none()
+        || value.is_instance_of::<PyBool>()
+        || value.is_instance_of::<PyLong>()
+        || value.is_instance_of::<PyFloat>()
+    {
+        return Ok(true);
+    }
+    if value.is_instance_of::<PyString>() {
+        let text: &PyString = value.downcast()?;
+        return Ok(is_safe_zen_grid_string(text.to_str()?));
+    }
+    Ok(false)
+}
+
+fn dict_has_only_scalar_zen_grid_cells(dict: &PyDict) -> PyResult<bool> {
+    for (_, value) in dict.iter() {
+        if !is_scalar_zen_grid_cell(value)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 /// Write a Zen Grid table.

@@ -2,7 +2,7 @@
 JTON (JSON Tabular Object Notation) — high-performance JSON superset
 with SIMD-accelerated parsing and Zen Grid token-efficient serialization.
 
-Drop-in replacement for `import json`:
+JSON-compatible API for common Python JSON workflows:
   load(fp)                 — parse JTON/JSON from file object
   loads(data)              — parse JTON/JSON string/bytes → Python object
   dump(obj, fp, **opts)    — serialize Python object → file object
@@ -62,8 +62,8 @@ def dumps(
     """
     Serialize a Python object to a JTON/JSON string.
 
-    Drop-in replacement for ``json.dumps()``.  All standard options are
-    supported, plus JTON-specific Zen Grid options.
+    Compatible with common ``json.dumps()`` usage, plus JTON-specific
+    Zen Grid options.
 
     Args:
         data:          Any serializable Python object.
@@ -98,7 +98,7 @@ def load(fp, **kwargs):
     """
     Parse JTON/JSON from a file-like object.
 
-    Drop-in replacement for ``json.load()``.
+    Compatible with normal ``json.load()`` usage.
 
     Args:
         fp:      A readable file-like object (``str`` or ``bytes`` ``.read()``).
@@ -114,7 +114,7 @@ def dump(obj, fp, **kwargs):
     """
     Serialize a Python object to a file-like object as JTON/JSON.
 
-    Drop-in replacement for ``json.dump()``.
+    Compatible with normal ``json.dump()`` usage.
 
     Args:
         obj:     Python object to serialize.

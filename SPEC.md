@@ -28,6 +28,33 @@ A conforming JTON **serializer** MUST:
 - Produce output that round-trips through a conforming parser
 - Default to the Zen Grid encoding for homogeneous arrays of dicts when `zen_grid=True`
 
+### 2.1 Python JSON-compatibility semantics
+
+The Python binding exposes `load`, `loads`, `dump`, and `dumps` so it can be used with code that already relies on the common stdlib `json` workflow.
+
+Conforming Python behavior is:
+
+- `jton.load()` and `jton.loads()` MUST accept all valid JSON inputs with identical data semantics
+- `jton.dump()` and `jton.dumps()` MUST accept ordinary Python JSON-compatible values (`dict`, `list`, `str`, `int`, `float`, `bool`, `None`)
+- `jton.dump()` / `jton.dumps()` MAY emit **JTON Zen Grid** instead of strict JSON when:
+  - `zen_grid=True` (default), and
+  - the value is eligible for Zen Grid serialization
+
+Therefore:
+
+- Replacing `json.loads` / `json.load` with `jton.loads` / `jton.load` is safe for existing JSON inputs
+- For strict JSON output compatibility, callers SHOULD set `zen_grid=False`
+
+The following serializer options are **JTON-specific** and may produce non-JSON output:
+
+- `zen_grid=True`
+- `unquoted_keys=True`
+- `bare_strings=True`
+- `implicit_null=True`
+- `multiline_zen=True`
+
+When `zen_grid=False` and `unquoted_keys=False`, serializer output is standard JSON, optionally pretty-printed with `indent`.
+
 ---
 
 ## 3. Lexical Grammar
@@ -137,6 +164,8 @@ A Zen Grid is emitted if and only if:
 
 If eligibility is not met, the serializer falls back to standard JSON array output.
 
+This fallback behavior is what allows JTON to act as a practical Python `json` replacement: ordinary non-tabular data remains standard JSON unless a JTON-specific serializer mode is explicitly or implicitly activated.
+
 ### 6.3 Row Count
 
 The leading `N` is always present when `row_count=True` (the default).
@@ -161,6 +190,8 @@ Three delimiter modes are defined:
 | `pipe` | ` \| ` | similar to comma | Alternative table style |
 
 The delimiter applies to both the header segment and all value segments.
+
+For LLM-oriented usage, `comma` is the recommended default. `tab` may reduce token count further, but implementations SHOULD document that it can trade off readability and model robustness depending on the target model.
 
 ### 6.5 Value Encoding in Zen Grid Cells
 
@@ -246,6 +277,27 @@ The serializer MUST check types in this order (to handle Python's `bool` → `in
 ### 7.2 Depth Limit
 
 Serialization MUST raise `ValueError` when object nesting exceeds 256 levels.
+
+### 7.2a Strict JSON output mode
+
+When called with:
+
+```python
+zen_grid=False
+unquoted_keys=False
+multiline_zen=False
+```
+
+the serializer MUST emit standard JSON text.
+
+Additionally:
+
+- `bare_strings`
+- `implicit_null`
+- `row_count`
+- `delimiter`
+
+have no effect on output unless Zen Grid serialization is active.
 
 ### 7.3 String Escaping
 

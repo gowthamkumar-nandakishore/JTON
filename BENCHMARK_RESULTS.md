@@ -17,16 +17,20 @@
 | **loads — string-heavy (0.65 MB)** | **227 MB/s** | 154 MB/s | 428 MB/s |
 | **dumps JSON mode — string-heavy** | **276 MB/s** | 268 MB/s | 440 MB/s |
 | **dumps Zen Grid — string-heavy** | **240 MB/s** | 268 MB/s | — |
+| **AKBE parse — large object-heavy (338.1 MB)** | 139 MB/s | **193 MB/s** | — |
+| **AKBE dumps JSON mode — large object-heavy (338.1 MB)** | **127 MB/s** | 57 MB/s | — |
 | **Token savings vs JSON compact (avg tabular)** | **20–36%** | — | — |
 | **Token savings vs JSON compact (twitter-style)** | **67%** | — | — |
 
 Key findings:
 - ✅ `jton.loads()` is **1.5–2.1× faster** than stdlib `json.loads`
 - ✅ `jton.dumps()` JSON mode is **1.5–5.5× faster** than stdlib across all datasets
+- ✅ On the 338 MB `akbe_doc_classifier.json` payload, JTON dump is **2.2× faster** than stdlib
+- ⚠️ On that same AKBE payload, stdlib parse is faster than JTON
 - ✅ Zen Grid saves **20–36% tokens** vs JSON compact across 5 real-world benchmark datasets
 - ✅ Zen Grid saves **67% tokens** on twitter-style highly-tabular string data
 - ✅ JTON is **#2 most token-efficient** format overall (after TRON), while being the only JSON-superset in the top 3
-- ✅ 670 tests passing, 0 failures
+- ✅ 680 tests passing, 0 failures
 
 ---
 
@@ -40,6 +44,17 @@ Key findings:
 
 > Small files (< 0.1 MB) show lower JTON advantage due to Python FFI call overhead dominating.
 > JTON's SIMD advantage materialises at 0.5 MB+ where the structural scan amortises startup cost.
+
+### Large-file case study: `akbe_doc_classifier.json` (338.1 MB)
+
+Measured from the repository payload on this machine:
+
+| Operation | JTON | stdlib json | Winner |
+|-----------|------|-------------|--------|
+| Parse / decode | 2.43 s (**138.9 MB/s**) | **1.75 s (193.5 MB/s)** | stdlib |
+| Dump / encode (`zen_grid=False`) | **0.81 s (126.5 MB/s)** | 1.78 s (57.3 MB/s) | **JTON** |
+
+> This large classifier file is object-heavy rather than tabular. JTON wins strongly on dump throughput here, while stdlib wins on parse throughput for this specific payload.
 
 ### Reference Parse Speeds
 
@@ -163,14 +178,14 @@ users = [
 ## Test Suite
 
 ```
-670 passed, 52 skipped, 58 xfailed, 6 xpassed in ~1.6s
+680 passed, 52 skipped, 58 xfailed, 6 xpassed in ~1.3s
 ```
 
 | Suite | Tests | Coverage |
 |-------|-------|----------|
 | `test_json_compatibility.py` | ~39 | JSON primitives, nesting, escapes, error handling |
 | `test_reference_vectors.py` | 600+ parametrized | JSONTestSuite corpus (valid/invalid/transform) |
-| `test_zen_grid.py` | 200+ | Zen Grid round-trips, delimiters, Pydantic, dataclass, CLI, batch API |
+| `test_zen_grid.py` | 100+ | Zen Grid round-trips, delimiters, Pydantic, dataclass, CLI, batch API |
 
 ---
 
@@ -351,7 +366,7 @@ Two new `dumps()` options for maximum LLM token efficiency:
 
 ### JTON Zen Grid (54 chars, ~19 tokens — **32% fewer tokens**)
 ```
-[: id, name, score; 1, "Alice", 95; 2, "Bob", 87 ]
+[2: id, name, score; 1, "Alice", 95; 2, "Bob", 87 ]
 ```
 
 ### How it scales — tokens per row
@@ -366,84 +381,72 @@ Savings increase with more rows (header amortized) and more columns (key names s
 
 ---
 
-## LLM Comprehension Evaluation (12 Models)
+## LLM Comprehension Evaluation (10 Models)
 
-**Methodology**: 7 real-world datasets × 5 question types × 2 formats (JSON compact vs Zen Grid) per model = 840 total API calls across 12 LLMs from 6 providers. Questions include lookup, aggregation, filtering, comparison, and count tasks with deterministic ground-truth answers.
+**Methodology**: 7 real-world datasets × 5 question types × 2 formats (JSON compact vs Zen Grid with `bare_strings=True`) per model = 700 total API calls across 10 LLMs from 6 providers. Questions include lookup, aggregation, filtering, comparison, and count tasks with deterministic ground-truth answers. Uses JTON 1.0 `[N: ...]` syntax.
 
 ### Per-Model Accuracy
 
 | Model | Family | JSON Acc | Zen Grid Acc | Delta | n |
 |-------|--------|----------|--------------|-------|---|
-| GPT-5.1 | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
-| GPT-5.1-codex | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
-| GPT-5-mini | OpenAI | 71.4% | **74.3%** | **+2.9 pp** | 35 |
-| GPT-4o | OpenAI | 71.4% | 62.9% | −8.6 pp | 35 |
-| Gemini 2.5 Flash | Google | 68.6% | 53.8% | −14.7 pp | 26* |
-| Gemini 2.5 Pro | Google | 68.6% | 57.1% | −11.4 pp | 35 |
-| Gemini 3 Flash | Google | 65.7% | 57.1% | −8.6 pp | 35 |
-| Kimi K2 | Moonshot | 65.7% | 57.1% | −8.6 pp | 35 |
-| Llama 3.3 70B | Meta | 54.3% | 54.3% | 0.0 pp | 35 |
-| Qwen3 32B | Alibaba | 51.4% | **54.3%** | **+2.9 pp** | 35 |
-| GPT-OSS 120B | Open-src | 42.9% | 42.9% | 0.0 pp | 35 |
-| Llama 4 Scout 17B | Meta | 37.1% | **40.0%** | **+2.9 pp** | 35 |
-| **Overall** | | **61.7%** | **58.6%** | **−3.0 pp** | 420/411 |
+| GPT-5.1-codex | OpenAI | 74.3% | 71.4% | −2.9 pp | 35 |
+| GPT-5.1 | OpenAI | 71.4% | 62.9% | −8.6 pp | 35 |
+| GPT-5-mini | OpenAI | 71.4% | 71.4% | 0.0 pp | 35 |
+| Gemini 3 Pro Preview | Google | 68.6% | 68.6% | 0.0 pp | 35 |
+| Kimi K2 | Moonshot | 62.9% | **68.6%** | **+5.7 pp** | 35 |
+| Qwen3 32B | Alibaba | 60.0% | 57.1% | −2.9 pp | 35 |
+| Llama 3.3 70B | Meta | 55.9% | 55.9% | 0.0 pp | 34 |
+| Llama 3.1 8B | Meta | 45.7% | **48.6%** | **+2.9 pp** | 35 |
+| GPT-OSS 120B | Open-src | 42.9% | **45.7%** | **+2.9 pp** | 35 |
+| Llama 4 Scout 17B | Meta | 40.0% | **45.7%** | **+5.7 pp** | 35 |
+| **Overall** | | **59.1%** | **59.4%** | **+0.3 pp** | 350 |
 
-\* Gemini 2.5 Flash returned null for 9/35 Zen Grid queries (model limitation).
+### By Question Type
 
-### By Model Family
-
-| Family | Models | JSON | Zen Grid | Delta |
-|--------|--------|------|----------|-------|
-| OpenAI (GPT-5.x, 4o) | 4 | 71.4% | 71.4% | 0.0 pp |
-| Google (Gemini) | 3 | 67.6% | 56.2% | −11.4 pp |
-| Meta (Llama) | 2 | 45.7% | 47.1% | +1.4 pp |
-| Alibaba (Qwen3) | 1 | 51.4% | 54.3% | +2.9 pp |
-| Moonshot (Kimi K2) | 1 | 65.7% | 57.1% | −8.6 pp |
-| Open-source (GPT-OSS) | 1 | 42.9% | 42.9% | 0.0 pp |
+| Question Type | JSON | Zen Grid | Delta |
+|---------------|------|----------|-------|
+| Lookup | 95.7% | 95.7% | 0.0 pp |
+| Filtering | 52.9% | 51.4% | −1.4 pp |
+| Count | 51.4% | 48.6% | −2.9 pp |
+| Aggregation | 47.1% | 51.4% | +4.3 pp |
+| Comparison | 48.6% | 50.0% | +1.4 pp |
 
 ### Summary
 
-Five of twelve models do better with Zen Grid (GPT-5.x, Qwen3, Llama 4 Scout), two show no difference (Llama 3.3, GPT-OSS), and five regress (Gemini family, GPT-4o, Kimi K2). The overall accuracy costs 3.0 pp for 32% fewer tokens — a favorable trade-off on cost-per-correct-answer. The generational split within OpenAI (GPT-5.x improves, GPT-4o does not) suggests newer models generalize better to the tabular syntax.
+Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, Llama 3.1 8B +2.9pp, GPT-OSS 120B +2.9pp), three show no difference (GPT-5-mini, Gemini 3 Pro, Llama 3.3 70B), and three regress slightly (GPT-5.1 −8.6pp, GPT-5.1-codex/Qwen3 at −2.9pp). Overall Zen Grid is **+0.3 pp** ahead of JSON while using ~20% fewer tokens — a clear win on cost-per-correct-answer. Lookup tasks (95.7%) are perfectly preserved across formats.
 
 ---
 
 ## LLM Generation Evaluation (13 Models)
 
-**Can LLMs _produce_ valid Zen Grid output?** We test 13 models from 8 providers with few-shot and zero-shot prompting across 6 tasks of increasing complexity (simple 3×3 to 8×5 stock data with nulls and special characters).
+**Can LLMs _produce_ valid Zen Grid output?** We test 13 models from 7 providers with few-shot and zero-shot prompting across 6 tasks of increasing complexity (simple 3×3 to 8×5 stock data with nulls and special characters). Uses the JTON 1.0 syntax `[N: headers; row1; row2 ]` where N is the optional row count.
 
 ### Per-Model Validity
 
 | Model | Family | Few-shot Valid | Zero-shot Valid |
 |-------|--------|---------------|-----------------|
-| GPT-5-mini | OpenAI | **100%** | **100%** |
+| GPT-5-mini (WTG) | OpenAI | **100%** | **100%** |
+| GPT-5-mini (Azure) | OpenAI | **100%** | **100%** |
 | GPT-5.1 | OpenAI | **100%** | **100%** |
 | GPT-4o | OpenAI | **100%** | **100%** |
 | Claude Sonnet 4 | Anthropic | **100%** | **100%** |
 | Claude 3.5 Haiku | Anthropic | **100%** | **100%** |
 | Claude 3 Haiku | Anthropic | **100%** | **100%** |
 | Gemini 2.5 Flash | Google | **100%** | **100%** |
-| Gemini 3 Flash | Google | 83% | 83% |
-| Gemini 2.5 Pro | Google | 50% | 33% |
+| Gemini 2.5 Pro | Google | **100%** | **100%** |
+| Gemini 3 Flash Preview | Google | **100%** | **100%** |
 | Llama 3.3 70B | Meta | **100%** | **100%** |
 | Llama 4 Scout 17B | Meta | **100%** | **100%** |
 | Kimi K2 | Moonshot | **100%** | **100%** |
-| Qwen3 32B | Alibaba | 0% | 0% |
-| **Overall** | | **87.2%** | **85.7%** |
-
-### Error Analysis
-
-| Error Type | % of failures | Description |
-|-----------|---------------|-------------|
-| `missing_opener` | 57.1% | Output wrapped in markdown fences (Qwen3) |
-| `missing_closer` | 42.9% | Truncated closing bracket (Gemini 2.5 Pro) |
+| **Overall** | | **100%** | **100%** |
 
 ### Key Findings
 
-- **10 of 13 models achieve 100% validity** in both prompting modes
+- **All 13 models achieve 100% validity** in both few-shot and zero-shot modes
+- **100% accuracy** across all 13 models — the `[N: ...]` syntax is universally understood
+- All OpenAI models (GPT-5-mini, GPT-5.1) achieve perfect scores
 - All three Anthropic Claude models (Sonnet 4, 3.5 Haiku, 3 Haiku) achieve perfect scores
-- Few-shot (87.2%) and zero-shot (85.7%) perform similarly — Zen Grid syntax is intuitive
-- Qwen3 32B fails due to markdown wrapping (fixable with prompt tuning)
-- Gemini 2.5 Pro occasionally truncates the closing `]` on larger tables
+- All three Google Gemini models (2.5 Flash, 2.5 Pro, 3 Flash Preview) achieve perfect scores
 - Task complexity has minimal impact — validity is consistent from 3×3 to 8×5
 
 ---
@@ -474,7 +477,7 @@ CSV wins on raw token count but has no type system. **Zen Grid is the only forma
 ## Test Suite
 
 ```
-622 passed, 54 skipped, 58 xfailed, 6 xpassed in ~1s
+680 passed, 52 skipped, 58 xfailed, 6 xpassed in ~1.3s
 ```
 
 | Suite | Count | What it covers |

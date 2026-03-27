@@ -4,211 +4,1237 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JTON Playground</title>
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="%234f46e5"/><stop offset="1" stop-color="%230ea5a4"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(%23g)"/><text x="32" y="39" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="800" fill="white">jt</text></svg>'>
 <style>
   :root {
-    --bg: #0d1117; --surface: #161b22; --border: #30363d;
-    --accent: #58a6ff; --accent2: #3fb950; --accent3: #f78166;
-    --text: #e6edf3; --muted: #8b949e; --code-bg: #1e2430;
+    --bg: #f8fbff;
+    --bg-2: #eef6ff;
+    --panel: rgba(255, 255, 255, 0.92);
+    --panel-2: #ffffff;
+    --panel-3: #f8fbff;
+    --border: rgba(96, 122, 173, 0.16);
+    --border-strong: rgba(73, 125, 255, 0.28);
+    --text: #172033;
+    --muted: #64748b;
+    --accent: #4f46e5;
+    --accent-2: #0ea5a4;
+    --accent-3: #f97316;
+    --danger: #ef4444;
+    --shadow: 0 18px 45px rgba(58, 76, 122, 0.12);
+    --radius: 22px;
+    --radius-sm: 14px;
+    --mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
+    --sans: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; }
-  header { padding: 12px 20px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
-  header h1 { font-size: 1.1rem; font-weight: 600; color: var(--accent); }
-  header span.badge { background: #238636; color: #fff; border-radius: 12px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600; }
-  header span.sub { color: var(--muted); font-size: 0.82rem; }
-  .main { display: flex; flex: 1; overflow: hidden; }
-  .sidebar { width: 220px; min-width: 200px; border-right: 1px solid var(--border); background: var(--surface); padding: 16px 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
-  .sidebar h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
-  .opt-group { display: flex; flex-direction: column; gap: 8px; }
-  .opt-row { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
-  .opt-row input[type=checkbox] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
-  .opt-row label { font-size: 0.83rem; cursor: pointer; }
-  .opt-row small { color: var(--muted); font-size: 0.72rem; display: block; padding-left: 22px; margin-top: -4px; }
-  select { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 5px 8px; font-size: 0.82rem; width: 100%; }
-  .editors { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; }
-  .pane { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
-  .pane:last-child { border-right: none; }
-  .pane-header { padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .pane-title { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .pane-actions { display: flex; gap: 8px; }
-  button { background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; transition: background 0.15s; }
-  button:hover { background: rgba(88,166,255,0.1); border-color: var(--accent); }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
-  button.primary:hover { background: #79c0ff; }
-  textarea { flex: 1; background: var(--code-bg); border: none; color: var(--text); font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 13px; line-height: 1.6; padding: 14px; resize: none; outline: none; tab-size: 2; }
-  textarea::placeholder { color: var(--muted); }
-  .statusbar { padding: 6px 14px; background: var(--surface); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 20px; font-size: 0.75rem; color: var(--muted); flex-wrap: wrap; }
-  .stat { display: flex; align-items: center; gap: 5px; }
-  .stat .val { color: var(--text); font-weight: 600; }
-  .stat .pill { padding: 1px 7px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; }
-  .pill.green { background: rgba(63,185,80,0.2); color: var(--accent2); }
-  .pill.blue { background: rgba(88,166,255,0.2); color: var(--accent); }
-  .pill.red { background: rgba(247,129,102,0.2); color: var(--accent3); }
-  .hint-bar { padding: 10px 14px; background: #161b22; border-top: 1px solid var(--border); font-size: 0.76rem; color: var(--muted); font-family: monospace; white-space: pre-wrap; display: none; max-height: 140px; overflow-y: auto; }
-  .bottom-bar { padding: 8px 14px; background: var(--surface); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .samples { display: flex; gap: 6px; flex-wrap: wrap; }
-  .sample-btn { font-size: 0.72rem; padding: 3px 8px; border-radius: 10px; }
-  #error-msg { color: var(--accent3); font-size: 0.78rem; padding: 6px 14px; background: rgba(247,129,102,0.08); border-top: 1px solid rgba(247,129,102,0.3); display: none; }
-  .token-bars { display: flex; flex-direction: column; gap: 4px; padding: 8px 14px; border-top: 1px solid var(--border); }
-  .tok-row { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; }
-  .tok-label { width: 110px; color: var(--muted); }
-  .tok-bar-wrap { flex: 1; background: #1e2430; border-radius: 3px; height: 10px; overflow: hidden; }
-  .tok-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s; }
-  .tok-num { width: 60px; text-align: right; color: var(--text); }
-  #spinner { display: none; font-size: 0.78rem; color: var(--muted); }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--text);
+    background:
+      radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 30%),
+      radial-gradient(circle at top right, rgba(236, 72, 153, 0.12), transparent 24%),
+      radial-gradient(circle at 20% 80%, rgba(20, 184, 166, 0.12), transparent 18%),
+      linear-gradient(180deg, #fdfefe 0%, #f3f8ff 45%, #eef6ff 100%);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(rgba(79,70,229,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,70,229,0.035) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.05));
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+    gap: 18px;
+  }
+
+  .hero-card,
+  .panel,
+  .editor-card,
+  .sample-card,
+  .metrics-card {
+    background: var(--panel);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card {
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-card::after {
+    content: "";
+    position: absolute;
+    right: -80px;
+    top: -80px;
+    width: 240px;
+    height: 240px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.15), transparent 70%);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(79, 70, 229, 0.16);
+    background: rgba(79, 70, 229, 0.08);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    margin: 18px 0 10px;
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+
+  .hero p {
+    margin: 0;
+    max-width: 760px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .hero-note {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .recommendation-banner {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(6,182,212,0.08), rgba(14,165,164,0.06));
+    border: 1px solid rgba(79, 70, 229, 0.12);
+  }
+
+  .recommendation-banner strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  .recommendation-banner span {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .metrics-card {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: linear-gradient(180deg, #ffffff, #f6f9ff);
+  }
+
+  .metrics-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .metrics-title h2,
+  .section-title h2 {
+    margin: 0;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .metric {
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(79, 70, 229, 0.06), rgba(14, 165, 164, 0.04));
+    border: 1px solid rgba(96, 122, 173, 0.12);
+  }
+
+  .metric-label {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .metric-value {
+    display: block;
+    margin-top: 8px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .metric-sub {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 18px;
+    min-height: 0;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 18px;
+    min-height: 0;
+  }
+
+  .editor-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+    min-height: 620px;
+  }
+
+  .editor-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+  }
+
+  .editor-header,
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel {
+    overflow: hidden;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+  }
+
+  .panel-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .section-title p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .editor-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .editor-title h3 {
+    margin: 0;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .editor-title span {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  button,
+  select {
+    font: inherit;
+  }
+
+  button {
+    appearance: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    background: rgba(79, 70, 229, 0.04);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: 0.18s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(79, 70, 229, 0.3);
+    background: rgba(79, 70, 229, 0.08);
+  }
+
+  button.primary {
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    color: #ffffff;
+    border-color: transparent;
+    font-weight: 700;
+  }
+
+  button.secondary {
+    background: rgba(14, 165, 164, 0.1);
+    border-color: rgba(14, 165, 164, 0.18);
+  }
+
+  button.ghost {
+    background: transparent;
+  }
+
+  .mono {
+    font-family: var(--mono);
+  }
+
+  textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    resize: none;
+    border: 0;
+    outline: none;
+    background:
+      linear-gradient(180deg, rgba(79,70,229,0.02), rgba(6,182,212,0.01)),
+      #ffffff;
+    color: #172033;
+    border-top: 1px solid rgba(96,122,173,0.06);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 18px;
+    tab-size: 2;
+  }
+
+  textarea::placeholder {
+    color: #8b9ab1;
+  }
+
+  .editor-footer {
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(79, 70, 229, 0.05);
+    border: 1px solid rgba(79, 70, 229, 0.08);
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .chip strong {
+    color: var(--accent);
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .control-group h3 {
+    margin: 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .option-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff, #fafcff);
+    border: 1px solid rgba(96, 122, 173, 0.12);
+  }
+
+  .option-card input[type="checkbox"] {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .option-card label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .option-card small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    line-height: 1.5;
+    font-size: 12px;
+  }
+
+  select {
+    width: 100%;
+    border-radius: 12px;
+    padding: 11px 12px;
+    background: #ffffff;
+    color: var(--text);
+    border: 1px solid var(--border);
+    outline: none;
+  }
+
+  .token-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+  }
+
+  .tok-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 90px;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .tok-label {
+    color: var(--muted);
+  }
+
+  .tok-bar-wrap {
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(96, 122, 173, 0.14);
+    overflow: hidden;
+  }
+
+  .tok-bar {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #4f46e5, #06b6d4, #14b8a6);
+    transition: width 0.25s ease;
+  }
+
+  .tok-num {
+    text-align: right;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .stat-card {
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border: 1px solid var(--border);
+  }
+
+  .stat-label {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .stat-value {
+    margin-top: 8px;
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .stat-sub {
+    margin-top: 6px;
+    min-height: 20px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .pill.green { background: rgba(14, 165, 164, 0.12); color: var(--accent-2); }
+  .pill.blue { background: rgba(79, 70, 229, 0.12); color: var(--accent); }
+  .pill.red { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+
+  .hint-bar,
+  .error {
+    white-space: pre-wrap;
+    padding: 16px 18px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+  }
+
+  .hint-bar {
+    display: none;
+    background: linear-gradient(180deg, rgba(79, 70, 229, 0.08), rgba(6, 182, 212, 0.05));
+    color: #20304d;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .error {
+    display: none;
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.18);
+    color: #9f1239;
+  }
+
+  .sample-card {
+    padding: 18px;
+  }
+
+  .sample-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .sample-btn {
+    text-align: left;
+    min-height: 78px;
+    padding: 14px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border: 1px solid rgba(96, 122, 173, 0.12);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .info-card {
+    padding: 18px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border: 1px solid rgba(96, 122, 173, 0.12);
+    box-shadow: var(--shadow);
+  }
+
+  .info-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+  }
+
+  .info-card p,
+  .info-card code {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .info-card code {
+    display: block;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(79, 70, 229, 0.05);
+    color: #233252;
+    font-family: var(--mono);
+  }
+
+  .sample-btn strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  .sample-btn span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .token-preview {
+    padding: 16px 18px 8px;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(79,70,229,0.03), rgba(6,182,212,0.02));
+  }
+
+  .token-preview h4,
+  .comparison-card h2 {
+    margin: 0 0 10px;
+    font-size: 15px;
+  }
+
+  .token-preview p,
+  .comparison-meta {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .token-lens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 44px;
+  }
+
+  .tok-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1;
+    border: 1px solid transparent;
+  }
+
+  .tok-chip.string { background: rgba(168, 85, 247, 0.12); color: #7e22ce; border-color: rgba(168,85,247,0.12); }
+  .tok-chip.number { background: rgba(249, 115, 22, 0.12); color: #c2410c; border-color: rgba(249,115,22,0.12); }
+  .tok-chip.keyword { background: rgba(14, 165, 164, 0.12); color: #0f766e; border-color: rgba(14,165,164,0.12); }
+  .tok-chip.punct { background: rgba(79, 70, 229, 0.1); color: #4338ca; border-color: rgba(79,70,229,0.1); }
+  .tok-chip.ident { background: rgba(59, 130, 246, 0.1); color: #1d4ed8; border-color: rgba(59,130,246,0.1); }
+
+  .comparison-card {
+    padding: 18px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border: 1px solid rgba(96, 122, 173, 0.12);
+    box-shadow: var(--shadow);
+  }
+
+  .speed-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .speed-card {
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(79,70,229,0.06), rgba(6,182,212,0.04));
+    border: 1px solid rgba(96, 122, 173, 0.12);
+  }
+
+  .speed-card strong {
+    display: block;
+    font-size: 22px;
+    margin-top: 6px;
+    color: var(--accent);
+  }
+
+  .speed-card span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .comparison-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(96, 122, 173, 0.12);
+    border-radius: 18px;
+    background: #ffffff;
+  }
+
+  .benchmark-banner {
+    margin: 0 0 18px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(79,70,229,0.05), rgba(6,182,212,0.04));
+    border: 1px solid rgba(96, 122, 173, 0.12);
+  }
+
+  .benchmark-banner strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--accent);
+    font-size: 14px;
+  }
+
+  .benchmark-banner span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  table.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(96, 122, 173, 0.1);
+    text-align: left;
+    font-size: 13px;
+  }
+
+  .comparison-table th {
+    color: var(--muted);
+    background: rgba(79, 70, 229, 0.04);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+  }
+
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .bar-mini {
+    position: relative;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(96, 122, 173, 0.14);
+    overflow: hidden;
+  }
+
+  .bar-mini > span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #4f46e5, #06b6d4, #14b8a6);
+  }
+
+  .link {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .link:hover { text-decoration: underline; }
+
+  #spinner {
+    display: none;
+  }
+
+  @media (max-width: 1240px) {
+    .hero,
+    .layout,
+    .editor-grid,
+    .sample-grid,
+    .info-grid,
+    .stats-grid,
+    .speed-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .metrics-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .app { padding: 14px; }
+    .hero-card,
+    .metrics-card,
+    .panel-body,
+    .sample-card,
+    .token-bars,
+    .editor-header,
+    .panel-header {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+
+    .metrics-grid,
+    .stats-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .tok-row {
+      grid-template-columns: 1fr;
+    }
+
+    .tok-num {
+      text-align: left;
+    }
+  }
 </style>
 </head>
 <body>
-
-<header>
-  <h1>⚡ JTON Playground</h1>
-  <span class="badge">v1.0</span>
-  <span class="sub">JSON Tabular Object Notation — JSON superset · 20% fewer tokens · 2× faster loads</span>
-  <span id="spinner">⏳ encoding…</span>
-</header>
-
-<div class="main">
-  <!-- Options sidebar -->
-  <div class="sidebar">
-    <div>
-      <h3>Output Format</h3>
-      <div class="opt-group">
-        <div class="opt-row">
-          <input type="checkbox" id="opt-zen" checked>
-          <label for="opt-zen">Zen Grid</label>
-        </div>
-        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Compact table encoding</small>
-
-        <div class="opt-row">
-          <input type="checkbox" id="opt-row-count" checked>
-          <label for="opt-row-count">Row count [N:]</label>
-        </div>
-        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Structural cue for LLMs (default on)</small>
+<div class="app">
+  <section class="hero">
+    <div class="hero-card">
+      <div class="eyebrow">JTON Playground</div>
+      <h1>Fast JSON-compatible parsing with JTON encoding, token insights, and speed context.</h1>
+      <p>
+        Paste JSON, tune JTON output options, compare token footprint instantly, and copy an LLM-ready format hint.
+        It now works in two modes: the real Python backend when available, and a browser-only fallback so the same page can be published on GitHub Pages.
+      </p>
+      <div class="recommendation-banner">
+        <strong>Recommended for most LLM workflows</strong>
+        <span><span class="mono">zen_grid=true</span>, <span class="mono">row_count=true</span>, <span class="mono">delimiter="comma"</span>, <span class="mono">bare_strings=false</span>, <span class="mono">implicit_null=false</span>.</span>
+      </div>
+      <div class="hero-actions">
+        <button class="primary" onclick="loadSample('employees')">Load example dataset</button>
+        <button class="secondary" onclick="showHint()">Copy LLM format hint</button>
+        <span class="hero-note" id="spinner">Encoding...</span>
       </div>
     </div>
 
-    <div>
-      <h3>Cell Encoding</h3>
-      <div class="opt-group">
-        <div class="opt-row">
-          <input type="checkbox" id="opt-bare">
-          <label for="opt-bare">Bare strings</label>
+    <aside class="metrics-card">
+      <div class="metrics-title">
+        <h2>Why JTON</h2>
+        <span class="chip"><strong>v1.0</strong> Python-first</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric">
+          <span class="metric-label">Speed</span>
+          <span class="metric-value">2x+</span>
+          <div class="metric-sub">Measured against Python stdlib `json` on local benchmark datasets.</div>
         </div>
-        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">alice vs "alice"</small>
-
-        <div class="opt-row">
-          <input type="checkbox" id="opt-null">
-          <label for="opt-null">Implicit null</label>
+        <div class="metric">
+          <span class="metric-label">Tokens</span>
+          <span class="metric-value">-20%</span>
+          <div class="metric-sub">Typical savings vs compact JSON while staying JSON-compatible.</div>
         </div>
-        <small style="color:var(--muted);font-size:.71rem;padding-left:4px">Empty cell = null</small>
+        <div class="metric">
+          <span class="metric-label">Use case</span>
+          <span class="metric-value">LLM-ready</span>
+          <div class="metric-sub">Row counts and tabular encoding give models clearer structure.</div>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Round-trip</span>
+          <span class="metric-value">Lossless</span>
+          <div class="metric-sub">Instant parse-back validation after every encode.</div>
+        </div>
+      </div>
+    </aside>
+  </section>
 
-        <div class="opt-row">
-          <input type="checkbox" id="opt-keys">
-          <label for="opt-keys">Unquoted keys</label>
+  <section class="layout">
+    <div class="workspace">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Input size</span>
+          <span class="stat-value" id="s-chars-in">0</span>
+          <div class="stat-sub">characters</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Output size</span>
+          <span class="stat-value" id="s-chars-out">0</span>
+          <div class="stat-sub">characters</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">JTON encode time</span>
+          <span class="stat-value" id="s-time">-</span>
+          <div class="stat-sub" id="runtime-mode">auto runtime</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Savings</span>
+          <span class="stat-value" id="s-savings">-</span>
+          <div class="stat-sub">vs compact JSON</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Round-trip</span>
+          <span class="stat-value" id="s-rt-wrap"><span id="s-rt" class="pill blue">Waiting</span></span>
+          <div class="stat-sub" id="stat-rtcheck">encode and parse-back check</div>
+        </div>
+      </div>
+
+      <div class="editor-grid">
+        <section class="editor-card">
+          <div class="editor-header">
+            <div class="editor-title">
+              <div>
+                <h3>JSON Input</h3>
+                <span>Paste JSON or load one of the sample datasets.</span>
+              </div>
+            </div>
+            <div class="toolbar">
+              <button class="ghost" onclick="clearInput()">Clear</button>
+              <button class="ghost" onclick="formatJson()">Format JSON</button>
+            </div>
+          </div>
+          <textarea id="input" placeholder='Paste JSON here...
+
+[
+  {"id": 1, "name": "Alice", "department": "Engineering"},
+  {"id": 2, "name": "Bob", "department": "Sales"}
+]' spellcheck="false"></textarea>
+          <div class="editor-footer">
+            <span class="chip">Auto-encodes after edits</span>
+            <span class="chip mono">Accepts JSON, then emits JTON</span>
+          </div>
+        </section>
+
+        <section class="editor-card">
+          <div class="editor-header">
+            <div class="editor-title">
+              <div>
+                <h3>JTON Output</h3>
+                <span>Live serialized output using your selected options.</span>
+              </div>
+            </div>
+            <div class="toolbar">
+              <button class="ghost" onclick="copyOutput(event)">Copy</button>
+              <button class="primary" onclick="decodeOutput()">Back to JSON</button>
+            </div>
+          </div>
+          <textarea id="output" placeholder="JTON output will appear here..." readonly spellcheck="false"></textarea>
+          <div class="token-preview">
+            <h4>Token lens</h4>
+            <p>Color highlights show the rough token makeup of the current JTON output so users can quickly spot bulky strings, repeated identifiers, and punctuation-heavy segments.</p>
+            <div class="token-lens" id="token-lens"></div>
+          </div>
+          <div class="editor-footer">
+            <span class="chip">Lossless when the round-trip pill turns green</span>
+            <span class="chip mono">Ideal for prompts, logs, and structured data exchange</span>
+          </div>
+        </section>
+      </div>
+
+  <section class="panel">
+        <div class="panel-header">
+          <div class="section-title">
+            <div>
+              <h2>Token comparison</h2>
+              <p>Current output versus JSON baselines, plus TOON as a comparison format that is not JSON-compatible.</p>
+            </div>
+          </div>
+        </div>
+        <div class="token-bars" id="tok-bars" style="display:none">
+          <div class="tok-row">
+            <span class="tok-label">JSON (pretty)</span>
+            <div class="tok-bar-wrap"><div class="tok-bar" id="tb-json-pretty" style="background:linear-gradient(90deg,#52617a,#7b8ba5);width:100%"></div></div>
+            <span class="tok-num" id="tn-json-pretty">-</span>
+          </div>
+          <div class="tok-row">
+            <span class="tok-label">JSON (compact)</span>
+            <div class="tok-bar-wrap"><div class="tok-bar" id="tb-json-compact" style="background:linear-gradient(90deg,#69788f,#9aa9bf);width:100%"></div></div>
+            <span class="tok-num" id="tn-json-compact">-</span>
+          </div>
+          <div class="tok-row">
+            <span class="tok-label">TOON (not JSON-compatible)</span>
+            <div class="tok-bar-wrap"><div class="tok-bar" id="tb-TOON" style="background:linear-gradient(90deg,#ec4899,#f97316)"></div></div>
+            <span class="tok-num" id="tn-TOON">-</span>
+          </div>
+          <div class="tok-row">
+            <span class="tok-label" style="color:var(--accent)">JTON (current)</span>
+            <div class="tok-bar-wrap"><div class="tok-bar" id="tb-JTON"></div></div>
+            <span class="tok-num" id="tn-JTON">-</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="error" id="error-msg"></div>
+      <div class="hint-bar mono" id="hint-bar"></div>
+    </div>
+
+    <aside class="panel">
+      <div class="panel-header">
+        <div class="section-title">
+          <div>
+            <h2>Output controls</h2>
+            <p>Tune JTON for readability, compactness, or LLM usage.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="control-group">
+          <h3>Structure</h3>
+          <div class="option-card">
+            <input type="checkbox" id="opt-zen" checked>
+            <div>
+              <label for="opt-zen">Zen Grid</label>
+              <small>Convert tabular arrays of objects into compact JTON table form.</small>
+            </div>
+          </div>
+          <div class="option-card">
+            <input type="checkbox" id="opt-row-count" checked>
+            <div>
+              <label for="opt-row-count">Include row count</label>
+              <small>Add the structural <span class="mono">[N:</span> prefix. Recommended for LLM retrieval.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Encoding</h3>
+          <div class="option-card">
+            <input type="checkbox" id="opt-bare">
+            <div>
+              <label for="opt-bare">Bare strings</label>
+              <small>Use unquoted identifier-like values where safe to reduce clutter.</small>
+            </div>
+          </div>
+          <div class="option-card">
+            <input type="checkbox" id="opt-null">
+            <div>
+              <label for="opt-null">Implicit null</label>
+              <small>Represent null cells as empty values for maximum compactness.</small>
+            </div>
+          </div>
+          <div class="option-card">
+            <input type="checkbox" id="opt-keys">
+            <div>
+              <label for="opt-keys">Unquoted keys</label>
+              <small>Emit object keys in JTON style without JSON quotes.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Delimiter</h3>
+          <select id="opt-delim">
+            <option value="comma" selected>Comma - recommended for LLM readability</option>
+            <option value="tab">Tab - advanced token-saving mode</option>
+            <option value="pipe">Pipe - visual alternative</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <h3>Formatting</h3>
+          <select id="opt-indent">
+            <option value="0" selected>Compact</option>
+            <option value="2">Pretty print: 2 spaces</option>
+            <option value="4">Pretty print: 4 spaces</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <h3>LLM prompt helper</h3>
+          <select id="hint-style">
+            <option value="zen_grid">Zen Grid</option>
+            <option value="zen_grid_rowcount">Zen Grid with row count</option>
+            <option value="multiline">Multiline</option>
+            <option value="tab">Tab-delimited</option>
+          </select>
+          <button class="secondary" onclick="showHint()">Copy format hint</button>
+          <span style="color:var(--muted);font-size:12px;line-height:1.6">
+            Verified against core: these prompt primer styles still exist in <span class="mono">jton.format_hint(...)</span>.
+          </span>
+        </div>
+
+        <div class="control-group">
+          <h3>Hosting</h3>
+          <span style="color:var(--muted);font-size:13px;line-height:1.6">
+            This page can run as a static GitHub Pages site. If the API is unavailable, the browser fallback keeps encode, decode, hints, and token estimates working.
+          </span>
+        </div>
+
+        <div class="control-group">
+          <h3>Core sync</h3>
+          <span style="color:var(--muted);font-size:13px;line-height:1.6">
+            Playground controls are aligned with the real API: <span class="mono">row_count</span>, <span class="mono">bare_strings</span>,
+            <span class="mono">implicit_null</span>, <span class="mono">delimiter=comma|tab|pipe</span>, and prompt hint styles.
+          </span>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="comparison-card">
+      <h2>Dataset token and stdlib-json speed snapshot</h2>
+      <p class="comparison-meta">
+      Live speed cards below compare Python stdlib <span class="mono">json</span> parse/dump against JTON on the current JSON input.
+      The dataset table remains a broader benchmark-style snapshot across flat, nested, and semi-uniform data. TOON is shown for comparison only and is not JSON-compatible.
+      </p>
+      <div class="benchmark-banner">
+        <strong>Static large-file benchmark: <span class="mono">akbe_doc_classifier.json</span> (338.1 MB)</strong>
+        <span>Parse/decode: stdlib <span class="mono">json</span> <strong>1.75 s</strong> (193.5 MB/s) vs JTON <strong>2.43 s</strong> (138.9 MB/s). Dump/encode in JSON-compatible mode: stdlib <span class="mono">json</span> <strong>1.78 s</strong> (57.3 MB/s) vs JTON <strong>0.81 s</strong> (126.5 MB/s).</span>
+      </div>
+      <div class="speed-grid">
+        <div class="speed-card">
+        <span>Stdlib json parse</span>
+        <strong id="speed-json-parse">-</strong>
+        <span id="speed-json-parse-sub">Current input, backend benchmark</span>
+        </div>
+        <div class="speed-card">
+        <span>JTON parse</span>
+        <strong id="speed-jton-parse">-</strong>
+        <span id="speed-jton-parse-sub">Current input, backend benchmark</span>
+        </div>
+        <div class="speed-card">
+        <span>Stdlib json dump</span>
+        <strong id="speed-json-encode">-</strong>
+        <span id="speed-json-encode-sub">Current input, backend benchmark</span>
+        </div>
+        <div class="speed-card">
+        <span>JTON dump</span>
+        <strong id="speed-jton-encode">-</strong>
+        <span id="speed-jton-encode-sub">Current input, backend benchmark</span>
+        </div>
+      </div>
+    <div class="comparison-table-wrap">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Dataset</th>
+            <th>Shape</th>
+            <th>JSON compact</th>
+            <th>TOON (not JSON)</th>
+            <th>JTON row-count</th>
+            <th>JTON tab</th>
+            <th>Best savings</th>
+            <th>Visual</th>
+          </tr>
+        </thead>
+        <tbody id="dataset-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sample-card">
+    <div class="panel-header" style="padding:0 0 16px;border-bottom:none">
+      <div class="section-title">
+        <div>
+          <h2>Sample datasets</h2>
+          <p>Try realistic structures to see how JTON behaves across flat, nested, and semi-structured data.</p>
         </div>
       </div>
     </div>
-
-    <div>
-      <h3>Delimiter</h3>
-      <select id="opt-delim">
-        <option value="comma" selected>Comma (readable)</option>
-        <option value="tab">Tab (max tokens)</option>
-        <option value="pipe">Pipe (alt readable)</option>
-      </select>
+    <div class="sample-grid">
+      <button class="sample-btn" onclick="loadSample('employees')">
+        <strong>Employees</strong>
+        <span>Flat records. Best showcase for Zen Grid compression.</span>
+      </button>
+      <button class="sample-btn" onclick="loadSample('orders')">
+        <strong>Orders</strong>
+        <span>Nested objects and arrays for mixed-structure behavior.</span>
+      </button>
+      <button class="sample-btn" onclick="loadSample('analytics')">
+        <strong>Analytics</strong>
+        <span>Time-series metrics with repeated fields and numeric values.</span>
+      </button>
+      <button class="sample-btn" onclick="loadSample('config')">
+        <strong>Deep config</strong>
+        <span>Mostly nested settings where compact JSON-like output matters.</span>
+      </button>
+      <button class="sample-btn" onclick="loadSample('github')">
+        <strong>GitHub repos</strong>
+        <span>Real-world tabular metadata with nullable fields.</span>
+      </button>
+      <button class="sample-btn" onclick="loadSample('event_logs')">
+        <strong>Event logs</strong>
+        <span>Semi-uniform logs for mixed tabular and nested structure behavior.</span>
+      </button>
     </div>
+  </section>
 
-    <div>
-      <h3>Pretty Print</h3>
-      <select id="opt-indent">
-        <option value="0" selected>Compact</option>
-        <option value="2">2 spaces</option>
-        <option value="4">4 spaces</option>
-      </select>
-    </div>
+  <section class="info-grid">
+    <article class="info-card">
+      <h3>Spec snapshot</h3>
+      <p>JTON is a JSON-superset encoding with a tabular mode for repeated objects. It stays readable while reducing tokens for flat datasets.</p>
+      <code>[3: id, name, role; 1, "Ada", "admin"; 2, "Bob", "user"; 3, "Cara", "ops" ]</code>
+    </article>
 
-    <div>
-      <h3>LLM Prompt</h3>
-      <button onclick="showHint()" style="width:100%;font-size:.78rem">📋 Copy format hint</button>
-      <div style="margin-top:6px">
-        <select id="hint-style">
-          <option value="zen_grid">Zen Grid</option>
-          <option value="zen_grid_rowcount">With row count</option>
-          <option value="multiline">Multiline mode</option>
-          <option value="tab">Tab-delimited</option>
-        </select>
-      </div>
-    </div>
-  </div>
+    <article class="info-card">
+      <h3>LLM-friendly defaults</h3>
+      <p>Row count is enabled by default because it helps structural awareness. Use bare strings and implicit nulls only when you want maximum compactness.</p>
+      <code>row_count=true, zen_grid=true, delimiter="comma"</code>
+    </article>
 
-  <!-- Editor panels -->
-  <div class="editors">
-    <div class="pane">
-      <div class="pane-header">
-        <span class="pane-title">📥 JSON Input</span>
-        <div class="pane-actions">
-          <button onclick="clearInput()">Clear</button>
-          <button onclick="formatJson()">Format</button>
-        </div>
-      </div>
-      <textarea id="input" placeholder='Paste JSON here…&#10;&#10;Example:&#10;[{"id":1,"name":"Alice","score":95},&#10; {"id":2,"name":"Bob","score":87}]' spellcheck="false"></textarea>
-    </div>
-
-    <div class="pane">
-      <div class="pane-header">
-        <span class="pane-title">📤 JTON Output</span>
-        <div class="pane-actions">
-          <button onclick="copyOutput()">Copy</button>
-          <button onclick="decodeOutput()">→ JSON</button>
-        </div>
-      </div>
-      <textarea id="output" placeholder="JTON output will appear here…" readonly spellcheck="false"></textarea>
-    </div>
-  </div>
-</div>
-
-<div id="error-msg"></div>
-
-<!-- Token comparison bars -->
-<div class="token-bars" id="tok-bars" style="display:none">
-  <div class="tok-row"><span class="tok-label">JSON (pretty)</span><div class="tok-bar-wrap"><div class="tok-bar" id="tb-json-pretty" style="width:100%;background:#555"></div></div><span class="tok-num" id="tn-json-pretty">-</span></div>
-  <div class="tok-row"><span class="tok-label">JSON (compact)</span><div class="tok-bar-wrap"><div class="tok-bar" id="tb-json-compact" style="width:100%;background:#888"></div></div><span class="tok-num" id="tn-json-compact">-</span></div>
-  <div class="tok-row"><span class="tok-label" style="color:var(--accent)">JTON (current)</span><div class="tok-bar-wrap"><div class="tok-bar" id="tb-JTON" style="background:var(--accent)"></div></div><span class="tok-num" id="tn-JTON">-</span></div>
-</div>
-
-<div class="statusbar">
-  <div class="stat">Input: <span class="val" id="s-chars-in">0</span> chars</div>
-  <div class="stat">Output: <span class="val" id="s-chars-out">0</span> chars</div>
-  <div class="stat">Savings: <span id="s-savings">—</span></div>
-  <div class="stat">Encode: <span class="val" id="s-time">—</span></div>
-  <div class="stat" id="stat-rtcheck" style="display:none">Round-trip: <span id="s-rt" class="pill green">✓ lossless</span></div>
-</div>
-
-<div class="hint-bar" id="hint-bar"></div>
-
-<div class="bottom-bar">
-  <span style="font-size:.75rem;color:var(--muted)">Sample datasets:</span>
-  <div class="samples">
-    <button class="sample-btn" onclick="loadSample('employees')">👥 Employees (10)</button>
-    <button class="sample-btn" onclick="loadSample('orders')">🛒 Orders (nested)</button>
-    <button class="sample-btn" onclick="loadSample('analytics')">📈 Analytics</button>
-    <button class="sample-btn" onclick="loadSample('config')">⚙️ Deep config</button>
-    <button class="sample-btn" onclick="loadSample('github')">⭐ GitHub repos</button>
-  </div>
-  <div style="margin-left:auto;display:flex;gap:16px;align-items:center">
-    <span style="color:var(--muted);font-size:.72rem">📊 Benchmarks: <strong style="color:var(--accent2)">2× faster loads</strong> · <strong style="color:var(--accent2)">20% fewer tokens</strong> vs JSON compact · <strong style="color:var(--accent2)">#2 token efficiency</strong> (all JSON-compatible formats)</span>
-    <a href="https://github.com/your-org/jton" target="_blank" style="color:var(--muted);font-size:.75rem;text-decoration:none">GitHub →</a>
-  </div>
+    <article class="info-card">
+      <h3>Static deployment</h3>
+      <p>This page can be hosted on GitHub Pages. When the Python API is unavailable, it automatically switches to the browser runtime for encode, decode, hints, and token estimates.</p>
+      <code>local backend -&gt; Python mode | github.io -&gt; static fallback</code>
+    </article>
+  </section>
 </div>
 
 <script>
-// ── Sample datasets ────────────────────────────────────────────────────────────
 const SAMPLES = {
   employees: JSON.stringify(
-    Array.from({length:10}, (_,i) => ({
-      id: i+1, name: ["Alice","Bob","Carol","David","Eve","Frank","Grace","Henry","Ivy","Jack"][i],
+    Array.from({length: 10}, (_, i) => ({
+      id: i + 1,
+      name: ["Alice","Bob","Carol","David","Eve","Frank","Grace","Henry","Ivy","Jack"][i],
       department: ["Engineering","Marketing","Engineering","Sales","Engineering","HR","Marketing","Sales","Engineering","HR"][i],
-      salary: 60000 + i*5000, yearsExp: i+1, active: i%3 !== 2
+      salary: 60000 + i * 5000,
+      yearsExp: i + 1,
+      active: i % 3 !== 2
     })), null, 2),
   orders: JSON.stringify([
     {orderId:"ORD-001",customer:{name:"Alice",email:"alice@example.com"},items:[{sku:"A1",qty:2,price:29.99},{sku:"B3",qty:1,price:99.00}],total:158.98,status:"shipped"},
@@ -216,9 +1242,15 @@ const SAMPLES = {
     {orderId:"ORD-003",customer:{name:"Carol",email:"carol@example.com"},items:[{sku:"A1",qty:1,price:29.99},{sku:"D2",qty:2,price:49.50}],total:129.00,status:"delivered"}
   ], null, 2),
   analytics: JSON.stringify(
-    Array.from({length:14}, (_,i) => {
-      const d = new Date(2025,0,i+1);
-      return {date: d.toISOString().slice(0,10), pageviews: 1000+Math.round(Math.random()*5000), sessions: 200+Math.round(Math.random()*1500), bounceRate: +(0.3+Math.random()*0.4).toFixed(2), avgDuration: 90+Math.round(Math.random()*180)};
+    Array.from({length: 14}, (_, i) => {
+      const d = new Date(2025, 0, i + 1);
+      return {
+        date: d.toISOString().slice(0, 10),
+        pageviews: 1000 + Math.round(Math.random() * 5000),
+        sessions: 200 + Math.round(Math.random() * 1500),
+        bounceRate: +(0.3 + Math.random() * 0.4).toFixed(2),
+        avgDuration: 90 + Math.round(Math.random() * 180)
+      };
     }), null, 2),
   config: JSON.stringify({
     server:{host:"0.0.0.0",port:8080,tls:{enabled:true,certPath:"/etc/ssl/cert.pem",keyPath:"/etc/ssl/key.pem"}},
@@ -227,179 +1259,631 @@ const SAMPLES = {
     features:{zenGrid:true,simd:true,parallelParsing:false},
     logging:{level:"info",format:"json",outputs:["stdout","file"]}
   }, null, 2),
+  event_logs: JSON.stringify([
+    {timestamp:"2025-01-01T10:00:00Z",level:"info",service:"api",message:"request completed",status:200,latencyMs:31},
+    {timestamp:"2025-01-01T10:00:03Z",level:"warn",service:"worker",message:"retry scheduled",jobId:"job-182",attempt:2},
+    {timestamp:"2025-01-01T10:00:07Z",level:"error",service:"billing",message:"payment gateway timeout",error:{code:"GW_TIMEOUT",retryable:true},latencyMs:801},
+    {timestamp:"2025-01-01T10:00:11Z",level:"info",service:"auth",message:"token refreshed",userId:"u-41",status:200}
+  ], null, 2),
   github: JSON.stringify(
-    [["freeCodeCamp","JavaScript",393000],["996.ICU","","267000"],["free-programming-books","","329000"],["awesome","","312000"],["coding-interview-university","","307000"]].map(([name,lang,stars]) => ({name,language:lang||null,stars,forks:Math.round(stars*0.15),openIssues:Math.round(stars*0.005),archived:false}))
-  , null, 2),
+    [["freeCodeCamp","JavaScript",393000],["996.ICU","",267000],["free-programming-books","",329000],["awesome","",312000],["coding-interview-university","",307000]].map(([name, lang, stars]) => ({
+      name,
+      language: lang || null,
+      stars,
+      forks: Math.round(stars * 0.15),
+      openIssues: Math.round(stars * 0.005),
+      archived: false
+    })), null, 2)
 };
 
-// ── API call to Python server ─────────────────────────────────────────────────
 const API = location.origin;
-let debounceTimer = null;
+const LOCAL_HINTS = {
+  zen_grid: "JTON Zen Grid: [N: col1, col2; v1, v2; v3, v4 ] where N is optional and values follow column order.",
+  zen_grid_rowcount: "JTON Zen Grid with row count: [N: col1, col2; v1, v2; v3, v4 ] where N is required and helps with structural validation.",
+  multiline: "JTON multiline style:\n[N]{col1,col2}:\n  v1, v2\n  v3, v4",
+  tab: "JTON tab-delimited style: [N: col1\\tcol2; v1\\tv2; v3\\tv4 ]"
+};
+const DATASET_CATALOG = [
+  {id: "employees", label: "Employees", shape: "Flat records"},
+  {id: "analytics", label: "Analytics", shape: "Time series"},
+  {id: "github", label: "GitHub repos", shape: "Open-source metadata"},
+  {id: "orders", label: "Orders", shape: "Nested commerce"},
+  {id: "event_logs", label: "Event logs", shape: "Semi-uniform logs"},
+  {id: "config", label: "Deep config", shape: "Nested config"}
+];
+const TOON_REFERENCE_TOKENS = {
+  employees: 71421,
+  analytics: 10965,
+  github: 9256,
+  orders: 47526,
+  event_logs: 6610,
+  config: 335
+};
+let runtimeMode = "Auto";
+let encTimer = null;
+
+function setRuntimeMode(mode) {
+  runtimeMode = mode;
+  document.getElementById("runtime-mode").textContent = mode;
+}
+
+function estimateTokens(text) {
+  return Math.max(1, Math.ceil(text.length / 4));
+}
+
+function isPrimitive(value) {
+  return value === null || ["string", "number", "boolean"].includes(typeof value);
+}
+
+function isPlainObject(value) {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function isIdentifier(value) {
+  return /^[A-Za-z_][A-Za-z0-9_-]*$/.test(value);
+}
+
+function escapeKey(key, opts) {
+  return opts.unquoted_keys && isIdentifier(key) ? key : JSON.stringify(key);
+}
+
+function serializeCell(value, opts) {
+  if (value === null) return opts.implicit_null ? "" : "null";
+  if (typeof value === "string") {
+    return opts.bare_strings && isIdentifier(value) ? value : JSON.stringify(value);
+  }
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return JSON.stringify(value);
+}
+
+function canZenGrid(value) {
+  if (!Array.isArray(value) || value.length === 0) return false;
+  if (!value.every(isPlainObject)) return false;
+  const keys = Object.keys(value[0]);
+  if (!keys.length) return false;
+  return value.every((row) => {
+    const rowKeys = Object.keys(row);
+    return rowKeys.length === keys.length &&
+      rowKeys.every((k, i) => k === keys[i]) &&
+      keys.every((k) => isPrimitive(row[k]));
+  });
+}
+
+function serializeTable(rows, opts) {
+  const keys = Object.keys(rows[0]);
+  const delim = opts.delimiter === "tab" ? "\t" : opts.delimiter === "pipe" ? " | " : ", ";
+  if (opts.multiline_zen) {
+    const header = `[${rows.length}]{${keys.join(",")}}:`;
+    const lines = rows.map((row) => `  ${keys.map((key) => serializeCell(row[key], opts)).join(delim)}`);
+    return `${header}\n${lines.join("\n")}`;
+  }
+  const prefix = opts.row_count ? `[${rows.length}: ` : "[: ";
+  const header = keys.join(delim);
+  const body = rows.map((row) => keys.map((key) => serializeCell(row[key], opts)).join(delim));
+  return `${prefix}${header}; ${body.join("; ")} ]`;
+}
+
+function stringifyLocal(value, opts, level = 0) {
+  if (opts.zen_grid && canZenGrid(value)) return serializeTable(value, opts);
+  if (Array.isArray(value)) return stringifyArray(value, opts, level);
+  if (isPlainObject(value)) return stringifyObject(value, opts, level);
+  return JSON.stringify(value);
+}
+
+function stringifyArray(value, opts, level) {
+  if (!opts.indent) {
+    return `[${value.map((item) => stringifyLocal(item, opts, level + 1)).join(",")}]`;
+  }
+  const pad = " ".repeat(level * opts.indent);
+  const nextPad = " ".repeat((level + 1) * opts.indent);
+  return `[\n${value.map((item) => `${nextPad}${stringifyLocal(item, opts, level + 1)}`).join(",\n")}\n${pad}]`;
+}
+
+function stringifyObject(value, opts, level) {
+  const entries = Object.entries(value);
+  if (!opts.indent) {
+    return `{${entries.map(([k, v]) => `${escapeKey(k, opts)}:${stringifyLocal(v, opts, level + 1)}`).join(",")}}`;
+  }
+  const pad = " ".repeat(level * opts.indent);
+  const nextPad = " ".repeat((level + 1) * opts.indent);
+  return `{\n${entries.map(([k, v]) => `${nextPad}${escapeKey(k, opts)}: ${stringifyLocal(v, opts, level + 1)}`).join(",\n")}\n${pad}}`;
+}
+
+function splitTopLevel(text, separator) {
+  const parts = [];
+  let current = "";
+  let inString = false;
+  let escaped = false;
+  for (const ch of text) {
+    if (inString) {
+      current += ch;
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === "\"") {
+      inString = true;
+      current += ch;
+      continue;
+    }
+    if (ch === separator) {
+      parts.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += ch;
+  }
+  if (current.trim() || text.endsWith(separator)) parts.push(current.trim());
+  return parts;
+}
+
+function formatToonLocal(value, indent = 0) {
+  const spaces = "  ".repeat(indent);
+  if (isPlainObject(value)) {
+    const entries = Object.entries(value);
+    if (!entries.length) return "{}";
+    if (entries.length === 1 && Array.isArray(entries[0][1]) && entries[0][1].length && entries[0][1].every(isPlainObject)) {
+      const [key, rows] = entries[0];
+      const keys = Object.keys(rows[0]);
+      const lines = [`${spaces}${key}`, `${spaces}  ${keys.join(" | ")}`];
+      for (const row of rows) {
+        lines.push(`${spaces}  ${keys.map((k) => row[k] ?? "").join(" | ")}`);
+      }
+      return lines.join("\n");
+    }
+    const lines = ["{"];
+    entries.forEach(([key, val], idx) => {
+      lines.push(`${spaces}  ${key}: ${formatToonLocal(val, indent + 1)}${idx < entries.length - 1 ? "," : ""}`);
+    });
+    lines.push(`${spaces}}`);
+    return lines.join("\n");
+  }
+  if (Array.isArray(value)) {
+    if (!value.length) return "[]";
+    if (value.every(isPlainObject) && value.every((item) => JSON.stringify(Object.keys(item)) === JSON.stringify(Object.keys(value[0])))) {
+      const keys = Object.keys(value[0]);
+      return [keys.join(" | "), ...value.map((row) => keys.map((k) => row[k] ?? "").join(" | "))].join("\n");
+    }
+    return `[\n${value.map((item, idx) => `${spaces}  ${formatToonLocal(item, indent + 1)}${idx < value.length - 1 ? "," : ""}`).join("\n")}\n${spaces}]`;
+  }
+  if (typeof value === "string") return JSON.stringify(value);
+  if (typeof value === "boolean") return value ? "true" : "false";
+  if (value === null) return "null";
+  return String(value);
+}
+
+function parseCell(text) {
+  const value = text.trim();
+  if (value === "") return null;
+  if (value === "null") return null;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/.test(value)) return Number(value);
+  if (value.startsWith("\"")) return JSON.parse(value);
+  return value;
+}
+
+function parseTable(text) {
+  const inner = text.trim().slice(1, -1).trim();
+  const colonIndex = inner.indexOf(":");
+  if (colonIndex < 0) throw new Error("Invalid JTON table");
+  const content = inner.slice(colonIndex + 1).trim();
+  const segments = splitTopLevel(content, ";").filter(Boolean);
+  if (!segments.length) return [];
+  const header = segments[0];
+  const delim = header.includes("\t") ? "\t" : header.includes("|") ? "|" : ",";
+  const splitCellsFor = (line) => splitTopLevel(line, delim).map((part) => part.trim()).filter((part) => part.length || delim === "\t");
+  const keys = splitCellsFor(header);
+  return segments.slice(1).map((row) => {
+    const values = splitCellsFor(row);
+    const out = {};
+    keys.forEach((key, idx) => {
+      out[key] = parseCell(values[idx] ?? "");
+    });
+    return out;
+  });
+}
+
+function parseLooseJson(text) {
+  const normalized = text.replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_-]*)(\s*:)/g, '$1"$2"$3');
+  return JSON.parse(normalized);
+}
+
+function localEncode(input, opts) {
+  const parsed = JSON.parse(input);
+  const output = stringifyLocal(parsed, opts);
+  const rtParsed = localDecodeObject(output);
+  const jsonCompact = JSON.stringify(parsed);
+  const jsonPretty = JSON.stringify(parsed, null, 2);
+  return {
+    output,
+    elapsed_ms: 0,
+    char_savings: ((jsonCompact.length - output.length) / Math.max(jsonCompact.length, 1)) * 100,
+    token_counts: {
+      json_pretty: estimateTokens(jsonPretty),
+      json_compact: estimateTokens(jsonCompact),
+      JTON: estimateTokens(output)
+    },
+    speed_metrics: null,
+    roundtrip_ok: JSON.stringify(rtParsed) === JSON.stringify(parsed)
+  };
+}
+
+function localDecodeObject(text) {
+  const trimmed = text.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]") && /^\[\s*(?:\d+\s*)?:/.test(trimmed)) {
+    return parseTable(trimmed);
+  }
+  return parseLooseJson(trimmed);
+}
+
+function localDecode(input) {
+  return {output: JSON.stringify(localDecodeObject(input), null, 2)};
+}
+
+function localHint(style) {
+  return {hint: LOCAL_HINTS[style] || LOCAL_HINTS.zen_grid};
+}
+
+function localTokens(input) {
+  const parsed = JSON.parse(input);
+  const jsonPretty = JSON.stringify(parsed, null, 2);
+  const jsonCompact = JSON.stringify(parsed);
+  const toonRef = formatToonLocal(parsed);
+  const jtonDefault = stringifyLocal(parsed, {zen_grid: true, row_count: true, bare_strings: false, implicit_null: false, unquoted_keys: false, delimiter: "comma", indent: null, multiline_zen: false});
+  const jtonTab = stringifyLocal(parsed, {zen_grid: true, row_count: true, bare_strings: false, implicit_null: false, unquoted_keys: false, delimiter: "tab", indent: null, multiline_zen: false});
+  const jtonPlus = stringifyLocal(parsed, {zen_grid: true, row_count: true, bare_strings: true, implicit_null: true, unquoted_keys: false, delimiter: "comma", indent: null, multiline_zen: false});
+  const jtonMultiline = stringifyLocal(parsed, {zen_grid: true, row_count: true, bare_strings: false, implicit_null: false, unquoted_keys: false, delimiter: "comma", indent: null, multiline_zen: true});
+  const baseline = estimateTokens(jsonCompact);
+  const entry = (text, label) => ({
+    label,
+    tokens: estimateTokens(text),
+    chars: text.length,
+    savings: baseline ? Math.round(((baseline - estimateTokens(text)) / baseline) * 1000) / 10 : 0
+  });
+  return {
+    has_tiktoken: false,
+    formats: [
+      entry(jsonPretty, "JSON (pretty)"),
+      entry(jsonCompact, "JSON (compact)"),
+      entry(toonRef, "TOON (not JSON-compatible)"),
+      entry(jtonDefault, "JTON Zen Grid"),
+      entry(jtonTab, "JTON Zen Grid (tab)"),
+      entry(jtonPlus, "JTON Zen Grid (bare+null)"),
+      entry(jtonMultiline, "JTON Multiline")
+    ]
+  };
+}
 
 async function callApi(endpoint, body) {
-  const r = await fetch(`${API}/${endpoint}`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
+  const response = await fetch(`${API}/${endpoint}`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify(body)
   });
-  return r.json();
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
+async function callEndpoint(endpoint, body) {
+  try {
+    const result = await callApi(endpoint, body);
+    setRuntimeMode("Python backend");
+    return result;
+  } catch (e) {
+    setRuntimeMode("Static browser fallback");
+    if (endpoint === "encode") return localEncode(body.input, body);
+    if (endpoint === "decode") return localDecode(body.input);
+    if (endpoint === "hint") return localHint(body.style);
+    if (endpoint === "tokens") return localTokens(body.input);
+    throw e;
+  }
+}
+
+function findSampleIdByInput(input) {
+  return Object.entries(SAMPLES).find(([, value]) => value === input)?.[0] || null;
+}
+
+function getOpts() {
+  return {
+    zen_grid: document.getElementById("opt-zen").checked,
+    row_count: document.getElementById("opt-row-count").checked,
+    bare_strings: document.getElementById("opt-bare").checked,
+    implicit_null: document.getElementById("opt-null").checked,
+    unquoted_keys: document.getElementById("opt-keys").checked,
+    delimiter: document.getElementById("opt-delim").value,
+    indent: parseInt(document.getElementById("opt-indent").value, 10) || null
+  };
 }
 
 async function doEncode() {
-  const inp = document.getElementById('input').value.trim();
-  if (!inp) { clearStats(); return; }
-  showError('');
-  document.getElementById('spinner').style.display = 'inline';
+  const inp = document.getElementById("input").value.trim();
+  if (!inp) {
+    document.getElementById("output").value = "";
+    clearStats();
+    showError("");
+    return;
+  }
 
-  const opts = getOpts();
-  const t0 = performance.now();
+  showError("");
+  document.getElementById("spinner").style.display = "inline";
+
   try {
-    const res = await callApi('encode', {input: inp, ...opts});
-    const ms = (performance.now() - t0).toFixed(1);
-    if (res.error) { showError(res.error); return; }
-    document.getElementById('output').value = res.output;
-    updateStats(inp, res.output, ms, res.char_savings, res.token_counts, res.roundtrip_ok);
-  } catch(e) {
-    showError('Server error: ' + e.message + ' — make sure playground/server.py is running');
+    const started = performance.now();
+    const res = await callEndpoint("encode", {input: inp, ...getOpts()});
+    const elapsed = `${(performance.now() - started).toFixed(1)} ms`;
+
+    if (res.error) {
+      showError(res.error);
+      return;
+    }
+
+    document.getElementById("output").value = res.output;
+    const sampleId = findSampleIdByInput(inp);
+    if (sampleId && runtimeMode === "Static browser fallback" && TOON_REFERENCE_TOKENS[sampleId] && res.token_counts) {
+      res.token_counts.TOON = TOON_REFERENCE_TOKENS[sampleId];
+    }
+    updateStats(inp, res.output, elapsed, res.char_savings, res.token_counts, res.roundtrip_ok, res.speed_metrics || null);
+    renderTokenLens(res.output);
+  } catch (e) {
+    showError("Server error: " + e.message + " - make sure playground/server.py is running");
   } finally {
-    document.getElementById('spinner').style.display = 'none';
+    document.getElementById("spinner").style.display = "none";
   }
 }
 
 async function decodeOutput() {
-  const out = document.getElementById('output').value.trim();
+  const out = document.getElementById("output").value.trim();
   if (!out) return;
   try {
-    const res = await callApi('decode', {input: out});
-    if (res.error) { showError(res.error); return; }
-    document.getElementById('input').value = res.output;
+    const res = await callEndpoint("decode", {input: out});
+    if (res.error) {
+      showError(res.error);
+      return;
+    }
+    document.getElementById("input").value = res.output;
     clearStats();
-  } catch(e) { showError('Decode error: ' + e.message); }
+    showError("");
+  } catch (e) {
+    showError("Decode error: " + e.message);
+  }
 }
 
 async function showHint() {
-  const style = document.getElementById('hint-style').value;
+  const style = document.getElementById("hint-style").value;
   try {
-    const res = await callApi('hint', {style});
-    const bar = document.getElementById('hint-bar');
+    const res = await callEndpoint("hint", {style});
+    const bar = document.getElementById("hint-bar");
     bar.textContent = res.hint;
-    bar.style.display = 'block';
+    bar.style.display = "block";
     await navigator.clipboard.writeText(res.hint);
-    bar.textContent = '✓ Copied to clipboard!\n\n' + res.hint;
-    setTimeout(() => { bar.style.display = 'none'; }, 4000);
-  } catch(e) {
-    // fallback: just show
-    document.getElementById('hint-bar').textContent = 'Could not connect to server.';
-    document.getElementById('hint-bar').style.display = 'block';
+    bar.textContent = "Copied to clipboard.\n\n" + res.hint;
+    setTimeout(() => {
+      bar.style.display = "none";
+    }, 4000);
+  } catch (e) {
+    const bar = document.getElementById("hint-bar");
+    bar.textContent = "Could not generate the format hint.";
+    bar.style.display = "block";
   }
 }
 
-// ── UI helpers ─────────────────────────────────────────────────────────────────
-function getOpts() {
-  return {
-    zen_grid:      document.getElementById('opt-zen').checked,
-    row_count:     document.getElementById('opt-row-count').checked,
-    bare_strings:  document.getElementById('opt-bare').checked,
-    implicit_null: document.getElementById('opt-null').checked,
-    unquoted_keys: document.getElementById('opt-keys').checked,
-    delimiter:     document.getElementById('opt-delim').value,
-    indent:        parseInt(document.getElementById('opt-indent').value) || null,
-  };
+function formatMs(value) {
+  return value == null ? "-" : `${Number(value).toFixed(value < 1 ? 3 : 2)} ms`;
 }
 
-function updateStats(inp, out, ms, savings, tokenCounts, rtOk) {
-  document.getElementById('s-chars-in').textContent  = inp.length.toLocaleString();
-  document.getElementById('s-chars-out').textContent = out.length.toLocaleString();
-  document.getElementById('s-time').textContent = ms + ' ms';
+function formatRatio(a, b) {
+  if (!(a > 0) || !(b > 0)) return "";
+  const faster = a < b ? (b / a) : (a / b);
+  const label = a < b ? "faster" : "slower";
+  return `${faster.toFixed(2)}x ${label}`;
+}
 
-  const pct = savings != null ? savings.toFixed(1) : null;
-  const savEl = document.getElementById('s-savings');
-  if (pct !== null) {
-    const cls = pct > 0 ? 'pill green' : pct < 0 ? 'pill red' : 'pill blue';
-    savEl.innerHTML = `<span class="${cls}">${pct > 0 ? '−' : '+'}${Math.abs(pct)}% chars vs JSON</span>`;
-  } else { savEl.innerHTML = '—'; }
+function updateSpeedCards(speedMetrics) {
+  const ids = [
+    ["json-parse", "json_parse_ms", null],
+    ["jton-parse", "jton_parse_ms", "json_parse_ms"],
+    ["json-encode", "json_encode_ms", null],
+    ["jton-encode", "jton_encode_ms", "json_encode_ms"],
+  ];
 
-  const rtEl = document.getElementById('stat-rtcheck');
-  if (rtOk !== undefined) {
-    rtEl.style.display = 'flex';
-    const rt = document.getElementById('s-rt');
-    rt.className = rtOk ? 'pill green' : 'pill red';
-    rt.textContent = rtOk ? '✓ lossless' : '✗ lossy';
-  } else { rtEl.style.display = 'none'; }
+  if (!speedMetrics) {
+    ids.forEach(([key]) => {
+      document.getElementById(`speed-${key}`).textContent = "-";
+      document.getElementById(`speed-${key}-sub`).textContent = "Requires Python backend";
+    });
+    return;
+  }
+
+  ids.forEach(([key, metric, compareTo]) => {
+    document.getElementById(`speed-${key}`).textContent = formatMs(speedMetrics[metric]);
+    if (compareTo) {
+      const ratio = formatRatio(speedMetrics[metric], speedMetrics[compareTo]);
+      document.getElementById(`speed-${key}-sub`).textContent = ratio ? `vs stdlib json: ${ratio}` : "Current input benchmark";
+    } else {
+      document.getElementById(`speed-${key}-sub`).textContent = "Current input benchmark";
+    }
+  });
+}
+
+function updateStats(inp, out, ms, savings, tokenCounts, roundtripOk, speedMetrics) {
+  document.getElementById("s-chars-in").textContent = inp.length.toLocaleString();
+  document.getElementById("s-chars-out").textContent = out.length.toLocaleString();
+  document.getElementById("s-time").textContent = ms;
+  updateSpeedCards(speedMetrics);
+
+  const savEl = document.getElementById("s-savings");
+  if (savings != null) {
+    const pct = Number(savings).toFixed(1);
+    const cls = pct > 0 ? "pill green" : pct < 0 ? "pill red" : "pill blue";
+    savEl.innerHTML = `<span class="${cls}">${pct > 0 ? "-" : "+"}${Math.abs(pct)}%</span>`;
+  } else {
+    savEl.textContent = "-";
+  }
+
+  const rt = document.getElementById("s-rt");
+  rt.className = roundtripOk ? "pill green" : "pill red";
+  rt.textContent = roundtripOk ? "Lossless" : "Lossy";
+  document.getElementById("stat-rtcheck").textContent = roundtripOk ? "matches parse-back result" : "output changed data on parse-back";
 
   if (tokenCounts) {
-    const tb = document.getElementById('tok-bars');
-    tb.style.display = 'block';
-    const maxTok = Math.max(tokenCounts.json_pretty, tokenCounts.json_compact, tokenCounts.JTON);
+    const tb = document.getElementById("tok-bars");
+    tb.style.display = "flex";
+    const maxTok = Math.max(tokenCounts.json_pretty, tokenCounts.json_compact, tokenCounts.JTON, tokenCounts.TOON || 0);
     const set = (id, n) => {
-      document.getElementById('tb-' + id).style.width = (n / maxTok * 100).toFixed(1) + '%';
-      document.getElementById('tn-' + id).textContent = n.toLocaleString() + ' tok';
+      document.getElementById("tb-" + id).style.width = ((n / maxTok) * 100).toFixed(1) + "%";
+      document.getElementById("tn-" + id).textContent = n.toLocaleString() + " tok";
     };
-    set('json-pretty', tokenCounts.json_pretty);
-    set('json-compact', tokenCounts.json_compact);
-    set('JTON', tokenCounts.JTON);
+    set("json-pretty", tokenCounts.json_pretty);
+    set("json-compact", tokenCounts.json_compact);
+    if (tokenCounts.TOON != null) {
+      set("TOON", tokenCounts.TOON);
+    }
+    set("JTON", tokenCounts.JTON);
   }
+}
+
+function renderTokenLens(text) {
+  const root = document.getElementById("token-lens");
+  root.innerHTML = "";
+  const tokens = (text.match(/"(?:\\.|[^"\\])*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|\b(?:true|false|null)\b|[A-Za-z_][A-Za-z0-9_-]*|[\[\]\{\}\(\):;,]|[^\s]/g) || []).slice(0, 140);
+  if (!tokens.length) {
+    root.innerHTML = '<span style="color:var(--muted);font-size:12px">No output yet.</span>';
+    return;
+  }
+  for (const tok of tokens) {
+    const span = document.createElement("span");
+    let cls = "ident";
+    if (/^"/.test(tok)) cls = "string";
+    else if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/.test(tok)) cls = "number";
+    else if (/^(true|false|null)$/.test(tok)) cls = "keyword";
+    else if (/^[\[\]\{\}\(\):;,]$/.test(tok)) cls = "punct";
+    span.className = `tok-chip ${cls}`;
+    span.textContent = tok;
+    root.appendChild(span);
+  }
+}
+
+function findFormat(formats, label) {
+  return formats.find((item) => item.label === label) || {tokens: 0};
+}
+
+async function renderDatasetCatalog() {
+  const tbody = document.getElementById("dataset-table-body");
+  tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">Loading dataset comparison...</td></tr>';
+  const rows = [];
+  for (const dataset of DATASET_CATALOG) {
+    const input = SAMPLES[dataset.id];
+    try {
+      const report = await callEndpoint("tokens", {input});
+      const jsonCompact = findFormat(report.formats, "JSON (compact)").tokens;
+      const toonRef = runtimeMode === "Static browser fallback"
+        ? (TOON_REFERENCE_TOKENS[dataset.id] || findFormat(report.formats, "TOON (not JSON-compatible)").tokens)
+        : findFormat(report.formats, "TOON (not JSON-compatible)").tokens;
+      const jtonDefault = findFormat(report.formats, "JTON Zen Grid").tokens;
+      const jtonTab = findFormat(report.formats, "JTON Zen Grid (tab)").tokens;
+      const best = Math.min(jtonDefault || Number.MAX_SAFE_INTEGER, jtonTab || Number.MAX_SAFE_INTEGER);
+      const savings = jsonCompact ? (((jsonCompact - best) / jsonCompact) * 100) : 0;
+      rows.push({...dataset, jsonCompact, toonRef, jtonDefault, jtonTab, savings});
+    } catch (e) {
+      rows.push({...dataset, jsonCompact: 0, toonRef: 0, jtonDefault: 0, jtonTab: 0, savings: 0});
+    }
+  }
+
+  const maxTokens = Math.max(...rows.map((row) => row.jsonCompact || 1), 1);
+  tbody.innerHTML = rows.map((row) => `
+    <tr>
+      <td><strong>${row.label}</strong></td>
+      <td>${row.shape}</td>
+      <td>${row.jsonCompact.toLocaleString()}</td>
+      <td>${row.toonRef.toLocaleString()}</td>
+      <td>${row.jtonDefault.toLocaleString()}</td>
+      <td>${row.jtonTab.toLocaleString()}</td>
+      <td><span class="${row.savings > 0 ? "pill green" : "pill blue"}">${row.savings > 0 ? "-" : "+"}${Math.abs(row.savings).toFixed(1)}%</span></td>
+      <td>
+        <div class="bar-mini">
+          <span style="width:${Math.max(8, (Math.min(row.jtonTab || row.jtonDefault || 1, maxTokens) / maxTokens) * 100)}%"></span>
+        </div>
+      </td>
+    </tr>
+  `).join("");
 }
 
 function clearStats() {
-  document.getElementById('s-chars-in').textContent = '0';
-  document.getElementById('s-chars-out').textContent = '0';
-  document.getElementById('s-time').textContent = '—';
-  document.getElementById('s-savings').innerHTML = '—';
-  document.getElementById('stat-rtcheck').style.display = 'none';
-  document.getElementById('tok-bars').style.display = 'none';
+  document.getElementById("s-chars-in").textContent = "0";
+  document.getElementById("s-chars-out").textContent = "0";
+  document.getElementById("s-time").textContent = "-";
+  document.getElementById("s-savings").textContent = "-";
+  document.getElementById("s-rt").className = "pill blue";
+  document.getElementById("s-rt").textContent = "Waiting";
+  document.getElementById("stat-rtcheck").textContent = "encode and parse-back check";
+  document.getElementById("tok-bars").style.display = "none";
+  updateSpeedCards(null);
+  renderTokenLens("");
 }
 
 function showError(msg) {
-  const el = document.getElementById('error-msg');
+  const el = document.getElementById("error-msg");
   el.textContent = msg;
-  el.style.display = msg ? 'block' : 'none';
+  el.style.display = msg ? "block" : "none";
 }
 
 function loadSample(name) {
-  document.getElementById('input').value = SAMPLES[name] || '';
+  document.getElementById("input").value = SAMPLES[name] || "";
   doEncode();
 }
 
 function clearInput() {
-  document.getElementById('input').value = '';
-  document.getElementById('output').value = '';
+  document.getElementById("input").value = "";
+  document.getElementById("output").value = "";
   clearStats();
-  showError('');
+  showError("");
 }
 
 function formatJson() {
   try {
-    const v = JSON.parse(document.getElementById('input').value);
-    document.getElementById('input').value = JSON.stringify(v, null, 2);
-  } catch(e) { showError('Invalid JSON: ' + e.message); }
+    const value = JSON.parse(document.getElementById("input").value);
+    document.getElementById("input").value = JSON.stringify(value, null, 2);
+    doEncode();
+  } catch (e) {
+    showError("Invalid JSON: " + e.message);
+  }
 }
 
-function copyOutput() {
-  const out = document.getElementById('output').value;
+function copyOutput(evt) {
+  const out = document.getElementById("output").value;
   if (!out) return;
   navigator.clipboard.writeText(out).then(() => {
-    const btn = event.target;
-    btn.textContent = '✓ Copied';
-    setTimeout(() => btn.textContent = 'Copy', 1500);
+    const btn = evt && evt.target;
+    if (!btn) return;
+    const prev = btn.textContent;
+    btn.textContent = "Copied";
+    setTimeout(() => {
+      btn.textContent = prev;
+    }, 1400);
   });
 }
 
-// ── Event listeners ────────────────────────────────────────────────────────────
-let encTimer = null;
-document.getElementById('input').addEventListener('input', () => {
+document.getElementById("input").addEventListener("input", () => {
   clearTimeout(encTimer);
-  encTimer = setTimeout(doEncode, 400);
+  encTimer = setTimeout(doEncode, 350);
 });
 
-['opt-zen','opt-row-count','opt-bare','opt-null','opt-keys'].forEach(id =>
-  document.getElementById(id).addEventListener('change', doEncode));
-['opt-delim','opt-indent'].forEach(id =>
-  document.getElementById(id).addEventListener('change', doEncode));
+["opt-zen", "opt-row-count", "opt-bare", "opt-null", "opt-keys"].forEach((id) => {
+  document.getElementById(id).addEventListener("change", doEncode);
+});
 
-// Load a sample on startup
-loadSample('employees');
+["opt-delim", "opt-indent"].forEach((id) => {
+  document.getElementById(id).addEventListener("change", doEncode);
+});
+
+loadSample("employees");
+renderDatasetCatalog();
 </script>
 </body>
 </html>
-

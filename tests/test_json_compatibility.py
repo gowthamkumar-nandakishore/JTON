@@ -281,6 +281,23 @@ class TestCompatibilityWithPythonJSON:
         
         # Compare results
         assert result == test_data
+
+    def test_array_with_json_like_strings_roundtrip(self):
+        test_data = [
+            {
+                "id": 1,
+                "payload": "'{\n    \"approach\": \"ml_lalang\",\n    \"label\": \"InvoiceNo\"\n}'",
+                "note": "line1\nline2",
+            },
+            {
+                "id": 2,
+                "payload": "[{\"nested\":true},{\"nested\":false}]",
+                "note": "tail\n",
+            },
+        ]
+
+        encoded = json.dumps(test_data, separators=(",", ":"))
+        assert jton.loads(encoded) == test_data
     
     def test_various_json_formats(self):
         """Test various JSON formatting styles"""

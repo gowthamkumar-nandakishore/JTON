@@ -254,6 +254,24 @@ class TestRoundTrip:
         result = self._roundtrip(data, zen_grid=True)
         assert result == data
 
+    def test_nested_cells_fallback_to_json(self):
+        data = [
+            {"id": 1, "meta": {"k": 10}, "tags": ["a", "b"]},
+            {"id": 2, "meta": {"k": 20}, "tags": ["c"]},
+        ]
+        serialized = jton.dumps(data, zen_grid=True)
+        assert serialized.startswith('[{"id":1')
+        assert jton.loads(serialized) == data
+
+    def test_structural_string_cells_fallback_to_json(self):
+        data = [
+            {"id": 1, "value": "line1\nline2", "note": "[json-like]"},
+            {"id": 2, "value": "plain", "note": "a:semicolon"},
+        ]
+        serialized = jton.dumps(data, zen_grid=True)
+        assert serialized.startswith('[{"id":1')
+        assert jton.loads(serialized) == data
+
     def test_unicode_roundtrip(self):
         data = [{"name": "日本語", "val": "café"}]
         # Single-row won't trigger Zen Grid, but still round-trips
@@ -609,10 +627,10 @@ class TestMixedOptions:
         assert json.loads(enc) == self.DATA
 
 
-# ── Drop-in json compatibility tests ─────────────────────────────────────────
+# ── Common json API compatibility tests ─────────────────────────────────────
 
 class TestDropInCompatibility:
-    """jton must be a drop-in for `import json` — load, dump, loads, dumps."""
+    """jton must support the common json API surface — load, dump, loads, dumps."""
 
     def test_load_from_file(self, tmp_path):
         f = tmp_path / "test.json"
