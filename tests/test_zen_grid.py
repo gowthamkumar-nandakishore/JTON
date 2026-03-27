@@ -609,6 +609,78 @@ class TestMixedOptions:
         assert json.loads(enc) == self.DATA
 
 
+# ── Drop-in json compatibility tests ─────────────────────────────────────────
+
+class TestDropInCompatibility:
+    """jton must be a drop-in for `import json` — load, dump, loads, dumps."""
+
+    def test_load_from_file(self, tmp_path):
+        f = tmp_path / "test.json"
+        f.write_text('{"x": 1, "y": 2}')
+        with open(f) as fp:
+            result = jton.load(fp)
+        assert result == {"x": 1, "y": 2}
+
+    def test_load_from_bytes_file(self, tmp_path):
+        f = tmp_path / "test.json"
+        f.write_bytes(b'[1, 2, 3]')
+        with open(f, "rb") as fp:
+            result = jton.load(fp)
+        assert result == [1, 2, 3]
+
+    def test_dump_to_file(self, tmp_path):
+        f = tmp_path / "out.json"
+        with open(f, "w") as fp:
+            jton.dump({"a": 1}, fp, zen_grid=False)
+        assert json.loads(f.read_text()) == {"a": 1}
+
+    def test_dump_round_trip(self, tmp_path):
+        data = [{"id": i, "val": f"v{i}"} for i in range(5)]
+        f = tmp_path / "rt.jton"
+        with open(f, "w") as fp:
+            jton.dump(data, fp)
+        with open(f) as fp:
+            result = jton.load(fp)
+        assert result == data
+
+    def test_dumps_default_datetime(self):
+        from datetime import date
+        result = jton.dumps({"d": date(2025, 1, 1)}, default=str, zen_grid=False)
+        assert json.loads(result) == {"d": "2025-01-01"}
+
+    def test_dumps_default_custom_object(self):
+        class MyObj:
+            def __init__(self, v): self.v = v
+        result = jton.dumps({"x": MyObj(42)}, default=lambda o: o.v, zen_grid=False)
+        assert json.loads(result) == {"x": 42}
+
+    def test_dumps_default_in_nested_list(self):
+        from decimal import Decimal
+        data = [{"price": Decimal("9.99")}, {"price": Decimal("14.50")}]
+        result = jton.dumps(data, default=float, zen_grid=False)
+        parsed = json.loads(result)
+        assert abs(parsed[0]["price"] - 9.99) < 0.001
+
+    def test_dumps_default_with_zen_grid(self):
+        from datetime import date
+        data = [{"id": 1, "date": date(2025, 1, 1)}, {"id": 2, "date": date(2025, 1, 2)}]
+        result = jton.dumps(data, default=str)
+        assert _is_zen_grid(result)
+        parsed = jton.loads(result)
+        assert parsed[0]["date"] == "2025-01-01"
+
+    def test_dumps_no_default_raises_on_unserializable(self):
+        class BadObj: pass
+        with pytest.raises((TypeError, ValueError)):
+            jton.dumps({"x": BadObj()})
+
+    def test_loads_is_same_as_json_loads_for_standard_json(self):
+        cases = ['{}', '[]', '"hello"', '42', '3.14', 'true', 'false', 'null',
+                 '{"a":1,"b":[1,2,3]}', '[{"x":1},{"x":2}]']
+        for s in cases:
+            assert jton.loads(s) == json.loads(s), f"Mismatch for: {s}"
+
+
 # ── CLI tests ─────────────────────────────────────────────────────────────────
 
 class TestCLI:

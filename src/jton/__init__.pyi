@@ -1,33 +1,22 @@
 """
-Type stubs for JTON — Ultra-Optimized Object Notation.
+Type stubs for JTON — JSON Tabular Object Notation.
+Drop-in replacement for the stdlib `json` module.
 """
 
-from typing import Any, Literal, Optional, TypeVar, Union
+from typing import Any, Callable, IO, Literal, Optional, Union
 
 __version__: str
 __simd__: str
-
-T = TypeVar("T")
 
 def loads(
     data: Union[str, bytes],
     schema: Optional[list] = None,
 ) -> Any:
-    """
-    Parse a JTON or JSON string/bytes into a Python object.
+    """Parse a JTON or JSON string/bytes into a Python object."""
+    ...
 
-    Args:
-        data:   Input string or bytes.  bytes avoids a UTF-8 copy.
-        schema: Optional list of field names for schema-guided parsing
-                (activates the Nitro fast-path on homogeneous object arrays).
-
-    Returns:
-        Parsed Python value: dict, list, str, int, float, bool, or None.
-
-    Raises:
-        ValueError:  Invalid JTON/JSON syntax.
-        TypeError:   data is not str or bytes.
-    """
+def load(fp: IO[Any], **kwargs: Any) -> Any:
+    """Parse JTON/JSON from a file-like object. Drop-in for json.load()."""
     ...
 
 def dumps(
@@ -41,65 +30,33 @@ def dumps(
     row_count: bool = True,
     multiline_zen: bool = False,
     delimiter: Literal["comma", "tab", "pipe"] = "comma",
+    default: Optional[Callable[[Any], Any]] = None,
 ) -> str:
     """
-    Serialize a Python object to a JTON or JSON string.
+    Serialize a Python object to a JTON/JSON string. Drop-in for json.dumps().
 
     Args:
-        data:           Any serializable Python object.
-        zen_grid:       Enable Zen Grid table encoding (default: True).
-        unquoted_keys:  Write identifier-safe keys without quotes.
-        indent:         Pretty-print with this many spaces per level.
-        bare_strings:   Write identifier string values without quotes in Zen Grid cells.
-        implicit_null:  Write missing/null Zen Grid cells as empty (saves ~1 token/cell).
-        row_count:      Prefix Zen Grid header with row count: ``[N: col1, col2; ...]``.
-                        Improves LLM comprehension (+3–5 pp on Gemini models).
-        multiline_zen:  Emit TOON-compatible multi-line format::
-
-                            [N]{col1,col2}:
-                              val1,val2
-                              val3,val4
-
-                        Proven +1.4 pp LLM accuracy over JSON. Best for Gemini models.
-        delimiter:      Cell separator in Zen Grid headers and rows.
-                        "comma" (default, readable), "tab" (5–15% fewer tokens),
-                        "pipe" (alternative readable format).
-
-    Returns:
-        A str containing the JTON/JSON representation.
-
-    Raises:
-        TypeError:  An object is not serializable.
-        ValueError: Nesting exceeds 256 levels.
+        data:          Any serializable Python object.
+        zen_grid:      Enable Zen Grid table encoding (default: True).
+        unquoted_keys: Write identifier-safe keys without quotes.
+        indent:        Pretty-print with this many spaces per level.
+        bare_strings:  Write identifier string values without quotes in Zen Grid cells.
+        implicit_null: Write null Zen Grid cells as empty (saves ~1 token/cell).
+        row_count:     Prefix Zen Grid header with ``[N: ...]`` row count (default: True).
+        multiline_zen: Emit multi-line Zen Grid format.
+        delimiter:     "comma" (default), "tab" (max token savings), "pipe".
+        default:       Callable for non-serializable objects (like json.dumps default=).
     """
+    ...
+
+def dump(obj: Any, fp: IO[Any], **kwargs: Any) -> None:
+    """Serialize a Python object to a file-like object. Drop-in for json.dump()."""
     ...
 
 def format_hint(
     style: Literal["zen_grid", "zen_grid_rowcount", "multiline", "tab"] = "zen_grid",
 ) -> str:
-    """
-    Return a concise format description for pasting into LLM system prompts.
-
-    Use this to prime an LLM before sending Zen Grid data in a prompt.
-
-    Args:
-        style: One of:
-            "zen_grid"          — default inline format
-            "zen_grid_rowcount" — inline with [N] row count
-            "multiline"         — TOON-compatible multi-line (best for Gemini)
-            "tab"               — tab-delimited
-
-    Returns:
-        A natural-language description + example the LLM can reference.
-
-    Example::
-
-        >>> import jton
-        >>> print(jton.format_hint())
-        Data is in JTON Zen Grid format.
-        Format: [: col1, col2, col3; row1val1, row1val2, row1val3; ... ]
-        ...
-    """
+    """Return a concise format description for pasting into LLM system prompts."""
     ...
 
 def token_count(
@@ -107,23 +64,13 @@ def token_count(
     tokenizer: str = "o200k_base",
 ) -> dict[str, dict[str, Union[int, str]]]:
     """
-    Compare token costs across all JTON output modes.
+    Compare token costs across all JTON output modes. Requires tiktoken.
 
-    Requires ``tiktoken`` (pip install tiktoken).
-
-    Args:
-        data:      Any serialisable Python object.
-        tokenizer: tiktoken encoding name (default: "o200k_base" for GPT-4o/GPT-5).
-
-    Returns:
-        Dict mapping mode names to {"tokens": int, "chars": int, "savings_vs_compact": str}.
-        Modes: json_pretty, json_compact, zen_grid, zen_grid_rowcount,
-               zen_grid_tab, zen_grid_multiline, zen_grid_plus.
+    Returns dict mapping mode names to {"tokens": int, "chars": int, "savings_vs_compact": str}.
+    Modes: json_pretty, json_compact, zen_grid, zen_grid_rowcount, zen_grid_tab, zen_grid_plus.
     """
     ...
 
 # Aliases
 encode = dumps
 decode = loads
-
-

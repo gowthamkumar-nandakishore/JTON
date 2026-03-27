@@ -170,6 +170,7 @@ fn format_hint(style: &str) -> String {
         _ => concat!(
             "Data is in JTON Zen Grid format.\n",
             "Format: [N: col1, col2, col3; row1val1, row1val2, row1val3; row2val1, row2val2, row2val3 ]\n",
+            "N is the optional row count prefix (may be omitted: [: col1, col2; ...]).\n",
             "The first semicolon-separated segment is the header (field names).\n",
             "Each subsequent semicolon-separated segment is one data record.\n",
             "Values within each segment are comma-separated and correspond to the header fields in order.\n",

@@ -2,7 +2,7 @@
 
 **JTON (JSON Tabular Object Notation)** — A high-performance, token-efficient JSON superset built in Rust with PyO3 bindings for Python. Home of **Zen Grid**, a token-aware tabular encoding that reduces LLM token costs by 19–61%.
 
-[![Tests](https://img.shields.io/badge/tests-670%20passing-brightgreen)](./tests/)
+[![Tests](https://img.shields.io/badge/tests-680%20passing-brightgreen)](./tests/)
 [![Performance](https://img.shields.io/badge/loads-193%20MB%2Fs-green)](#performance)
 [![SIMD](https://img.shields.io/badge/SIMD-AVX2%20%2B%20AVX--512-blue)](#simd-acceleration)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
@@ -155,7 +155,7 @@ Example: [3: id, name, score; 1, Alice, 95; 2, Bob, 87; 3, Carol, 92 ]
 
 ```python
 original = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
-encoded = jton.dumps(original)                # → '[: id, name; 1, "Alice"; 2, "Bob" ]'
+encoded = jton.dumps(original)                # → '[2: id, name; 1, "Alice"; 2, "Bob" ]'
 decoded = jton.loads(encoded)                 # → [{"id": 1, "name": "Alice"}, ...]
 assert decoded == original                    # ✅ perfect round-trip
 ```
@@ -205,16 +205,11 @@ pt = Point(**pt_data)
 
 ## API Reference
 
+JTON is a **drop-in replacement for `import json`** — `load`, `dump`, `loads`, `dumps` all work identically, plus Zen Grid options on top.
+
 ### `jton.loads(data, schema=None)`
 
 Parse JTON or JSON data into Python objects.
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `data` | `str \| bytes` | required | JTON/JSON text to parse |
-| `schema` | `list[FieldDescriptor] \| None` | `None` | Optional schema for guided parsing |
-
-Returns: `Any` — parsed Python object (dict, list, str, int, float, bool, None)
 
 ```python
 jton.loads('{"a": 1}')          # → {"a": 1}
@@ -223,24 +218,55 @@ jton.loads('{a: 1}')            # unquoted keys OK
 jton.loads('// comment\n{a:1}') # comments OK
 ```
 
-### `jton.dumps(data, *, zen_grid=True, unquoted_keys=False, indent=None, bare_strings=False, implicit_null=False, row_count=True, multiline_zen=False, delimiter="comma")`
+### `jton.load(fp)`
 
-Serialize Python objects to JTON/JSON string.
+Parse JTON/JSON from a **file object** — drop-in for `json.load()`.
+
+```python
+with open("data.json") as f:
+    data = jton.load(f)
+```
+
+### `jton.dumps(data, *, zen_grid=True, ..., default=None)`
+
+Serialize Python objects to JTON/JSON string — drop-in for `json.dumps()`.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `data` | `Any` | required | Python object to serialize |
 | `zen_grid` | `bool` | `True` | Auto-convert lists of dicts to Zen Grid table format |
-| `unquoted_keys` | `bool` | `False` | Write dict keys without quotes (JTON style) |
-| `indent` | `int \| None` | `None` | Enable pretty-printing with given indent width |
-| `bare_strings` | `bool` | `False` | Write identifier string values without quotes in Zen Grid cells |
-| `implicit_null` | `bool` | `False` | Write missing/null cells as empty (saves ~1 token per null cell) |
-| `row_count` | `bool` | `True` | Prefix Zen Grid header with row count: `[N: ...]` (default: **True**) |
-| `delimiter` | `str` | `"comma"` | Cell separator: `"comma"` (readable), `"tab"` (max token savings), `"pipe"` |
+| `unquoted_keys` | `bool` | `False` | Write dict keys without quotes |
+| `indent` | `int \| None` | `None` | Pretty-print with given indent width |
+| `bare_strings` | `bool` | `False` | Write identifier string values without quotes in cells |
+| `implicit_null` | `bool` | `False` | Write null cells as empty (saves ~1 token per cell) |
+| `row_count` | `bool` | `True` | Prefix Zen Grid header with `[N: ...]` row count |
+| `delimiter` | `str` | `"comma"` | `"comma"` (readable), `"tab"` (max savings), `"pipe"` |
+| `default` | `callable \| None` | `None` | For non-serializable objects, same as `json.dumps(default=...)` |
 
-Returns: `str` — serialized text
+```python
+# Standard usage
+jton.dumps({"a": 1}, zen_grid=False)         # → '{"a":1}'
 
-**Supported types**: `dict`, `list`, `tuple`, `str`, `int`, `float`, `bool`, `None`, Pydantic `BaseModel` (v1+v2), `@dataclass`
+# Custom types with default=
+from datetime import date
+jton.dumps({"d": date(2025,1,1)}, default=str)
+# → '{"d":"2025-01-01"}'
+
+# Works with Zen Grid too
+jton.dumps([{"id":1,"d":date(2025,1,1)}], default=str)
+# → '[1: id, d; 1, "2025-01-01" ]'
+```
+
+**Supported types natively**: `dict`, `list`, `tuple`, `str`, `int`, `float`, `bool`, `None`, Pydantic `BaseModel` (v1+v2), `@dataclass`
+
+### `jton.dump(obj, fp, **kwargs)`
+
+Serialize to a **file object** — drop-in for `json.dump()`.
+
+```python
+with open("out.jton", "w") as f:
+    jton.dump(data, f)
+```
 
 ### `jton.format_hint(style="zen_grid")`
 
@@ -248,9 +274,9 @@ Return a format description for pasting into LLM system prompts.
 
 | `style` | Description |
 |---------|-------------|
-| `"zen_grid"` | Default inline format |
-| `"zen_grid_rowcount"` | Inline with `[N]` row count |
-| `"multiline"` | TOON-compatible multi-line (best for Gemini) |
+| `"zen_grid"` | Default inline format (mentions both `[:` and `[N:` forms) |
+| `"zen_grid_rowcount"` | Inline with explicit `[N]` row count |
+| `"multiline"` | Multi-line format |
 | `"tab"` | Tab-delimited |
 
 ### `jton.token_count(data, tokenizer="o200k_base")`

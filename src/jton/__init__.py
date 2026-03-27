@@ -2,14 +2,16 @@
 JTON (JSON Tabular Object Notation) — high-performance JSON superset
 with SIMD-accelerated parsing and Zen Grid token-efficient serialization.
 
-Key functions:
-  loads(data)              — parse JTON/JSON → Python object
+Drop-in replacement for `import json`:
+  load(fp)                 — parse JTON/JSON from file object
+  loads(data)              — parse JTON/JSON string/bytes → Python object
+  dump(obj, fp, **opts)    — serialize Python object → file object
   dumps(data, **opts)      — serialize Python object → JTON/JSON string
   format_hint(style)       — LLM system-prompt primer for Zen Grid format
   token_count(data)        — compare token costs across all formats
 
 Zen Grid format automatically converts homogeneous arrays of dicts to a
-compact table syntax that reduces LLM token counts by 15–36%:
+compact table syntax that reduces LLM token counts by 15–67%:
 
     [3: id, name, score; 1, Alice, 95; 2, Bob, 87; 3, Carol, 92 ]
 
@@ -21,13 +23,105 @@ dumps() options:
   indent=None             — Pretty-print with N spaces per indent level
   row_count=True          — Add [N] row count to Zen Grid header (default: True)
   delimiter="comma"       — "comma" (default), "tab" (max tokens), or "pipe"
+  default=None            — Callable for non-serializable objects (like json.dumps)
 """
 
-from .jton_core import __version__, __simd__, loads, dumps, format_hint
+from .jton_core import __version__, __simd__, loads
+from .jton_core import dumps as _core_dumps
+from .jton_core import format_hint
 
 # Convenient aliases
-encode = dumps   # familiar for users coming from orjson / msgspec
+encode = _core_dumps
 decode = loads
+
+
+def _apply_default(obj, default_fn):
+    """Recursively replace non-JSON-native objects using a default callable."""
+    if isinstance(obj, dict):
+        return {k: _apply_default(v, default_fn) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_apply_default(v, default_fn) for v in obj]
+    if isinstance(obj, (str, int, float, bool, type(None))):
+        return obj
+    return _apply_default(default_fn(obj), default_fn)
+
+
+def dumps(
+    data,
+    *,
+    zen_grid: bool = True,
+    unquoted_keys: bool = False,
+    indent=None,
+    bare_strings: bool = False,
+    implicit_null: bool = False,
+    row_count: bool = True,
+    multiline_zen: bool = False,
+    delimiter: str = "comma",
+    default=None,
+) -> str:
+    """
+    Serialize a Python object to a JTON/JSON string.
+
+    Drop-in replacement for ``json.dumps()``.  All standard options are
+    supported, plus JTON-specific Zen Grid options.
+
+    Args:
+        data:          Any serializable Python object.
+        zen_grid:      Enable Zen Grid table encoding (default: True).
+        unquoted_keys: Write identifier-safe keys without quotes.
+        indent:        Pretty-print with this many spaces per level.
+        bare_strings:  Write identifier string values without quotes in cells.
+        implicit_null: Write null Zen Grid cells as empty.
+        row_count:     Prefix Zen Grid header with ``[N: ...]`` row count.
+        multiline_zen: Emit multi-line Zen Grid format.
+        delimiter:     Cell separator: "comma", "tab", or "pipe".
+        default:       Callable for non-serializable objects, same as
+                       ``json.dumps(default=...)``.  Called with the object,
+                       must return a JSON-serializable value.
+    """
+    if default is not None:
+        data = _apply_default(data, default)
+    return _core_dumps(
+        data,
+        zen_grid=zen_grid,
+        unquoted_keys=unquoted_keys,
+        indent=indent,
+        bare_strings=bare_strings,
+        implicit_null=implicit_null,
+        row_count=row_count,
+        multiline_zen=multiline_zen,
+        delimiter=delimiter,
+    )
+
+
+def load(fp, **kwargs):
+    """
+    Parse JTON/JSON from a file-like object.
+
+    Drop-in replacement for ``json.load()``.
+
+    Args:
+        fp:      A readable file-like object (``str`` or ``bytes`` ``.read()``).
+        **kwargs: Passed to ``loads()``.
+
+    Returns:
+        Parsed Python object.
+    """
+    return loads(fp.read(), **kwargs)
+
+
+def dump(obj, fp, **kwargs):
+    """
+    Serialize a Python object to a file-like object as JTON/JSON.
+
+    Drop-in replacement for ``json.dump()``.
+
+    Args:
+        obj:     Python object to serialize.
+        fp:      A writable file-like object.
+        **kwargs: Passed to ``dumps()``.
+    """
+    fp.write(dumps(obj, **kwargs))
 
 
 def token_count(data, tokenizer: str = "o200k_base") -> dict:
@@ -105,6 +199,8 @@ def token_count(data, tokenizer: str = "o200k_base") -> dict:
 __all__ = [
     "loads",
     "dumps",
+    "load",
+    "dump",
     "encode",
     "decode",
     "format_hint",

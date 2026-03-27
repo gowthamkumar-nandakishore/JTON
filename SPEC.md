@@ -5,7 +5,7 @@
 
 ## 1. Introduction
 
-**JTON (JSON Tabular Object Notation)** is a strict superset of JSON. Every valid JSON document is a valid JTOJTONcument with identical semantics. JTOJTONtends JSON with:
+**JTON (JSON Tabular Object Notation)** is a strict superset of JSON. Every valid JSON document is a valid JTON document with identical semantics. JTON extends JSON with:
 
 1. **Extensions** — syntactic conveniences (unquoted keys, comments, special numbers)
 2. **Zen Grid** — a token-efficient tabular encoding for homogeneous arrays of objects
