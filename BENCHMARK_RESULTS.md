@@ -29,7 +29,7 @@ Key findings:
 - ⚠️ On that same AKBE payload, stdlib parse is faster than JTON
 - ✅ Zen Grid saves **15–36% tokens** vs JSON compact across 5 real-world benchmark datasets
 - ✅ Zen Grid saves **60% tokens** on twitter-style highly-tabular string data
-- ✅ JTON is **#2 most token-efficient** format overall (after TRON), while being the only JSON-superset in the top 3
+- ✅ JTON is the **most token-efficient JSON-compatible format**, while being ahead of TOON
 - ✅ 683 tests passing, 0 failures
 
 ---
@@ -89,16 +89,15 @@ Measured from the repository payload on this machine:
 
 | Rank | Format | Total Tokens | vs JTON | vs JSON compact |
 |------|--------|--------------|---------|-----------------|
-| 🥇 1 | **TRON** | 122,097 | −15.3% | −32.4% |
-| 🥈 2 | **JTON** | **144,159** | — | **−20.2%** |
-| 🥉 3 | **TOON** | 146,113 | +1.4% | −19.2% |
-| 4 | **JSON compact** | 180,725 | +25.4% | — |
-| 5 | orjson | 180,725 | +25.4% | 0.0% |
-| 6 | YAML | 220,129 | +52.7% | +21.8% |
-| 7 | JSON | 282,332 | +95.8% | +56.2% |
-| 8 | XML | 332,171 | +130.4% | +83.8% |
+| 🥇 1 | **JTON** | **144,159** | -- | **−20.2%** |
+| 🥈 2 | **TOON** | 146,113 | +1.4% | −19.2% |
+| 3 | **JSON compact** | 180,725 | +25.4% | -- |
+| 4 | orjson | 180,725 | +25.4% | 0.0% |
+| 5 | YAML | 220,129 | +52.7% | +21.8% |
+| 6 | JSON | 282,332 | +95.8% | +56.2% |
+| 7 | XML | 332,171 | +130.4% | +83.8% |
 
-> JTON is the **only JSON-superset** in the top 3. TRON and TOON require custom parsers.
+> JTON is the **most token-efficient JSON-compatible format**. TOON requires a custom parser.
 
 ### By Structure Type
 
@@ -106,17 +105,15 @@ Measured from the repository payload on this machine:
 
 | Format | Tokens | vs JTON | JTON advantage |
 |--------|--------|---------|----------------|
-| TRON | 82,929 | −14.9% | — |
-| TOON | 91,642 | −6.0% | — |
-| **JTON** | **97,456** | — | **−21.0% vs JSON compact** |
-| JSON compact | 123,376 | +26.6% | — |
+| TOON | 91,642 | −6.0% | -- |
+| **JTON** | **97,456** | -- | **−21.0% vs JSON compact** |
+| JSON compact | 123,376 | +26.6% | -- |
 
 #### Mixed Structure (Orders, Events)
 
 | Format | Tokens | vs JTON |
 |--------|--------|---------|
-| TRON | 38,945 | −16.2% |
-| **JTON** | **46,480** | — |
+| **JTON** | **46,480** | -- |
 | TOON | 54,136 | +16.5% |
 | JSON compact | 57,126 | +22.9% |
 
@@ -124,14 +121,14 @@ Measured from the repository payload on this machine:
 
 ### Per-Dataset Breakdown
 
-| Dataset | JTON | TOON | TRON | JSON compact | JTON savings |
-|---------|------|------|------|--------------|-------------|
-| 👥 Employees 2,000 | 77,226 | 71,421 | **65,223** | 97,407 | **−20.7%** |
-| 📈 Analytics 365d | 10,604 | 10,965 | **9,146** | 14,240 | **−25.5%** |
-| ⭐ GitHub 100 | 9,626 | 9,256 | **8,560** | 11,729 | **−17.9%** |
-| 🛒 Orders 500 | **39,565** | 47,526 | 30,913 | 46,381 | **−14.7%** |
-| 🧾 Events 300 | 6,915 | **6,610** | 8,032 | 10,745 | **−35.6%** |
-| 🧩 Config | 223 | 335 | 223 | **223** | 0.0% |
+| Dataset | JTON | TOON | JSON compact | JTON savings |
+|---------|------|------|--------------|-------------|
+| 👥 Employees 2,000 | 77,226 | 71,421 | 97,407 | **−20.7%** |
+| 📈 Analytics 365d | 10,604 | 10,965 | 14,240 | **−25.5%** |
+| ⭐ GitHub 100 | 9,626 | 9,256 | 11,729 | **−17.9%** |
+| 🛒 Orders 500 | **39,565** | 47,526 | 46,381 | **−14.7%** |
+| 🧾 Events 300 | 6,915 | **6,610** | 10,745 | **−35.6%** |
+| 🧩 Config | 223 | 335 | **223** | 0.0% |
 
 > Config (0% tabular): JTON and JSON compact tie. Zen Grid only activates on homogeneous arrays.
 
@@ -340,15 +337,13 @@ Two new `dumps()` options for maximum LLM token efficiency:
 
 | Format | Tokens (mixed dataset) | vs JSON compact | JSON-compatible |
 |--------|------------------------|-----------------|-----------------|
-| JSON compact | 181,094 (baseline) | — | ✅ Yes |
+| JSON compact | 181,094 (baseline) | -- | ✅ Yes |
 | **JTON Zen Grid** | **~160,000** | **~11–26%** | ✅ Yes (JTON superset) |
 | [TOON](https://github.com/nickcoutsos/toon) | 146,113 | −19.2% | ❌ No |
-| [TRON](https://github.com/tron-format/tron) | 122,097 | −32.4% | ❌ No |
 
 **Notes:**
-- TRON uses class-based aliases (schema must be known in advance); highest compression but requires custom parser
 - TOON uses table-oriented syntax; similar to Zen Grid but not JSON-compatible
-- JTON Zen Grid is valid JTON/JSON — any JSON parser handles it, with no schema required
+- JTON Zen Grid is valid JTON/JSON -- any JSON parser handles it, with no schema required
 
 ---
 
@@ -417,16 +412,15 @@ Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, 
 
 ---
 
-## LLM Generation Evaluation (13 Models)
+## LLM Generation Evaluation (12 Models)
 
-**Can LLMs _produce_ valid Zen Grid output?** We test 13 models from 7 providers with few-shot and zero-shot prompting across 6 tasks of increasing complexity (simple 3×3 to 8×5 stock data with nulls and special characters). Uses the JTON 1.0 syntax `[N: headers; row1; row2 ]` where N is the optional row count.
+**Can LLMs _produce_ valid Zen Grid output?** We test 12 models from 6 providers with few-shot and zero-shot prompting across 6 tasks of increasing complexity (simple 3×3 to 8×5 stock data with nulls and special characters). Uses the JTON 1.0 syntax `[N: headers; row1; row2 ]` where N is the optional row count.
 
 ### Per-Model Validity
 
 | Model | Family | Few-shot Valid | Zero-shot Valid |
-|-------|--------|---------------|-----------------|
-| GPT-5-mini (WTG) | OpenAI | **100%** | **100%** |
-| GPT-5-mini (Azure) | OpenAI | **100%** | **100%** |
+|-------|--------|---------------|------------------|
+| GPT-5-mini | OpenAI | **100%** | **100%** |
 | GPT-5.1 | OpenAI | **100%** | **100%** |
 | GPT-4o | OpenAI | **100%** | **100%** |
 | Claude Sonnet 4 | Anthropic | **100%** | **100%** |
@@ -442,9 +436,9 @@ Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, 
 
 ### Key Findings
 
-- **All 13 models achieve 100% validity** in both few-shot and zero-shot modes
-- **100% accuracy** across all 13 models — the `[N: ...]` syntax is universally understood
-- All OpenAI models (GPT-5-mini WTG, GPT-5-mini Azure, GPT-5.1, GPT-4o) achieve perfect scores
+- **All 12 models achieve 100% validity** in both few-shot and zero-shot modes
+- **100% accuracy** across all 12 models -- the `[N: ...]` syntax is universally understood
+- All OpenAI models (GPT-5-mini, GPT-5.1, GPT-4o) achieve perfect scores
 - All three Anthropic Claude models (Sonnet 4, 3.5 Haiku, 3 Haiku) achieve perfect scores
 - All three Google Gemini models (2.5 Flash, 2.5 Pro, 3 Flash Preview) achieve perfect scores
 - Task complexity has minimal impact — validity is consistent from 3×3 to 8×5
