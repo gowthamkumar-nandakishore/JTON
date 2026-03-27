@@ -14,7 +14,7 @@
 JTON is a JSON superset designed for LLM applications and high-throughput data processing:
 
 - **Zen Grid**: Tabular encoding reduces token count by **15–60%** on benchmarked data vs JSON compact (23% average across 6 datasets, ~60% on highly-tabular Twitter-style rows)
-- **LLM-Validated**: 10 models tested for comprehension, 13 models tested for generation -- all achieve 100% generation validity (100% few-shot, 100% zero-shot)
+- **LLM-Validated**: 10 models tested for comprehension, 12 models tested for generation -- all achieve 100% generation validity (100% few-shot, 100% zero-shot)
 - **SIMD Acceleration**: AVX2 (32-byte) and AVX-512 (64-byte) structural scanning
 - **JSON-compatible**: supports `load()` / `loads()` / `dump()` / `dumps()` for common JSON workflows — all valid JSON is valid JTON
 - **Serialization**: `dumps()` with Zen Grid table output, Pydantic v1/v2 and dataclass support
@@ -536,12 +536,11 @@ Benchmarked on 6 real-world datasets using tiktoken `o200k_base` encoder:
 
 | Format | Total Tokens | vs JSON compact | JSON-Compatible |
 |--------|-------------|-----------------|-----------------|
-| [TRON](https://github.com/tron-format/tron) | 122,097 | **−32.4%** | ❌ No (new syntax) |
 | **JTON Zen Grid** | **144,159** | **−20.2%** | ✅ Yes (JTON superset) |
 | [TOON](https://github.com/nickcoutsos/toon) | 146,113 | −19.2% | ❌ No (new syntax) |
-| JSON compact | 180,725 | — | ✅ Yes |
+| JSON compact | 180,725 | -- | ✅ Yes |
 
-**JTON is #2 most token-efficient** and the **only JSON-superset format in the top 3** — TRON and TOON require custom parsers.
+**JTON is the most token-efficient JSON-compatible format** -- TOON requires a custom parser.
 
 ### Real-world LLM Token Savings
 
@@ -591,12 +590,11 @@ Four of ten models improve with Zen Grid (Kimi K2 +5.7pp, Llama 4 Scout +5.7pp, 
 
 ### LLM Generation Results
 
-Can LLMs **produce** valid Zen Grid output? We tested 13 models from 7 providers with few-shot and zero-shot prompting on the JTON 1.0 `[N: ...]` syntax:
+Can LLMs **produce** valid Zen Grid output? We tested 12 models from 6 providers with few-shot and zero-shot prompting on the JTON 1.0 `[N: ...]` syntax:
 
 | Model | Few-shot Valid | Zero-shot Valid |
 |-------|---------------|------------------|
-| GPT-5-mini (WTG) | **100%** | **100%** |
-| GPT-5-mini (Azure) | **100%** | **100%** |
+| GPT-5-mini | **100%** | **100%** |
 | GPT-5.1 | **100%** | **100%** |
 | GPT-4o | **100%** | **100%** |
 | Claude Sonnet 4 | **100%** | **100%** |
@@ -610,7 +608,7 @@ Can LLMs **produce** valid Zen Grid output? We tested 13 models from 7 providers
 | Kimi K2 | **100%** | **100%** |
 | **Overall** | **100%** | **100%** |
 
-All 13 models achieve 100% validity in both modes. Zen Grid works for **bidirectional** LLM pipelines — both input and output.
+All 12 models achieve 100% validity in both modes. Zen Grid works for **bidirectional** LLM pipelines -- both input and output.
 
 ### Format Comparison
 
@@ -779,7 +777,6 @@ The canonical benchmark corpus from **[nativejson-benchmark](https://github.com/
 | Format | GitHub | Token Savings | Approach | JSON-Compatible |
 |--------|--------|---------------|----------|-----------------|
 | **JTON Zen Grid** | This repo | **11–50%** | Column headers once | ✅ Yes |
-| [TRON](https://github.com/tron-format/tron) | [![GitHub](https://img.shields.io/badge/GitHub-TRON-black)](https://github.com/tron-format/tron) | ~32% | Class-based aliases | ❌ No |
 | [TOON](https://github.com/nickcoutsos/toon) | [![GitHub](https://img.shields.io/badge/GitHub-TOON-black)](https://github.com/nickcoutsos/toon) | ~19% | Table-oriented | ❌ No |
 
 ---
