@@ -1,17 +1,17 @@
 [package]
-name = "uoon_core"
-version = "0.1.0"
+name = "jton_core"
+version = "1.0.0"
 edition = "2021"
 rust-version = "1.89"
 license = "MIT"
 description = "High-performance, token-efficient JSON superset with Zen Grid tabular encoding"
-repository = "https://github.com/gowthamkumar-nandakishore/UOON"
+repository = "https://github.com/gowthamkumar-nandakishore/JTON"
 authors = ["Gowthamkumar Nandakishore"]
 
 [lib]
-name = "uoon_core"
+name = "jton_core"
 crate-type = ["cdylib"]
-path = "src/uoon_core/src/lib.rs"
+path = "src/jton_core/src/lib.rs"
 
 [dependencies]
 pyo3 = { version = "0.20" }
