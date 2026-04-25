@@ -7,8 +7,11 @@
 [![SIMD](https://img.shields.io/badge/SIMD-AVX2%20%2B%20AVX--512-blue)](#simd-acceleration)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2604.05865-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2604.05865)
+[![Playground](https://img.shields.io/badge/Try%20it-Playground-blueviolet)](https://jton-playground.onrender.com)
 
 ---
+
+> **[Try the JTON Playground →](https://jton-playground.onrender.com)** — interactive encoder/decoder with live token counts and speed benchmarks.
 
 ## Overview
 

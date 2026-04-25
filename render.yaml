@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: jton-playground
+    runtime: python
+    plan: free
+    buildCommand: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      export PATH="$HOME/.cargo/bin:$PATH"
+      pip install maturin flask gunicorn tiktoken
+      maturin develop --release
+    startCommand: gunicorn playground.app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 30
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
