@@ -92,6 +92,7 @@ fn loads(py: Python, data: &PyAny, schema: Option<&PyAny>) -> PyResult<PyObject>
 ///     >>> jton.dumps([{"name":"Alice","dept":"Eng"},{"name":"Bob","dept":"Mkt"}], bare_strings=True)
 ///     '[: name, dept; Alice, Eng; Bob, Mkt ]'
 #[pyfunction(signature = (data, *, zen_grid=true, unquoted_keys=false, indent=None, bare_strings=false, implicit_null=false, row_count=true, multiline_zen=false, delimiter="comma"))]
+#[allow(clippy::too_many_arguments)]
 fn dumps(
     py: Python,
     data: &PyAny,

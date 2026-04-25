@@ -10,15 +10,11 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 from flask import Flask, request, jsonify, send_from_directory
 
-# ── Ensure the package is importable ──────────────────────────────────────────
-ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "src"))
-import jton  # noqa: E402
-from benchmarks.formatters import format_toon  # noqa: E402
+import jton
 
 # ── Optional: tiktoken for live token counts ──────────────────────────────────
 try:
@@ -33,6 +29,60 @@ except ImportError:
         return len(text) // 4
 
 PLAYGROUND_DIR = Path(__file__).parent
+
+
+# ── Inline TOON formatter (avoids dependency on benchmarks/) ──────────────────
+def format_toon(data: Any) -> str:
+    """Format as TOON (Token-Oriented Object Notation)."""
+    def toon_encode(obj: Any, indent: int = 0) -> str:
+        spaces = "  " * indent
+        if isinstance(obj, dict):
+            if not obj:
+                return "{}"
+            if len(obj) == 1:
+                key, value = next(iter(obj.items()))
+                if isinstance(value, list) and value and all(isinstance(i, dict) for i in value):
+                    keys = list(value[0].keys())
+                    lines = [f"{spaces}{key}"]
+                    lines.append(f"{spaces}  {' | '.join(keys)}")
+                    for item in value:
+                        lines.append(f"{spaces}  {' | '.join(str(item.get(k, '')) for k in keys)}")
+                    return "\n".join(lines)
+            lines = ["{"]
+            for i, (key, value) in enumerate(obj.items()):
+                encoded = toon_encode(value, indent + 1)
+                comma = "," if i < len(obj) - 1 else ""
+                lines.append(f"{spaces}  {key}: {encoded}{comma}")
+            lines.append(f"{spaces}}}")
+            return "\n".join(lines)
+        elif isinstance(obj, list):
+            if not obj:
+                return "[]"
+            if all(isinstance(item, dict) for item in obj):
+                if obj and all(set(item.keys()) == set(obj[0].keys()) for item in obj):
+                    keys = list(obj[0].keys())
+                    lines = [f"{spaces}{' | '.join(keys)}"]
+                    for item in obj:
+                        lines.append(f"{spaces}{' | '.join(str(item.get(k, '')) for k in keys)}")
+                    return "\n".join(lines)
+            lines = ["["]
+            for i, item in enumerate(obj):
+                encoded = toon_encode(item, indent + 1)
+                comma = "," if i < len(obj) - 1 else ""
+                lines.append(f"{spaces}  {encoded}{comma}")
+            lines.append(f"{spaces}]")
+            return "\n".join(lines)
+        elif isinstance(obj, str):
+            escaped = obj.replace("\\", "\\\\").replace('"', '\\"')
+            return f'"{escaped}"'
+        elif isinstance(obj, bool):
+            return "true" if obj else "false"
+        elif obj is None:
+            return "null"
+        else:
+            return str(obj)
+    return toon_encode(data)
+
 
 app = Flask(__name__, static_folder=None)
 

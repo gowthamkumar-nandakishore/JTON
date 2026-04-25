@@ -1,4 +1,4 @@
+jton>=1.0.0
 flask>=3.0
 gunicorn>=22.0
 tiktoken>=0.7
-maturin>=1.0,<2.0
