@@ -71,9 +71,9 @@ pub struct DumpsOptions {
 
 // ── Thread-local buffer pool ──────────────────────────────────────────────────
 
-/// Reusable serialization buffer per thread.
-/// Avoids re-allocating a fresh Vec on every `dumps()` call.
-/// The buffer is cleared (not dropped) between calls, so capacity is preserved.
+// Reusable serialization buffer per thread.
+// Avoids re-allocating a fresh Vec on every `dumps()` call.
+// The buffer is cleared (not dropped) between calls, so capacity is preserved.
 thread_local! {
     static WRITE_BUF: std::cell::RefCell<Vec<u8>> = std::cell::RefCell::new(Vec::with_capacity(8192));
 }
